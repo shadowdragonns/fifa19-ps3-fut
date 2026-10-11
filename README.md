@@ -90,9 +90,11 @@ not a general patch for other title IDs or revisions.
 Online division promotion/relegation, full quit/disconnect outcomes, transfer
 market trading, official EA accounts and global EA leaderboards are not
 implemented. Season match counters remain native 3/1/0 points; configurable
-point weights affect local leaderboards. The old England 110 store pack is
-retired; existing saved cards remain compatible. This project does not install
-the England gameplay mod.
+point weights affect local leaderboards.
 
 MIT licensed. FIFA, EA, PlayStation and other product names belong to their
 respective owners. RPCS3 and RPCN are separate projects; neither is bundled.
+
+A massive disclaimer is most of the code was made made with Codex
+as it involed looking at the raw code of the PS3 rom and i wouldnt know where to start with that
+but a lot of the testing was done by me and a friend
