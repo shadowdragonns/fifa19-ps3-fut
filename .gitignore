@@ -1,0 +1,44 @@
+# Game, emulator, firmware and extracted assets
+PS3_GAME/
+PS3_UPDATE/
+dev_hdd*/
+dev_flash*/
+rpcs3-runtime/
+runtime/
+*.iso
+*.ISO
+*.pkg
+*.PKG
+*.elf
+*.ELF
+*.big
+*.BIG
+*.bin
+*.BIN
+*.self
+*.sprx
+# Private runtime state and authentication
+state/
+state-backups/
+logs/
+plugin-data/
+server-config.json
+tls/
+*.key
+*.pem
+*.p12
+*.pfx
+.env
+.env.*
+hosts.yml
+rpcn.yml
+.github-auth/
+# Generated launcher/bundle files
+BLES02258_patch.yml
+rpcs3-discovery.yml
+.patch-generation.lock
+dist/
+__pycache__/
+*.py[cod]
+.venv/
+venv/

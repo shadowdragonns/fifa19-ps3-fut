@@ -1,0 +1,44 @@
+{
+  "source_archive": "PS3_GAME/USRDIR/cards0.big",
+  "source_db_sha256": "1c7f0ecdccb343ee337e1b6ca7ca2fd0d80af969a8d2a0af8317a9363b53a333",
+  "source_table": "fcc_stadium",
+  "source_row": {
+    "carddbid": 6200031,
+    "capacity": 90000,
+    "biodescription": "StadiumDetailDesc",
+    "weightrare": 1,
+    "cardassetid": 36,
+    "description": "StadiumDesc_155",
+    "assetid": 155,
+    "boost": 0,
+    "stadiumid": 155,
+    "value": 84,
+    "name": "Wembley Stadium",
+    "category": 4,
+    "header": "Stadium"
+  },
+  "native_subtype_mapping": "0x140c9e8 requests category 7, subtype 10 from 0x17194d4, then reads card+0x20 (assetId); 0x171a7ec maps subtype 10 to club equipment category 7. Subtype 271 is a stadium modifier and is not selected as the home venue.",
+  "native_active_state": "0x16b178c table 0x1f97cf8 maps activeStadium to 104",
+  "installed_gameplay_stadium": {
+    "stadiumid": 155,
+    "dlc": 0,
+    "name": "Wembley Stadium"
+  },
+  "card": {
+    "id": 9000001,
+    "resourceId": 6200031,
+    "assetId": 155,
+    "cardsubtypeid": 10,
+    "itemType": "stadium",
+    "itemState": "activeStadium",
+    "stadiumid": 155,
+    "rating": 84,
+    "rareflag": 1,
+    "capacity": 90000,
+    "name": "Wembley Stadium",
+    "discardValue": 0,
+    "untradeable": true,
+    "timestamp": 1,
+    "owners": 1
+  }
+}

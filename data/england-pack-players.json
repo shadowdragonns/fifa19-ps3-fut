@@ -1,0 +1,811 @@
+{
+  "source_db_sha256": "a34a250810495c76e14dc307a4aee2a7bf66d78d48cd61c3b22600af2d35966e",
+  "source_elf_sha256": "2f20b4f507e93283fefd3f14ac85462191ca9a66608f1d649981173f63f73be9",
+  "players": [
+    {
+      "assetId": 152908,
+      "name": "Ashley Young",
+      "preferredPosition": "LB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 11,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 164468,
+      "name": "Gary Cahill",
+      "preferredPosition": "CB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 5,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 169595,
+      "name": "Danny Rose",
+      "preferredPosition": "LB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 18,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 183427,
+      "name": "Fabian Delph",
+      "preferredPosition": "LB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 10,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 183711,
+      "name": "Jordan Henderson",
+      "preferredPosition": "CDM",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 9,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 186146,
+      "name": "Danny Welbeck",
+      "preferredPosition": "LW",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 1,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 186345,
+      "name": "Kieran Trippier",
+      "preferredPosition": "RB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 18,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 188377,
+      "name": "Kyle Walker",
+      "preferredPosition": "RB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 10,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 194957,
+      "name": "Phil Jones",
+      "preferredPosition": "CB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 11,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 202126,
+      "name": "Harry Kane",
+      "preferredPosition": "ST",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 18,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 202335,
+      "name": "Eric Dier",
+      "preferredPosition": "CDM",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 18,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 202652,
+      "name": "Raheem Sterling",
+      "preferredPosition": "RW",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 10,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 203042,
+      "name": "Jack Butland",
+      "preferredPosition": "GK",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 1806,
+      "leagueId": 14,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 203263,
+      "name": "Harry Maguire",
+      "preferredPosition": "CB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 95,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 203574,
+      "name": "John Stones",
+      "preferredPosition": "CB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 10,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 203841,
+      "name": "Nick Pope",
+      "preferredPosition": "GK",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 1796,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 204935,
+      "name": "Jordan Pickford",
+      "preferredPosition": "GK",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 7,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 207494,
+      "name": "Jesse Lingard",
+      "preferredPosition": "CAM",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 11,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 208830,
+      "name": "Jamie Vardy",
+      "preferredPosition": "ST",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 95,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 211117,
+      "name": "Dele Alli",
+      "preferredPosition": "CAM",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 112190,
+      "leagueId": 76,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 213666,
+      "name": "Ruben Loftus-Cheek",
+      "preferredPosition": "CM",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 5,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 231281,
+      "name": "Trent Alexander-Arnold",
+      "preferredPosition": "RB",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 9,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    },
+    {
+      "assetId": 231677,
+      "name": "Marcus Rashford",
+      "preferredPosition": "LW",
+      "rating": 110,
+      "nation": 14,
+      "teamid": 11,
+      "leagueId": 13,
+      "attributeList": [
+        {
+          "index": 0,
+          "value": 110
+        },
+        {
+          "index": 1,
+          "value": 110
+        },
+        {
+          "index": 2,
+          "value": 110
+        },
+        {
+          "index": 3,
+          "value": 110
+        },
+        {
+          "index": 4,
+          "value": 110
+        },
+        {
+          "index": 5,
+          "value": 110
+        }
+      ]
+    }
+  ]
+}

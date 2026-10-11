@@ -1,0 +1,93 @@
+# Client and patcher
+
+Use Python 3.10+, RPCS3 with your firmware, your own **FIFA 19 BLES02258** game
+and **v1.02** update, and a configured RPCN account/controller. Obtain the
+server's public `root.pem` from its operator. Close RPCS3 before launching.
+Each friend needs a distinct RPCN account. Reusing that account retains its
+saved club, regardless of client IP.
+
+Linux:
+
+```bash
+python3 launch.py --server 192.0.2.55 --trust-ca /path/to/root.pem \
+  --rpcs3 /path/to/rpcs3.AppImage --game /path/to/FIFA19
+```
+
+Windows PowerShell:
+
+```powershell
+py -3 launch.py --server 192.0.2.55 --trust-ca "C:\FUT\root.pem" --rpcs3 "F:\rpcs3.exe" --game "D:\Games\FIFA19"
+```
+
+Replace addresses and paths. The launcher accepts a server hostname resolving
+to IPv4. `--profile` can select RPCS3's existing data root containing `dev_hdd0`.
+Linux defaults to `~/.config/rpcs3`. Windows uses the folder beside `rpcs3.exe`
+or its existing `portable` folder; do not point at its nested `config` folder.
+Conflicting portable overrides are refused. Linux AppImage extraction is
+cached automatically. The development setup used RPCS3 revision bb5dc93b;
+other emulator revisions need testing, while the game executable hash remains
+strictly checked against BLES02258 v1.02.
+
+## ISO and update input
+
+`--game` accepts a JB folder containing `PS3_GAME` or a **decrypted ISO**, whose
+files can be read without disc encryption. The launcher does not decrypt
+encrypted images. Install 7-Zip for ISO extraction; use `--iso-cache` to choose
+a drive with room for the extracted game. Original images are preserved.
+
+The repository does not supply an update. If you already have an extracted
+v1.02 update folder from your own installation, install it into your selected
+Windows RPCS3 setup with:
+
+```powershell
+py -3 install_update.py --rpcs3 "F:\rpcs3.exe" --source "D:\OwnUpdate\BLES02258"
+```
+
+The installer validates and copies only that title's update, respects RPCS3's
+VFS hard-drive path, backs up an existing update and restores it on failure.
+Other games, saves, firmware and RPCN settings are preserved. It does not
+download game files. No private TLS key or OpenSSL installation is needed on
+the client; the public CA reader uses Python's standard library.
+
+## Temporary patches and validation
+
+Add `--prepare-only` for game/update/profile/network validation without
+starting RPCS3 or installing temporary patches. A normal launch replaces the
+game's per-launch `cl.ini`, redirects discovery to the chosen server, and
+installs a hash-specific certificate/boot compatibility patch through RPCS3.
+It restores patch settings and removes its temporary files after exit.
+Existing ambiguous patch settings are refused instead of overwritten. The
+launcher does not rewrite the ISO or EBOOT on disk. Network diagnostics are
+captured privately; `--trace-network` enables verbose tracing if needed.
+
+For same-PC testing with the source tree, initialize TLS locally and omit
+`--server`; the launcher starts and stops its same-PC server. Separate portable
+client ZIPs require `--server`. Windows supports one client per PC.
+
+## Two Linux clients
+
+Close RPCS3, then prepare isolated instances:
+
+```bash
+python3 setup_clients.py --game /path/to/FIFA19 --profile /path/to/rpcs3/data
+python3 launch.py --instance player2 --configure --server 192.0.2.55
+```
+
+Set a different RPCN account for player 2, then close its configuration window.
+The instances retain separate game/profile/cache files. Launch one per terminal:
+
+```bash
+python3 launch.py --instance player1 --server 192.0.2.55 --trust-ca /path/to/root.pem --rpcs3 /path/to/rpcs3.AppImage
+python3 launch.py --instance player2 --server 192.0.2.55 --trust-ca /path/to/root.pem --rpcs3 /path/to/rpcs3.AppImage
+```
+
+Do not add `--game` or `--profile` to prepared instances. A C compiler is needed
+for their process-local UDP port adapter. `--background-input` allows separate
+controllers while a window is unfocused. Instance setup is Linux-only.
+
+In both clients open **Ultimate Team → Online Seasons → Play Match** and
+search within the configured search window. Ready both sides. Gameplay is
+peer-to-peer, so RPCN and peer connectivity must work in addition to server
+access. A second match should use the same login; test repeated full games and
+report the stage of any failure. Reconnect after a server restart and re-enter
+FUT to refresh changed prices/cards. Do not reset squads to apply an update.

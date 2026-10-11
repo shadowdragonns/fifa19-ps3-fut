@@ -1,0 +1,1899 @@
+{
+  "source_sha256": "1c7f0ecdccb343ee337e1b6ca7ca2fd0d80af969a8d2a0af8317a9363b53a333",
+  "cards": [
+    {
+      "id": 9000100,
+      "resourceId": 6300006,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 93,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_21",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 21,
+      "category": 2,
+      "label": "Bayern M\u00fcnchen HomeKit",
+      "colours": {
+        "primary": [
+          175,
+          33,
+          46
+        ],
+        "secondary": [
+          0,
+          22,
+          95
+        ],
+        "third": [
+          0,
+          22,
+          95
+        ]
+      }
+    },
+    {
+      "id": 9000101,
+      "resourceId": 6300008,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 93,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_21",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 21,
+      "category": 5,
+      "label": "Bayern M\u00fcnchen ThirdKit",
+      "colours": {
+        "primary": [
+          97,
+          97,
+          98
+        ],
+        "secondary": [
+          97,
+          97,
+          98
+        ],
+        "third": [
+          60,
+          64,
+          72
+        ]
+      }
+    },
+    {
+      "id": 9000102,
+      "resourceId": 6300010,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 92,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_241",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 241,
+      "category": 2,
+      "label": "FC Barcelona HomeKit",
+      "colours": {
+        "primary": [
+          39,
+          46,
+          101
+        ],
+        "secondary": [
+          119,
+          22,
+          59
+        ],
+        "third": [
+          28,
+          41,
+          73
+        ]
+      }
+    },
+    {
+      "id": 9000103,
+      "resourceId": 6300016,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 92,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1337",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1337,
+      "category": 2,
+      "label": "Germany HomeKit",
+      "colours": {
+        "primary": [
+          231,
+          231,
+          231
+        ],
+        "secondary": [
+          231,
+          231,
+          231
+        ],
+        "third": [
+          25,
+          25,
+          25
+        ]
+      }
+    },
+    {
+      "id": 9000104,
+      "resourceId": 6300018,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_5",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 5,
+      "category": 2,
+      "label": "Chelsea HomeKit",
+      "colours": {
+        "primary": [
+          41,
+          56,
+          122
+        ],
+        "secondary": [
+          41,
+          56,
+          122
+        ],
+        "third": [
+          39,
+          54,
+          117
+        ]
+      }
+    },
+    {
+      "id": 9000105,
+      "resourceId": 6300020,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_5",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 5,
+      "category": 5,
+      "label": "Chelsea ThirdKit",
+      "colours": {
+        "primary": [
+          152,
+          174,
+          182
+        ],
+        "secondary": [
+          103,
+          129,
+          142
+        ],
+        "third": [
+          151,
+          174,
+          182
+        ]
+      }
+    },
+    {
+      "id": 9000106,
+      "resourceId": 6300021,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1369",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1369,
+      "category": 2,
+      "label": "Argentina HomeKit",
+      "colours": {
+        "primary": [
+          224,
+          229,
+          231
+        ],
+        "secondary": [
+          164,
+          207,
+          223
+        ],
+        "third": [
+          25,
+          25,
+          25
+        ]
+      }
+    },
+    {
+      "id": 9000107,
+      "resourceId": 6300022,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1370",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1370,
+      "category": 2,
+      "label": "Brazil HomeKit",
+      "colours": {
+        "primary": [
+          251,
+          229,
+          34
+        ],
+        "secondary": [
+          251,
+          229,
+          34
+        ],
+        "third": [
+          0,
+          91,
+          165
+        ]
+      }
+    },
+    {
+      "id": 9000108,
+      "resourceId": 6300023,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 90,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_10",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 10,
+      "category": 2,
+      "label": "Manchester City HomeKit",
+      "colours": {
+        "primary": [
+          117,
+          163,
+          207
+        ],
+        "secondary": [
+          74,
+          108,
+          147
+        ],
+        "third": [
+          226,
+          227,
+          227
+        ]
+      }
+    },
+    {
+      "id": 9000109,
+      "resourceId": 6300026,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 90,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_10",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 10,
+      "category": 5,
+      "label": "Manchester City ThirdKit",
+      "colours": {
+        "primary": [
+          64,
+          24,
+          82
+        ],
+        "secondary": [
+          64,
+          24,
+          82
+        ],
+        "third": [
+          69,
+          24,
+          86
+        ]
+      }
+    },
+    {
+      "id": 9000110,
+      "resourceId": 6300034,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 90,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1335",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1335,
+      "category": 2,
+      "label": "France HomeKit",
+      "colours": {
+        "primary": [
+          26,
+          31,
+          59
+        ],
+        "secondary": [
+          72,
+          110,
+          186
+        ],
+        "third": [
+          225,
+          225,
+          225
+        ]
+      }
+    },
+    {
+      "id": 9000111,
+      "resourceId": 6300036,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1,
+      "category": 2,
+      "label": "Arsenal HomeKit",
+      "colours": {
+        "primary": [
+          198,
+          41,
+          44
+        ],
+        "secondary": [
+          231,
+          231,
+          231
+        ],
+        "third": [
+          229,
+          229,
+          229
+        ]
+      }
+    },
+    {
+      "id": 9000112,
+      "resourceId": 6300038,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1,
+      "category": 5,
+      "label": "Arsenal ThirdKit",
+      "colours": {
+        "primary": [
+          132,
+          198,
+          179
+        ],
+        "secondary": [
+          34,
+          41,
+          64
+        ],
+        "third": [
+          115,
+          191,
+          169
+        ]
+      }
+    },
+    {
+      "id": 9000113,
+      "resourceId": 6300039,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_11",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 11,
+      "category": 2,
+      "label": "Manchester United HomeKit",
+      "colours": {
+        "primary": [
+          178,
+          26,
+          52
+        ],
+        "secondary": [
+          33,
+          30,
+          31
+        ],
+        "third": [
+          25,
+          25,
+          25
+        ]
+      }
+    },
+    {
+      "id": 9000114,
+      "resourceId": 6300040,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_11",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 11,
+      "category": 5,
+      "label": "Manchester United ThirdKit",
+      "colours": {
+        "primary": [
+          12,
+          31,
+          49
+        ],
+        "secondary": [
+          12,
+          31,
+          49
+        ],
+        "third": [
+          16,
+          29,
+          47
+        ]
+      }
+    },
+    {
+      "id": 9000115,
+      "resourceId": 6300041,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_22",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 22,
+      "category": 2,
+      "label": "Borussia Dortmund HomeKit",
+      "colours": {
+        "primary": [
+          248,
+          221,
+          3
+        ],
+        "secondary": [
+          38,
+          37,
+          28
+        ],
+        "third": [
+          26,
+          26,
+          26
+        ]
+      }
+    },
+    {
+      "id": 9000116,
+      "resourceId": 6300043,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_22",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 22,
+      "category": 5,
+      "label": "Borussia Dortmund ThirdKit",
+      "colours": {
+        "primary": [
+          249,
+          222,
+          0
+        ],
+        "secondary": [
+          33,
+          32,
+          29
+        ],
+        "third": [
+          32,
+          32,
+          32
+        ]
+      }
+    },
+    {
+      "id": 9000117,
+      "resourceId": 6300044,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1325",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1325,
+      "category": 2,
+      "label": "Belgium HomeKit",
+      "colours": {
+        "primary": [
+          231,
+          54,
+          51
+        ],
+        "secondary": [
+          231,
+          54,
+          51
+        ],
+        "third": [
+          226,
+          45,
+          42
+        ]
+      }
+    },
+    {
+      "id": 9000118,
+      "resourceId": 6300047,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 88,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_9",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 9,
+      "category": 2,
+      "label": "Liverpool HomeKit",
+      "colours": {
+        "primary": [
+          136,
+          14,
+          28
+        ],
+        "secondary": [
+          136,
+          14,
+          28
+        ],
+        "third": [
+          119,
+          12,
+          24
+        ]
+      }
+    },
+    {
+      "id": 9000119,
+      "resourceId": 6300050,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 88,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_9",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 9,
+      "category": 5,
+      "label": "Liverpool ThirdKit",
+      "colours": {
+        "primary": [
+          195,
+          195,
+          195
+        ],
+        "secondary": [
+          126,
+          132,
+          140
+        ],
+        "third": [
+          198,
+          197,
+          197
+        ]
+      }
+    },
+    {
+      "id": 9000120,
+      "resourceId": 6300056,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 88,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1318",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1318,
+      "category": 2,
+      "label": "England HomeKit",
+      "colours": {
+        "primary": [
+          224,
+          223,
+          223
+        ],
+        "secondary": [
+          224,
+          223,
+          223
+        ],
+        "third": [
+          25,
+          36,
+          75
+        ]
+      }
+    },
+    {
+      "id": 9000121,
+      "resourceId": 6300079,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 86,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_18",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 18,
+      "category": 2,
+      "label": "Tottenham Hotspur HomeKit",
+      "colours": {
+        "primary": [
+          229,
+          229,
+          229
+        ],
+        "secondary": [
+          31,
+          37,
+          71
+        ],
+        "third": [
+          27,
+          34,
+          67
+        ]
+      }
+    },
+    {
+      "id": 9000122,
+      "resourceId": 6300080,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 86,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_18",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 18,
+      "category": 5,
+      "label": "Tottenham Hotspur ThirdKit",
+      "colours": {
+        "primary": [
+          58,
+          136,
+          119
+        ],
+        "secondary": [
+          46,
+          62,
+          72
+        ],
+        "third": [
+          57,
+          131,
+          114
+        ]
+      }
+    },
+    {
+      "id": 9000123,
+      "resourceId": 6300081,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 86,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_23",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 23,
+      "category": 2,
+      "label": "Borussia M'gladbach HomeKit",
+      "colours": {
+        "primary": [
+          232,
+          232,
+          232
+        ],
+        "secondary": [
+          23,
+          91,
+          59
+        ],
+        "third": [
+          227,
+          227,
+          227
+        ]
+      }
+    },
+    {
+      "id": 9000124,
+      "resourceId": 6300083,
+      "assetId": 14,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 86,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_23",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 23,
+      "category": 5,
+      "label": "Borussia M'gladbach ThirdKit",
+      "colours": {
+        "primary": [
+          16,
+          147,
+          89
+        ],
+        "secondary": [
+          22,
+          89,
+          60
+        ],
+        "third": [
+          12,
+          134,
+          75
+        ]
+      }
+    },
+    {
+      "id": 9000125,
+      "resourceId": 6400003,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 93,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_21",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 21,
+      "category": 3,
+      "label": "Bayern M\u00fcnchen AwayKit",
+      "colours": {
+        "primary": [
+          158,
+          185,
+          179
+        ],
+        "secondary": [
+          158,
+          185,
+          179
+        ],
+        "third": [
+          67,
+          60,
+          77
+        ]
+      }
+    },
+    {
+      "id": 9000126,
+      "resourceId": 6400005,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 92,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_241",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 241,
+      "category": 3,
+      "label": "FC Barcelona AwayKit",
+      "colours": {
+        "primary": [
+          189,
+          214,
+          46
+        ],
+        "secondary": [
+          189,
+          214,
+          46
+        ],
+        "third": [
+          208,
+          223,
+          73
+        ]
+      }
+    },
+    {
+      "id": 9000127,
+      "resourceId": 6400007,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 92,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1337",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1337,
+      "category": 3,
+      "label": "Germany AwayKit",
+      "colours": {
+        "primary": [
+          44,
+          188,
+          182
+        ],
+        "secondary": [
+          19,
+          109,
+          112
+        ],
+        "third": [
+          227,
+          227,
+          227
+        ]
+      }
+    },
+    {
+      "id": 9000128,
+      "resourceId": 6400008,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_5",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 5,
+      "category": 3,
+      "label": "Chelsea AwayKit",
+      "colours": {
+        "primary": [
+          229,
+          187,
+          39
+        ],
+        "secondary": [
+          229,
+          187,
+          39
+        ],
+        "third": [
+          230,
+          184,
+          35
+        ]
+      }
+    },
+    {
+      "id": 9000129,
+      "resourceId": 6400009,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1369",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1369,
+      "category": 3,
+      "label": "Argentina AwayKit",
+      "colours": {
+        "primary": [
+          30,
+          30,
+          30
+        ],
+        "secondary": [
+          30,
+          30,
+          30
+        ],
+        "third": [
+          226,
+          226,
+          226
+        ]
+      }
+    },
+    {
+      "id": 9000130,
+      "resourceId": 6400010,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1370",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1370,
+      "category": 3,
+      "label": "Brazil AwayKit",
+      "colours": {
+        "primary": [
+          19,
+          106,
+          170
+        ],
+        "secondary": [
+          19,
+          106,
+          170
+        ],
+        "third": [
+          224,
+          224,
+          224
+        ]
+      }
+    },
+    {
+      "id": 9000131,
+      "resourceId": 6400011,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 90,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_10",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 10,
+      "category": 3,
+      "label": "Manchester City AwayKit",
+      "colours": {
+        "primary": [
+          18,
+          37,
+          55
+        ],
+        "secondary": [
+          18,
+          37,
+          55
+        ],
+        "third": [
+          18,
+          35,
+          53
+        ]
+      }
+    },
+    {
+      "id": 9000132,
+      "resourceId": 6400014,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 90,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1335",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1335,
+      "category": 3,
+      "label": "France AwayKit",
+      "colours": {
+        "primary": [
+          223,
+          223,
+          223
+        ],
+        "secondary": [
+          223,
+          223,
+          223
+        ],
+        "third": [
+          22,
+          27,
+          46
+        ]
+      }
+    },
+    {
+      "id": 9000133,
+      "resourceId": 6400016,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1,
+      "category": 3,
+      "label": "Arsenal AwayKit",
+      "colours": {
+        "primary": [
+          57,
+          49,
+          70
+        ],
+        "secondary": [
+          57,
+          49,
+          70
+        ],
+        "third": [
+          82,
+          29,
+          44
+        ]
+      }
+    },
+    {
+      "id": 9000134,
+      "resourceId": 6400017,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_11",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 11,
+      "category": 3,
+      "label": "Manchester United AwayKit",
+      "colours": {
+        "primary": [
+          231,
+          200,
+          195
+        ],
+        "secondary": [
+          208,
+          155,
+          143
+        ],
+        "third": [
+          25,
+          25,
+          25
+        ]
+      }
+    },
+    {
+      "id": 9000135,
+      "resourceId": 6400018,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_22",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 22,
+      "category": 3,
+      "label": "Borussia Dortmund AwayKit",
+      "colours": {
+        "primary": [
+          31,
+          31,
+          30
+        ],
+        "secondary": [
+          248,
+          221,
+          1
+        ],
+        "third": [
+          26,
+          26,
+          26
+        ]
+      }
+    },
+    {
+      "id": 9000136,
+      "resourceId": 6400019,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1325",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1325,
+      "category": 3,
+      "label": "Belgium AwayKit",
+      "colours": {
+        "primary": [
+          236,
+          218,
+          60
+        ],
+        "secondary": [
+          236,
+          218,
+          60
+        ],
+        "third": [
+          25,
+          25,
+          25
+        ]
+      }
+    },
+    {
+      "id": 9000137,
+      "resourceId": 6400022,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 88,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_9",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 9,
+      "category": 3,
+      "label": "Liverpool AwayKit",
+      "colours": {
+        "primary": [
+          52,
+          11,
+          109
+        ],
+        "secondary": [
+          52,
+          11,
+          109
+        ],
+        "third": [
+          49,
+          10,
+          107
+        ]
+      }
+    },
+    {
+      "id": 9000138,
+      "resourceId": 6400025,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 88,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1318",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1318,
+      "category": 3,
+      "label": "England AwayKit",
+      "colours": {
+        "primary": [
+          180,
+          31,
+          30
+        ],
+        "secondary": [
+          180,
+          31,
+          30
+        ],
+        "third": [
+          205,
+          205,
+          205
+        ]
+      }
+    },
+    {
+      "id": 9000139,
+      "resourceId": 6400034,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 86,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_18",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 18,
+      "category": 3,
+      "label": "Tottenham Hotspur AwayKit",
+      "colours": {
+        "primary": [
+          40,
+          45,
+          77
+        ],
+        "secondary": [
+          68,
+          173,
+          183
+        ],
+        "third": [
+          47,
+          59,
+          90
+        ]
+      }
+    },
+    {
+      "id": 9000140,
+      "resourceId": 6400035,
+      "assetId": 15,
+      "cardsubtypeid": 9,
+      "itemType": "kit",
+      "itemState": "free",
+      "rating": 86,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_23",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 23,
+      "category": 3,
+      "label": "Borussia M'gladbach AwayKit",
+      "colours": {
+        "primary": [
+          30,
+          34,
+          32
+        ],
+        "secondary": [
+          25,
+          104,
+          81
+        ],
+        "third": [
+          26,
+          26,
+          26
+        ]
+      }
+    },
+    {
+      "id": 9000141,
+      "resourceId": 6000005,
+      "assetId": 21,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 93,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_21",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 21,
+      "category": 1,
+      "label": "Bayern M\u00fcnchen badge"
+    },
+    {
+      "id": 9000142,
+      "resourceId": 6000007,
+      "assetId": 241,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 92,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_241",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 241,
+      "category": 1,
+      "label": "FC Barcelona badge"
+    },
+    {
+      "id": 9000143,
+      "resourceId": 6000009,
+      "assetId": 1337,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 92,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1337",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1337,
+      "category": 1,
+      "label": "Germany badge"
+    },
+    {
+      "id": 9000144,
+      "resourceId": 6000010,
+      "assetId": 5,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_5",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 5,
+      "category": 1,
+      "label": "Chelsea badge"
+    },
+    {
+      "id": 9000145,
+      "resourceId": 6000011,
+      "assetId": 1369,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1369",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1369,
+      "category": 1,
+      "label": "Argentina badge"
+    },
+    {
+      "id": 9000146,
+      "resourceId": 6000012,
+      "assetId": 1370,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 91,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1370",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1370,
+      "category": 1,
+      "label": "Brazil badge"
+    },
+    {
+      "id": 9000147,
+      "resourceId": 6000013,
+      "assetId": 10,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 90,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_10",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 10,
+      "category": 1,
+      "label": "Manchester City badge"
+    },
+    {
+      "id": 9000148,
+      "resourceId": 6000016,
+      "assetId": 1335,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 90,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1335",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1335,
+      "category": 1,
+      "label": "France badge"
+    },
+    {
+      "id": 9000149,
+      "resourceId": 6000018,
+      "assetId": 1,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1,
+      "category": 1,
+      "label": "Arsenal badge"
+    },
+    {
+      "id": 9000150,
+      "resourceId": 6000019,
+      "assetId": 11,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_11",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 11,
+      "category": 1,
+      "label": "Manchester United badge"
+    },
+    {
+      "id": 9000151,
+      "resourceId": 6000020,
+      "assetId": 22,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_22",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 22,
+      "category": 1,
+      "label": "Borussia Dortmund badge"
+    },
+    {
+      "id": 9000152,
+      "resourceId": 6000021,
+      "assetId": 1325,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 89,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1325",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1325,
+      "category": 1,
+      "label": "Belgium badge"
+    },
+    {
+      "id": 9000153,
+      "resourceId": 6000024,
+      "assetId": 9,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 88,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_9",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 9,
+      "category": 1,
+      "label": "Liverpool badge"
+    },
+    {
+      "id": 9000154,
+      "resourceId": 6000027,
+      "assetId": 1318,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 88,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_1318",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 1318,
+      "category": 1,
+      "label": "England badge"
+    },
+    {
+      "id": 9000155,
+      "resourceId": 6000036,
+      "assetId": 18,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 86,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_18",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 18,
+      "category": 1,
+      "label": "Tottenham Hotspur badge"
+    },
+    {
+      "id": 9000156,
+      "resourceId": 6000037,
+      "assetId": 23,
+      "cardsubtypeid": 11,
+      "itemType": "badge",
+      "itemState": "free",
+      "rating": 86,
+      "rareflag": 1,
+      "name": "TeamName_Abbr15_23",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "teamid": 23,
+      "category": 1,
+      "label": "Borussia M'gladbach badge"
+    },
+    {
+      "id": 9000157,
+      "resourceId": 8120000,
+      "assetId": 0,
+      "cardsubtypeid": 30,
+      "itemType": "ball",
+      "itemState": "free",
+      "rating": 60,
+      "rareflag": 0,
+      "name": "BallName_0",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "category": 1,
+      "label": "BallName_0"
+    },
+    {
+      "id": 9000158,
+      "resourceId": 8120001,
+      "assetId": 1,
+      "cardsubtypeid": 30,
+      "itemType": "ball",
+      "itemState": "free",
+      "rating": 60,
+      "rareflag": 0,
+      "name": "BallName_1",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "category": 1,
+      "label": "BallName_1"
+    },
+    {
+      "id": 9000159,
+      "resourceId": 8120002,
+      "assetId": 2,
+      "cardsubtypeid": 30,
+      "itemType": "ball",
+      "itemState": "free",
+      "rating": 60,
+      "rareflag": 0,
+      "name": "BallName_2",
+      "discardValue": 0,
+      "untradeable": true,
+      "timestamp": 1,
+      "owners": 1,
+      "stadiumid": 0,
+      "year": 0,
+      "category": 1,
+      "label": "BallName_2"
+    }
+  ]
+}

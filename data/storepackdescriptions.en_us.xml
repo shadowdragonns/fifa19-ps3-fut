@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='utf-8'?>
+<xliff version="1.2">
+  <file original="storepackdescriptions" source-language="en-US" datatype="plaintext">
+    <body>
+      <trans-unit id="FUT_STORE_PACK_4_NAME" resname="FUT_STORE_PACK_4_NAME">
+        <source>Bronze Player Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_4_DESC" resname="FUT_STORE_PACK_4_DESC">
+        <source>6 bronze players with normal ratings, including 1 rare. Costs 400 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_5_NAME" resname="FUT_STORE_PACK_5_NAME">
+        <source>Silver Player Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_5_DESC" resname="FUT_STORE_PACK_5_DESC">
+        <source>6 silver players with normal ratings, including 1 rare. Costs 2,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_6_NAME" resname="FUT_STORE_PACK_6_NAME">
+        <source>Gold Player Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_6_DESC" resname="FUT_STORE_PACK_6_DESC">
+        <source>12 gold players with normal ratings, including 1 rare. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_7_NAME" resname="FUT_STORE_PACK_7_NAME">
+        <source>Premium Gold Player Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_7_DESC" resname="FUT_STORE_PACK_7_DESC">
+        <source>12 gold players with normal ratings, including 3 rare. Costs 15,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_100_NAME" resname="FUT_STORE_PACK_100_NAME">
+        <source>England Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_100_DESC" resname="FUT_STORE_PACK_100_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: England national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_101_NAME" resname="FUT_STORE_PACK_101_NAME">
+        <source>France Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_101_DESC" resname="FUT_STORE_PACK_101_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: France national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_102_NAME" resname="FUT_STORE_PACK_102_NAME">
+        <source>Germany Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_102_DESC" resname="FUT_STORE_PACK_102_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: Germany national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_103_NAME" resname="FUT_STORE_PACK_103_NAME">
+        <source>Spain Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_103_DESC" resname="FUT_STORE_PACK_103_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: Spain national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_104_NAME" resname="FUT_STORE_PACK_104_NAME">
+        <source>Brazil Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_104_DESC" resname="FUT_STORE_PACK_104_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: Brazil national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_105_NAME" resname="FUT_STORE_PACK_105_NAME">
+        <source>Argentina Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_105_DESC" resname="FUT_STORE_PACK_105_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: Argentina national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_106_NAME" resname="FUT_STORE_PACK_106_NAME">
+        <source>Portugal Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_106_DESC" resname="FUT_STORE_PACK_106_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: Portugal national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_107_NAME" resname="FUT_STORE_PACK_107_NAME">
+        <source>Netherlands Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_107_DESC" resname="FUT_STORE_PACK_107_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: Netherlands national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_108_NAME" resname="FUT_STORE_PACK_108_NAME">
+        <source>Belgium Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_108_DESC" resname="FUT_STORE_PACK_108_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: Belgium national team. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_120_NAME" resname="FUT_STORE_PACK_120_NAME">
+        <source>Premier League Premium Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_120_DESC" resname="FUT_STORE_PACK_120_DESC">
+        <source>12 gold players with normal ratings, including 3 rare. All players: Premier League. Costs 15,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_121_NAME" resname="FUT_STORE_PACK_121_NAME">
+        <source>Ligue 1 Premium Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_121_DESC" resname="FUT_STORE_PACK_121_DESC">
+        <source>12 gold players with normal ratings, including 3 rare. All players: Ligue 1. Costs 15,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_122_NAME" resname="FUT_STORE_PACK_122_NAME">
+        <source>Bundesliga Premium Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_122_DESC" resname="FUT_STORE_PACK_122_DESC">
+        <source>12 gold players with normal ratings, including 3 rare. All players: Bundesliga. Costs 15,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_123_NAME" resname="FUT_STORE_PACK_123_NAME">
+        <source>Serie A Premium Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_123_DESC" resname="FUT_STORE_PACK_123_DESC">
+        <source>12 gold players with normal ratings, including 3 rare. All players: Serie A. Costs 15,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_124_NAME" resname="FUT_STORE_PACK_124_NAME">
+        <source>La Liga Premium Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_124_DESC" resname="FUT_STORE_PACK_124_DESC">
+        <source>12 gold players with normal ratings, including 3 rare. All players: La Liga. Costs 15,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_140_NAME" resname="FUT_STORE_PACK_140_NAME">
+        <source>Goalkeepers Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_140_DESC" resname="FUT_STORE_PACK_140_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: goalkeepers. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_141_NAME" resname="FUT_STORE_PACK_141_NAME">
+        <source>Defenders Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_141_DESC" resname="FUT_STORE_PACK_141_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: defenders. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_142_NAME" resname="FUT_STORE_PACK_142_NAME">
+        <source>Midfielders Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_142_DESC" resname="FUT_STORE_PACK_142_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: midfielders. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_143_NAME" resname="FUT_STORE_PACK_143_NAME">
+        <source>Forwards Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_143_DESC" resname="FUT_STORE_PACK_143_DESC">
+        <source>6 gold players with normal ratings, including 1 rare. All players: forwards. Costs 7,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_160_NAME" resname="FUT_STORE_PACK_160_NAME">
+        <source>Rare Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_160_DESC" resname="FUT_STORE_PACK_160_DESC">
+        <source>12 gold players with normal ratings, including 12 rare. Costs 50,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_161_NAME" resname="FUT_STORE_PACK_161_NAME">
+        <source>Jumbo Rare Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_161_DESC" resname="FUT_STORE_PACK_161_DESC">
+        <source>24 gold players with normal ratings, including 24 rare. Costs 100,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_162_NAME" resname="FUT_STORE_PACK_162_NAME">
+        <source>Ultimate Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_162_DESC" resname="FUT_STORE_PACK_162_DESC">
+        <source>30 gold players with normal ratings, including 30 rare. Costs 125,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_163_NAME" resname="FUT_STORE_PACK_163_NAME">
+        <source>83+ Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_163_DESC" resname="FUT_STORE_PACK_163_DESC">
+        <source>3 gold players with normal ratings, including 3 rare. Every player rated 83 or higher. Costs 20,000 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_164_NAME" resname="FUT_STORE_PACK_164_NAME">
+        <source>85+ Gold Players Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_164_DESC" resname="FUT_STORE_PACK_164_DESC">
+        <source>3 gold players with normal ratings, including 3 rare. Every player rated 85 or higher. Costs 50,000 local coins.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
