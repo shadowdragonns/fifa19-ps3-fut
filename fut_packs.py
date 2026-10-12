@@ -4,8 +4,8 @@ import json
 from pathlib import Path
 import random
 
-STANDARD = json.loads((Path(__file__).parent/'data/standard-pack-players.json').read_text())
-corrections = json.loads((Path(__file__).parent/'data/standard-england-players.json').read_text())['players']
+STANDARD = json.loads((Path(__file__).parent/'data/standard-pack-players.json').read_text(encoding='utf-8'))
+corrections = json.loads((Path(__file__).parent/'data/standard-england-players.json').read_text(encoding='utf-8'))['players']
 STANDARD['players'] = list({p['assetId']: p for p in STANDARD['players']+corrections}.values())
 STANDARD_PLAYERS = {p['assetId']: p for p in STANDARD['players']}
 LEAGUE_COUNTRIES = {int(k): v for k, v in STANDARD['leagueCountries'].items()}

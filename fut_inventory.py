@@ -18,7 +18,7 @@ import fut_packs
 PREFIX = '/ut/game/fifa19'
 DISCARD_PATH = '/ut/delete/game/fifa19/item'
 PACK_ID, PACK_PRICE, PACK_SIZE, STARTING_COINS = 6, 7500, 12, 20000
-CATALOG = json.loads((Path(__file__).parent/'data/england-pack-players.json').read_text())['players']
+CATALOG = json.loads((Path(__file__).parent/'data/england-pack-players.json').read_text(encoding='utf-8'))['players']
 PLAYERS = {p['assetId']: p for p in CATALOG}
 PLAYER_EDITIONS = {'england110': PLAYERS, 'standard': fut_packs.STANDARD_PLAYERS}
 ITEM_PATH = re.compile(re.escape(PREFIX) + r'/item(?:/([0-9]{1,19}))?')
@@ -48,7 +48,7 @@ class Inventory:
                       'nextPackId': 1, 'purchaseCount': 0, 'items': [],
                       'pendingPack': None, 'userHubData': []}
         if path and path.exists():
-            self.state = json.loads(path.read_text())
+            self.state = json.loads(path.read_text(encoding='utf-8'))
         self.validate(self.state)
 
     @staticmethod

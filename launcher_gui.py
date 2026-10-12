@@ -66,7 +66,7 @@ def build_command(values, action, state_dir, refresh=False):
     """Arguments are a list so spaces, quotes and UNC paths never enter a shell."""
     if action not in ('play', 'check', 'configure', 'install'): raise ValueError('Unknown launcher action')
     if not values['rpcs3'].strip(): raise ValueError('Choose your RPCS3 executable')
-    command = [python_executable(), '-u', str(HERE/('install_update.py' if action == 'install' else 'launch.py')),
+    command = [python_executable(), '-X', 'utf8', '-u', str(HERE/('install_update.py' if action == 'install' else 'launch.py')),
                '--rpcs3', values['rpcs3'].strip()]
     instance = values['instance'].strip()
     if action == 'install':

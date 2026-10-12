@@ -131,7 +131,7 @@ def copy_filtered_log(source, target, before, pattern):
             tail = stream.read(len(old_tail))
         if source.stat().st_size >= old_size and tail == old_tail:
             offset = old_size
-    with source.open('rb') as src, target.open('w') as out:
+    with source.open('rb') as src, target.open('w', encoding='utf-8') as out:
         src.seek(offset)
         for raw in src:
             line = raw.decode(errors='replace')
@@ -163,7 +163,7 @@ def copy_profile_trace(source, target, before):
         if source.stat().st_size >= old_size and tail == old_tail:
             offset = old_size
     markers = b'|'.join(re.escape(site[2].encode()) for site in PROFILE_TRACE_SITES)
-    with source.open('rb') as stream, target.open('w') as out:
+    with source.open('rb') as stream, target.open('w', encoding='utf-8') as out:
         stream.seek(offset)
         for raw in stream:
             match = re.search(rb'FUTPRAN (?:' + markers + rb')(?: [a-z]+=[0-9A-F]{8})*(?=[\r\n\x00]|$)', raw)

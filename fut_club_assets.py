@@ -9,8 +9,8 @@ from copy import deepcopy
 import json
 from pathlib import Path
 
-STADIUM = json.loads((Path(__file__).parent/'data/home-stadium.json').read_text())['card']
-STADIUMS = json.loads((Path(__file__).parent/'data/club-stadiums.json').read_text())['cards']
+STADIUM = json.loads((Path(__file__).parent/'data/home-stadium.json').read_text(encoding='utf-8'))['card']
+STADIUMS = json.loads((Path(__file__).parent/'data/club-stadiums.json').read_text(encoding='utf-8'))['cards']
 VENUES = {card['stadiumid']: card for card in STADIUMS}
 
 
@@ -23,7 +23,7 @@ def active_assets(backend):
     return [c for c in equipment(backend.fut_inventory) if c['itemState'] in SLOTS]
 
 
-EQUIPMENT = json.loads((Path(__file__).parent/'data/club-equipment.json').read_text())['cards']
+EQUIPMENT = json.loads((Path(__file__).parent/'data/club-equipment.json').read_text(encoding='utf-8'))['cards']
 CARDS = {card['id']: card for card in STADIUMS+EQUIPMENT}
 SLOTS = {'activeHomeKit': 'kit', 'activeAwayKit': 'kit', 'activeBadge': 'badge',
          'activeBall': 'ball', 'activeStadium': 'stadium'}
