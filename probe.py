@@ -65,6 +65,7 @@ class Capture:
         self.identity = self.backend.identity
         self.public_ca = None
         self.public_ca_sha256 = None
+        self.config_watcher = None
 
     def save(self, event, raw=b'', **details):
         details.update(event=event, time=datetime.now(timezone.utc).isoformat())
@@ -232,6 +233,9 @@ class Handler(socketserver.BaseRequestHandler):
                         info['features'].append('public-certificate')
                         info['public_certificate'] = {'path': '/fut-local/root.pem',
                                                        'sha256': capture.public_ca_sha256}
+                    if capture.config_watcher is not None:
+                        info['features'].append('live-config')
+                        info['config'] = capture.config_watcher.status()
                     body = json.dumps(info).encode()
                     status, mime = '200 OK', 'application/json'
                 elif method == 'GET' and path == '/fut-local/root.pem':

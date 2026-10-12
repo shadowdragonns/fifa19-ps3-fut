@@ -2,6 +2,9 @@
 from copy import deepcopy
 import json
 from pathlib import Path
+import hashlib
+import threading
+import time
 
 
 def defaults():
@@ -83,6 +86,13 @@ class Settings:
 
     @classmethod
     def load(cls, path):
+        with Path(path).open('rb') as stream:
+            data = stream.read(262145)
+        if len(data) > 262144: raise ValueError('Config exceeds 256 KiB')
+        return cls.parse(data)
+
+    @classmethod
+    def parse(cls, data):
         def unique(pairs):
             result = {}
             for key, value in pairs:
@@ -90,7 +100,14 @@ class Settings:
                 result[key] = value
             return result
         def nonfinite(value): raise ValueError('Non-finite config number: '+value)
-        return cls(json.loads(Path(path).read_text(), object_pairs_hook=unique, parse_constant=nonfinite))
+        return cls(json.loads(data.decode('utf-8'), object_pairs_hook=unique, parse_constant=nonfinite))
+
+    def replace(self, candidate):
+        """Swap a validated snapshot without breaking references held by clubs/queues."""
+        if not isinstance(candidate, Settings): raise TypeError('Expected validated Settings')
+        self._rules = candidate.as_dict()
+
+    def snapshot(self): return Settings(self.as_dict())
 
     def section(self, name): return deepcopy(self._rules[name])
     def as_dict(self): return deepcopy(self._rules)
@@ -117,3 +134,94 @@ class Settings:
 
 
 DEFAULT = Settings()
+
+
+class ConfigWatcher:
+    """Debounce file edits and atomically apply valid rules to a running backend."""
+    def __init__(self, backend, path, logger=None, clock=None, interval=0.25, settle=0.5):
+        self.backend, self.path = backend.root, Path(path)
+        self.logger = logger or (lambda record: None)
+        self.clock = clock or time.monotonic
+        self.interval, self.settle = interval, settle
+        self.generation = 0
+        self.updated_at = None
+        self.last_error_type = None
+        self._observed, self._attempted = object(), object()
+        self._observed_at = 0
+        self._saw_file = self.path.is_file()
+        self._stop = threading.Event()
+        self._thread = None
+
+    def status(self):
+        with self.backend.lock:
+            return {'watching': self._thread is not None and self._thread.is_alive(),
+                    'generation': self.generation, 'updated_at': self.updated_at,
+                    'last_error_type': self.last_error_type}
+
+    def _log(self, **record):
+        try: self.logger(record)
+        except Exception: pass
+
+    def poll(self):
+        error = None
+        try:
+            with self.path.open('rb') as stream: data = stream.read(262145)
+            self._saw_file = True
+            signature = hashlib.sha256(data).digest()
+            if len(data) > 262144: error = ValueError('Config exceeds 256 KiB')
+        except OSError as failure:
+            data, signature, error = None, ('file-error', type(failure).__name__), failure
+            # Optional absent startup config uses defaults until the file is created.
+            if isinstance(failure, FileNotFoundError) and not self._saw_file: return False
+        now = self.clock()
+        if signature != self._observed:
+            self._observed, self._observed_at = signature, now
+            return False
+        if now-self._observed_at < self.settle or signature == self._attempted: return False
+        self._attempted = signature
+        try:
+            if error is not None: raise error
+            candidate = Settings.parse(data)
+        except (OSError, ValueError) as failure:
+            with self.backend.lock: self.last_error_type = type(failure).__name__
+            details = {'event': 'config.error', 'error_type': type(failure).__name__,
+                       'retained_generation': self.generation}
+            if isinstance(failure, json.JSONDecodeError):
+                details.update(line=failure.lineno, column=failure.colno)
+            self._log(**details)
+            return False
+        root = self.backend
+        with root.lock:
+            previous, current = root.settings.as_dict(), candidate.as_dict()
+            changed = sorted(key for key in current if current[key] != previous[key])
+            self.last_error_type = None
+            if not changed: return False
+            root.settings.replace(candidate)
+            # Plugin modules keep their registrations/state; newly enabled files
+            # register once. Errors in custom code cannot reject valid server rules.
+            if hasattr(root.events, 'load'):
+                try: root.events.load(live=True)
+                except Exception as failure:
+                    self._log(event='plugin.error', hook='config.reload', error_type=type(failure).__name__)
+            self.generation += 1
+            self.updated_at = int(time.time())
+            self._log(event='config.reloaded', generation=self.generation, changed_sections=changed)
+            root.events.emit('server.config_changed', generation=self.generation, changed_sections=changed)
+        return True
+
+    def start(self):
+        if self._thread is not None: raise RuntimeError('Config watcher already started')
+        self._thread = threading.Thread(target=self._run, name='FUT-config', daemon=True)
+        self._thread.start()
+        return self
+
+    def _run(self):
+        while not self._stop.is_set():
+            try: self.poll()
+            except Exception as failure:
+                self._log(event='config.error', error_type=type(failure).__name__, retained_generation=self.generation)
+            self._stop.wait(self.interval)
+
+    def stop(self):
+        self._stop.set()
+        if self._thread is not None: self._thread.join()

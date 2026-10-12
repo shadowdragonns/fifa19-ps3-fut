@@ -36,8 +36,9 @@ def register(api):
 
 The bundled `_example_bonus.py` is disabled by its name. Copy it to
 `win_bonus.py`, set `plugins.settings.win_bonus.bonus_coins` in the JSON config,
-then restart between matches. Set `plugins.disabled` to `["win_bonus"]` or
-`plugins.enabled` to `false` to disable it. Removing a plugin does not remove
+then restart once to load the new Python file. Its bonus is read in the reward
+callback, so later JSON changes apply live. Set `plugins.disabled` to `["win_bonus"]` or
+`plugins.enabled` to `false` to disable hooks live. Removing a plugin does not remove
 its stored data or change previously paid rewards.
 
 Every event includes `event`. A `player` snapshot contains `persona_id`,
@@ -51,6 +52,7 @@ and `last_seen` is an in-memory timestamp reset on server restart.
 |---|---|---|
 | `server.started` | `advertise`, `plugins` | Listeners started |
 | `server.stopping`, `server.stopped` | none | Graceful stop begins / listeners stop |
+| `server.config_changed` | `generation`, `changed_sections` | Valid rules applied live; only top-level section names, no config values |
 | `player.created` | `player` | A new RPCN-to-club registration is committed |
 | `player.online` | `player`, `reason` | Successful Blaze post-authentication; repeated PostAuth does not repeat the event |
 | `player.offline` | `player`, `reason` | Logout, disconnect, relogin replacement or graceful server shutdown |
@@ -97,7 +99,14 @@ a notification. Use `match_id` or `purchase_id` to deduplicate external effects.
 `api.data_dir` is a private persistent path at
 `/path/to/fifa19-ps3-fut/plugin-data/<plugin_name>`; it is separate from
 club saves and remains on updates. Plugins own the format and atomic writes
-of their files. `api.settings` is a copy of their JSON settings.
+of their files. Each `api.settings` read returns a copy of the plugin's current
+JSON settings, including live edits. Read it inside callbacks when a value
+should change without restart. A value cached during registration does not
+update itself; `server.config_changed` can rebuild a plugin's own cache.
+Disabled plugins receive no hooks/filters; re-enabling preserves their loaded
+module and registrations without duplication. Previously unloaded enabled
+files register once. Editing Python source requires a restart. Broken new
+plugins are logged/skipped during live reload while valid global rules apply.
 `api.log(message)` writes `plugin.log` to the normal capture event index.
 Do not put credentials or private player data in these messages.
 

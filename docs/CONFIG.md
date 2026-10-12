@@ -4,25 +4,38 @@ Edit `/path/to/fifa19-ps3-fut/server-config.json`. The
 operator creates it from the supplied template and preserves it on later updates. The
 template is `data/server-config.example.json`. This is JSON: no comments or
 trailing commas. Missing settings use defaults; unknown keys, duplicate keys
-and invalid values fail preflight. Rules load once when the server starts.
+and invalid values are rejected. The running server watches this file and
+reloads a stable, valid edit automatically, usually within **one second**.
+No server restart or FIFA restart is needed for rule changes.
 
-After editing, validate before restarting:
+All rule sections swap together under the backend lock. Existing logged-in
+clubs, coins, cards, squads, searches and matches are retained. Partial writes,
+invalid JSON, unknown/duplicate keys, unreadable/deleted files and files over
+256 KiB leave the last valid rules active. A later valid save recovers automatically.
+Omitted fields still mean defaults, so preserve other settings when editing.
+
+You can validate the config without stopping the running server:
 
 ```bash
-systemctl --user stop fifa19-fut.service
-cd "$(systemctl --user show fifa19-fut.service --property=WorkingDirectory --value)"
-python3 server.py --check --state-dir /path/to/fifa19-ps3-fut/state \
-  --advertise 192.0.2.55 --bind 0.0.0.0 \
-  --config /path/to/fifa19-ps3-fut/server-config.json \
-  --plugins-dir /path/to/fifa19-ps3-fut/plugins
-systemctl --user start fifa19-fut.service
+python3 server.py --check-config --config /path/to/fifa19-ps3-fut/server-config.json
 ```
 
-`--check` needs the server's save lock to be free. Stop the service before
-running it (`systemctl --user stop fifa19-fut.service`); if validation fails,
-correct the configuration and repeat the check, then start the service.
-Coordinate restarts between matches. Re-enter FUT to refresh cached store
-prices and card values; close/relaunch clients for a server release update.
+`--check-config` does not touch saves, load TLS or execute plugins.
+The broader `--check` still requires stopping the server because it validates
+authoritative saves/TLS/plugin syntax as well. Code, TLS/address and Python
+plugin source changes require a restart between matches.
+
+The event log records `config.reloaded` with a generation and changed sections,
+or `config.error` (including line/column for JSON syntax errors), without
+logging config values. `/fut-local/health` exposes a small `config` status:
+`watching`, `generation`, `updated_at`, `last_error_type`. Generation resets
+on server restart. Formatting-only edits do not advance it.
+
+FIFA can cache prices, descriptions and card values already on screen. Close
+and reopen the relevant FUT menu to request fresh data; if a label remains
+cached, leave and re-enter FUT. Server purchases, quick sells and match rewards
+use the latest accepted rules even while an old menu is visible. Automatic
+reload does not push unsolicited HUD/menu packets or change match gameplay.
 
 | Setting | Default | Meaning |
 |---|---:|---|
@@ -39,9 +52,9 @@ prices and card values; close/relaunch clients for a server release update.
 | `cpu_seasons.promote` | `[12,13,14,15,16,17,18,19,20,21]` | Points needed for CPU promotion after ten fixtures |
 | `matchmaking.search_seconds` | 20 | Server search expiry, capped by the client's requested duration |
 | `matchmaking.peer_timeout_seconds` | 180 | Inactivity timeout for paired games, refreshed by valid peer traffic |
-| `plugins.enabled` | true | Enable loading of custom Python plugins |
-| `plugins.disabled` | `[]` | Plugin filenames without `.py` to skip |
-| `plugins.settings` | `{}` | Per-plugin JSON objects provided as `api.settings` |
+| `plugins.enabled` | true | Live enable/disable of custom plugin hooks |
+| `plugins.disabled` | `[]` | Plugin filenames without `.py` whose hooks are disabled |
+| `plugins.settings` | `{}` | Current per-plugin JSON objects read through `api.settings` |
 
 Division arrays run from **displayed Division 10 to Division 1**. The wire
 division numbers run in the opposite direction: wire 1 is displayed Division
@@ -56,11 +69,23 @@ weight improves elite odds without guaranteeing Messi or Ronaldo. Pack sizes,
 rarity guarantees, eligible nations/leagues and stock ratings remain defined
 in `fut_packs.py`; prices and odds need no code edits. England 110 stays retired.
 
-New rewards snapshot their policy and plugin adjustment in the match receipt.
+Reloaded rewards apply when a result is first committed, including a match
+already underway. New rewards snapshot their policy and plugin adjustment in the match receipt.
 Changing rules never recalculates paid coins or breaks saved receipts. Retried
 reports return the original award. Quit/DNF/no-contest pays zero, including
 when reward plugins are enabled. Leaderboards intentionally recompute all-time
 scores using the current point weights and club values using current quick-sell values.
+
+Starting coins only affect newly created inventories; existing balances never
+reset. An existing search retains its assigned deadline; new searches use the
+new search duration. Peer timeouts use the new value on their next refresh.
+
+Plugin settings/toggles reload live. Newly enabled, previously unloaded files
+register once; disabling/re-enabling a loaded plugin keeps its registrations
+and in-memory state without duplicating hooks. Source edits are not imported
+again until a server restart. A plugin which caches a setting during registration
+must read `api.settings` in its callbacks or handle `server.config_changed`.
+See [PLUGINS.md](PLUGINS.md).
 
 An example partial configuration (all omitted rules keep defaults):
 

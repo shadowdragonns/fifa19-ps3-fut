@@ -8,7 +8,7 @@ import sys
 import threading
 from contextlib import nullcontext
 
-EVENTS = {'server.started', 'server.stopping', 'server.stopped',
+EVENTS = {'server.started', 'server.stopping', 'server.stopped', 'server.config_changed',
           'player.online', 'player.offline', 'player.fut_entered', 'player.fut_left',
           'player.created', 'player.login', 'player.logout', 'pack.opened', 'cards.moved', 'cards.discarded',
           'squad.saved', 'squad.created', 'squad.deleted', 'squad.activated', 'equipment.changed',
@@ -32,6 +32,8 @@ class EventBus:
     def _backend_lock(self):
         return self._backend.lock if self._backend is not None else nullcontext()
 
+    def _active(self, plugin): return True
+
     def subscribe(self, name, callback, plugin='local', filter=False):
         if name not in (FILTERS if filter else EVENTS) or not callable(callback):
             raise ValueError('Unknown event/filter or non-callable handler: '+name)
@@ -47,12 +49,14 @@ class EventBus:
     def emit(self, event_name, **payload):
         with self._backend_lock(), self._lock:
             for plugin, callback in self._hooks.get(event_name, ()):
+                if not self._active(plugin): continue
                 try: callback(deepcopy({'event': event_name, **payload}))
                 except Exception as error: self._failure(plugin, event_name, error)
 
     def reward(self, coins, **payload):
         with self._backend_lock(), self._lock:
             for plugin, callback in self._filters.get('match.reward', ()):
+                if not self._active(plugin): continue
                 try:
                     proposed = callback(deepcopy({'event': 'match.reward', **payload}), coins)
                     if type(proposed) is not int or not 0 <= proposed <= 100000000:
@@ -67,8 +71,14 @@ class PluginAPI:
     events = tuple(sorted(EVENTS))
     filters = tuple(sorted(FILTERS))
     def __init__(self, bus, name, data_dir, settings):
-        self.name, self.data_dir, self.settings = name, data_dir, deepcopy(settings)
+        self.name, self.data_dir, self._settings = name, data_dir, deepcopy(settings)
         self._bus = bus
+
+    @property
+    def settings(self):
+        if isinstance(self._bus, PluginManager):
+            return deepcopy(self._bus.settings['settings'].get(self.name, {}))
+        return deepcopy(self._settings)
 
     def _register(self, name, callback, filter):
         def attach(fn): self._bus.subscribe(name, fn, self.name, filter); return fn
@@ -107,21 +117,35 @@ class PluginManager(EventBus):
     def __init__(self, directory, data_dir, settings, logger=None):
         super().__init__(logger)
         self.directory, self.data_dir = Path(directory), Path(data_dir)
-        self.settings = settings.section('plugins'); self.loaded = []
+        self.config = settings; self.loaded = []
 
-    def load(self, check=False):
+    @property
+    def settings(self): return self.config.section('plugins')
+
+    def _active(self, plugin):
+        rules = self.settings
+        return rules['enabled'] and plugin not in rules['disabled']
+
+    def active_names(self): return [name for name in self.loaded if self._active(name)]
+
+    def load(self, check=False, live=False):
         if not self.settings['enabled']: return []
         if not self.directory.exists(): return []
+        checked = []
         for path in sorted(self.directory.glob('*.py')):
             name = path.stem
             if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,63}', name) or name in self.settings['disabled']: continue
-            # Preflight checks syntax without executing trusted custom code.
-            compile(path.read_text(), str(path), 'exec')
+            if not check and name in self.loaded: continue
+            # Preflight/startup syntax errors still fail early; a newly enabled
+            # broken plugin is isolated during a live config update.
+            if check or not live: compile(path.read_text(encoding='utf-8'), str(path), 'exec')
+            checked.append(name)
             if not check:
                 hooks = {key:list(value) for key,value in self._hooks.items()}
                 filters = {key:list(value) for key,value in self._filters.items()}
                 module_name = '_fifa19_plugin_'+name
                 try:
+                    if live: compile(path.read_text(encoding='utf-8'), str(path), 'exec')
                     spec = importlib.util.spec_from_file_location(module_name, path)
                     module = importlib.util.module_from_spec(spec)
                     sys.modules[module_name] = module; spec.loader.exec_module(module)
@@ -134,8 +158,11 @@ class PluginManager(EventBus):
                     sys.modules.pop(module_name, None)
                     self._failure(name, 'register', error)
                     continue
-            self.loaded.append(name)
-        return list(self.loaded)
+                self.loaded.append(name)
+        # Re-enabling an earlier filename retains the documented filter order.
+        for table in (self._hooks, self._filters):
+            for callbacks in table.values(): callbacks.sort(key=lambda pair: pair[0])
+        return checked if check else self.active_names()
 
 
 def player(backend):

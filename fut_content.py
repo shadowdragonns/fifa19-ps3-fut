@@ -25,6 +25,7 @@ def response(method, path, settings=None):
     if settings is None:
         data = (HERE/'data/storepackdescriptions.en_us.xml').read_bytes()
     else:
+        settings = settings.snapshot()
         import xml.etree.ElementTree as ET
         from fut_packs import PACKS, description
         root = ET.Element('xliff', version='1.2')

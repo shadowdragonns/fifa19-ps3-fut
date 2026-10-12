@@ -83,8 +83,9 @@ reader uses Python only; Windows clients do not need OpenSSL. Use
 - [Development and tests](docs/DEVELOPMENT.md)
 
 Editable configuration lives in `server-config.json`; Python plugins live in
-`plugins/` and their private files in `plugin-data/`. Settings load on server
-startup. Defaults give new clubs 20,000 coins and full-time win/draw/loss
+`plugins/` and their private files in `plugin-data/`. Valid JSON settings reload
+live in about one second; invalid edits retain the last valid rules.
+Defaults give new clubs 20,000 coins and full-time win/draw/loss
 rewards of 1,000/750/500, with higher CPU division rewards. Reward receipts
 snapshot the policy so future configuration changes preserve old awards.
 

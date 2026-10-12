@@ -95,7 +95,8 @@ def main(argv=None):
     parser.add_argument('--state-dir', type=Path, default=HERE/'state')
     parser.add_argument('--logs', type=Path)
     parser.add_argument('--locale-archive', type=Path)
-    parser.add_argument('--config', type=Path, help='JSON server rules; read at startup')
+    parser.add_argument('--config', type=Path, help='JSON server rules; automatically reloaded after valid edits')
+    parser.add_argument('--check-config', action='store_true', help='Validate only the config; safe while the server is running')
     parser.add_argument('--plugins-dir', type=Path, help='Trusted Python plugin directory')
     parser.add_argument('--plugin-data-dir', type=Path, help='Persistent private plugin data')
     parser.add_argument('--check', action='store_true', help='Validate configuration, saves and TLS without listening')
@@ -107,9 +108,13 @@ def main(argv=None):
     import ipaddress
     bind = str(ipaddress.IPv4Address(args.bind))
     endpoints = Endpoints(args.advertise)
-    from server_settings import Settings
+    from server_settings import Settings, ConfigWatcher
     from server_plugins import PluginManager
     config = args.config or HERE/'server-config.json'
+    if args.check_config:
+        Settings.load(config)
+        print(json.dumps({'valid': True, 'scope': 'configuration'}))
+        return
     settings = Settings.load(config) if args.config or config.exists() else Settings()
     backend = Backend(args.state_dir/'profile.json', endpoints, multiuser=True, settings=settings)
     plugins = PluginManager(args.plugins_dir or config.parent/'plugins',
@@ -143,15 +148,19 @@ def main(argv=None):
         capture.public_ca_sha256 = public_ca_sha256
         plugins.logger = lambda record: capture.save(record['event'], **{k:v for k,v in record.items() if k != 'event'})
         plugins.load()
+        watcher = ConfigWatcher(backend, config, plugins.logger)
+        capture.config_watcher = watcher
         with listeners(bind, capture, context):
             capture.save('ready', bind=bind, advertise=endpoints.host, ports=list(PORTS), udp_ports=[8099],
                 status='Per-user FUT clubs, CPU seasons and paired online matches', plugins=plugins.loaded)
             plugins.emit('server.started', advertise=endpoints.host, plugins=plugins.loaded)
             try:
+                watcher.start()
                 threading.Event().wait()
             except KeyboardInterrupt:
                 pass
             finally:
+                watcher.stop()
                 plugins.emit('server.stopping')
                 backend.close_sessions()
         plugins.emit('server.stopped')

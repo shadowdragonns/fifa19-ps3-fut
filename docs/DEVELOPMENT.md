@@ -18,7 +18,8 @@ python3 build_bundle.py --output dist
 
 Tests exercise fresh local CA generation, custom-certificate patch rows,
 TLS handshakes, public-certificate discovery/pinning, GUI commands/settings,
-backend packs/rules/reward persistence and plugin isolation. CI renders the
+backend packs/rules/reward persistence, live config edits/recovery and plugin
+settings/toggles without duplicate registration. CI renders the
 GUI and checks background progress on Linux and Windows. GUI checks use a
 fake child process and never require a game, emulator or account credentials.
 The development environment has a larger protocol/native regression suite;

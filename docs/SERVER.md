@@ -51,12 +51,16 @@ manual certificate options are explained in [CLIENT.md](CLIENT.md).
 | `plugin-data/`, `--plugin-data-dir` | Persistent private extension files |
 | `--locale-archive` | Optional user-supplied game locale archive for additional account labels |
 | `--check` | Validate config, saves, TLS and plugin syntax without opening listeners |
+| `--check-config` | Validate only the JSON config, including while the server is running |
 
 An explicit config path must exist. Without `--config`, the server reads the
 file beside its code if present, otherwise uses defaults. Plugin/data paths
 default to directories next to the selected config. Stop the server before
 `--check` against its authoritative state: preflight takes the same save lock.
 Preflight can issue a missing TLS leaf but does not execute custom plugins.
+The config path is watched while running; valid edits apply in about a second,
+and invalid/partial saves keep the last valid rules. Sessions and saves stay
+intact. `--check-config` validates the file without taking the save lock.
 
 Each RPCN identity owns a persistent club. `state/accounts.json` maps hashed
 identities to `state/users/<hash>/`. Reuse an account to retain that club.
@@ -94,7 +98,8 @@ systemctl --user status fifa19-fut.service
 journalctl --user -u fifa19-fut.service -n 80 --no-pager
 ```
 
-Restart between matches after a code/config/plugin update. Login and
+Restart between matches after a code, TLS/address or Python plugin source update.
+JSON config edits reload live. Login and
 matchmaking state are in memory, so clients must reconnect afterward.
 Long-running user services may need your system's user-session persistence
 settings. The server can also run directly in a terminal.
