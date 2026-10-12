@@ -29,6 +29,28 @@ def validate_registry(value):
         raise ValueError('Invalid player sequence')
 
 
+def saved_backends(backend):
+    """Read registered offline clubs without creating users or writing saves."""
+    from sessions import Backend
+    root = backend.root
+    with root.lock:
+        owners = {root.profile['persona']: root}
+        for key, row in root.accounts['users'].items():
+            if row['legacy']: continue
+            owner = root.users.get(key)
+            if owner is None:
+                if root.path is None: continue
+                path = root.path.parent/'users'/key/'profile.json'
+                if not path.is_file(): continue
+                owner = Backend(path, root.endpoints, settings=root.settings)
+                if (owner.profile['persona'] != root.profile['persona']+row['number']
+                        or owner.profile['account'] != root.profile['account']+row['number']):
+                    raise ValueError('Saved club identity differs from registry')
+                owner.root = root
+            owners[owner.profile['persona']] = owner
+        return owners
+
+
 def user_backend(root, external):
     from sessions import Backend
     key = user_key(external)
@@ -68,7 +90,8 @@ def user_backend(root, external):
                     or owner.profile['account'] != root.profile['account']+row['number']):
                 raise ValueError('Saved player identity differs from registry')
         # Write profile first: an interrupted registration can safely retry.
-        if key not in root.accounts['users']:
+        created = key not in root.accounts['users']
+        if created:
             registry = deepcopy(root.accounts)
             registry['users'][key] = row
             validate_registry(registry)
@@ -79,4 +102,7 @@ def user_backend(root, external):
                 temporary.replace(root.accounts_path)
             root.accounts = registry
         root.users[key] = owner
+        if created:
+            from server_plugins import player
+            root.events.emit('player.created', player=player(owner))
         return owner

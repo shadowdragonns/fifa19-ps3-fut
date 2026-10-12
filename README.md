@@ -8,6 +8,8 @@ Includes per-user clubs, coins, player packs, named squads, equipment choices,
 repeatable ten-game CPU seasons with promotion/relegation, local leaderboards,
 and two-player FUT Online Seasons matchmaking and result saving. Server rules
 and Python domain-event plugins let operators customize the economy.
+Plugin API v2 adds online/offline and FUT entry/leave events, plus structured
+queries for saved players, clubs, cards, equipment, squads and match history.
 
 **This repository contains no ROM, game/update binaries, firmware, emulator,
 private TLS keys, RPCN credentials, saved clubs or captured sessions.** Supply

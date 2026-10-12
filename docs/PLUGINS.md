@@ -1,5 +1,9 @@
 # Python event plugins
 
+The current plugin API is **version 2** (`api.api_version == 2`). Existing
+event handlers and `match.reward` filters continue to work. Version 2 adds
+player presence and structured queries for live and offline saved clubs.
+
 Place standalone `.py` files in `/path/to/fifa19-ps3-fut/plugins` on
 your server. Names must start with a letter and contain only letters, numbers
 and underscores (up to 64 characters). Files beginning with `_` are ignored.
@@ -36,13 +40,24 @@ then restart between matches. Set `plugins.disabled` to `["win_bonus"]` or
 `plugins.enabled` to `false` to disable it. Removing a plugin does not remove
 its stored data or change previously paid rewards.
 
-Every event includes `event`. A `player` is `{persona_id, club_name}`; it
-identifies the saved club and active squad name, not a login credential.
+Every event includes `event`. A `player` snapshot contains `persona_id`,
+`name`, `club_name`, `online`, `in_fut`, `session_count`, `connected_at`,
+`last_login` and `last_seen`. `name` is the latest authenticated RPCN display
+name, with the saved local name as fallback. The saved local profile name is
+preserved. `connected_at` is null while offline, `last_login` survives restart,
+and `last_seen` is an in-memory timestamp reset on server restart.
 
 | Event | Additional fields | Timing |
 |---|---|---|
 | `server.started` | `advertise`, `plugins` | Listeners started |
+| `server.stopping`, `server.stopped` | none | Graceful stop begins / listeners stop |
+| `player.created` | `player` | A new RPCN-to-club registration is committed |
+| `player.online` | `player`, `reason` | Successful Blaze post-authentication; repeated PostAuth does not repeat the event |
+| `player.offline` | `player`, `reason` | Logout, disconnect, relogin replacement or graceful server shutdown |
+| `player.fut_entered` | `player` | A new FUT session is issued |
+| `player.fut_left` | `player`, `reason` | FUT logout or its underlying connection closes |
 | `player.login` | `player` | A new FUT SID is issued; no SID is exposed |
+| `player.logout` | `player`, `reason` | Compatibility companion to `player.login`, emitted alongside `player.fut_left` |
 | `pack.opened` | `player`, `pack_id`, `purchase_id`, `price`, `cards` | New pack saved; cards contain `item_id` and `asset_id` |
 | `cards.moved` | `player`, `items` | Club moves saved; per-item success is included |
 | `cards.discarded` | `player`, `item_ids`, `coins` | Quick sell committed |
@@ -85,3 +100,97 @@ club saves and remains on updates. Plugins own the format and atomic writes
 of their files. `api.settings` is a copy of their JSON settings.
 `api.log(message)` writes `plugin.log` to the normal capture event index.
 Do not put credentials or private player data in these messages.
+
+## Presence semantics
+
+`online` means connected and authenticated to this replacement backend;
+`in_fut` additionally means holding a live FUT session. Returning to FIFA's
+main menu leaves the player online but outside FUT. It is not a disconnect.
+On a disconnect inside FUT, the server emits FUT leave/logout before offline.
+Snapshots and query results already reflect the new state during callbacks.
+Leave reasons are `logout`, `disconnect`, `relogin` or `server_shutdown`.
+Presence is not the player's global PSN/RPCN online status. A hard process
+kill cannot send callbacks; graceful shutdown sends leave/offline events.
+
+`player.created` fires before PostAuth and FUT entry. The new club can be
+queried there, while the authenticated display name arrives during login.
+
+## Query API
+
+Queries return independent dictionaries/lists, including for offline saved
+clubs. Mutating them does not save or change game state. Offline reads do not
+create accounts, log players in, or write their saves. No session keys, web
+tokens, RPCN blobs, account IDs, raw request data or save paths are returned.
+These methods are for trusted server plugins, not public HTTP endpoints.
+
+| Method | Result |
+|---|---|
+| `api.get_players(online=None, in_fut=None, start=0, count=100)` | Saved players with presence; optional boolean filters |
+| `api.get_player(persona_id)` | One player snapshot |
+| `api.get_clubs(start=0, count=100)` | Club summaries, including offline clubs |
+| `api.get_club(persona_id)` | Name, coins, equipment, counts, active squad, season progress and statistics |
+| `api.get_cards(persona_id, pile=None, edition=None, start=0, count=100, **filters)` | Owned player cards; `pile` is `club`, `purchased` or null for both |
+| `api.get_card(persona_id, item_id)` | An owned card; item IDs are scoped to the specified club |
+| `api.get_equipment(persona_id, item_type=None, active_only=False, start=0, count=100)` | Kit, badge, ball and stadium choices with active states |
+| `api.get_squads(persona_id)` | All saved squads with slots and card snapshots |
+| `api.get_squad(persona_id, squad_id=None)` | A named squad ID or the active squad if omitted |
+| `api.get_matches(persona_id, mode=None, start=0, count=100)` | Committed match receipts, newest first; mode is `ONLINE`/`OFFLINE` |
+| `api.get_match(persona_id, match_id)` | One committed receipt's result, stats, card items and paid coins |
+| `api.get_packs(include_retired=False)` | Configured pack definitions/prices |
+| `api.get_pack(pack_id)` | One pack, including retired definitions |
+| `api.get_catalogue_card(asset_id, edition="standard")` | A football player's card metadata, whether owned or not |
+| `api.search_catalogue(edition="standard", start=0, count=100, **filters)` | Card catalogue search |
+| `api.get_rankings(category="competitor", start=0, count=100)` | Local ranks and scores across saved clubs |
+| `api.get_config()` | Current global rules; other plugins' settings are omitted |
+
+The optional arguments after an ID are keyword arguments. Pagination uses
+`start` from 0 to 1,000,000 and `count` from 1 to 1,000. Players/clubs sort by
+persona ID, cards by item ID and catalogue results by asset ID. Invalid values
+raise `ValueError`; unknown players/items/squads/pack IDs raise `KeyError`.
+IDs are positive integers; the match receipt ID is a string. Queries are
+available during `register(api)` as well as callbacks. An empty new multiuser
+server lists zero players until the first registration.
+
+Card filters: `min_rating`, `max_rating` (0–110), `name` (case-insensitive
+substring), `position`, `nation_id`, `team_id`, `league_id`, `rare` (boolean).
+Editions are `standard` and legacy `england110`. Owned-card rows include
+`item_id`, `asset_id`, `name`, `rating`, `position`, nation/team/league IDs,
+`rare`, `edition`, native indexed `attributes`, `quick_sell_value`, `pile`,
+`created_at`, and `condition` with `injury_type`, `injury_games`, `suspension`.
+Cards and equipment are separate query collections.
+
+Squad slots include `index`, `item_id`, `kit_number`, `role` and `card`.
+An empty slot has item ID zero and null `card`; roles are `starting`, `bench`
+or `reserve`. Club statistics include `won`, `draw`, `loss`, `played`, local
+`points` and quick-sell `value`. Season progress snapshots contain only saved
+division/round/played/points fields; reading them does not roll a season over.
+Match queries expose committed results, not live matchmaking state or raw
+report payloads. Rankings use `competitor`, `collector`, `seasonpoints` or
+`seasonplayed`, as described in the config docs.
+
+## Example: join logging with club/card lookups
+
+Copy `plugins/_example_presence.py` to `plugins/presence.py` and restart to
+enable the supplied example. A shorter version:
+
+```python
+def register(api):
+    @api.on("player.online")
+    def joined(event):
+        person = event["player"]
+        club = api.get_club(person["persona_id"])
+        cards = api.get_cards(person["persona_id"], pile="club", min_rating=85)
+        api.log(f"{person['name']} joined {club['name']}; {club['coins']} coins")
+        for card in cards:
+            api.log(f"{card['name']} ({card['rating']})")
+
+    @api.on("player.offline")
+    def left(event):
+        api.log(f"{event['player']['name']} left: {event['reason']}")
+```
+
+Callbacks remain synchronous; queries take the backend lock and return copies.
+Use pagination instead of repeatedly collecting every card or match. Send slow
+work to your own worker with captured snapshots, then use the read API there
+when needed. No callback needs to manipulate transport objects or credentials.
+The modifying hook remains `match.reward`; all new lookup methods are reads.

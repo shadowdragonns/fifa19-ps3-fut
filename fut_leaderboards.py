@@ -51,25 +51,8 @@ def localization():
 
 def clubs(backend):
     """Include offline registered users without creating identities or saves."""
-    root = backend.root
-    owners = {root.profile['persona']: root}
-    for key, row in root.accounts['users'].items():
-        if row['legacy']:
-            continue
-        owner = root.users.get(key)
-        if owner is None:
-            if root.path is None:
-                continue
-            path = root.path.parent/'users'/key/'profile.json'
-            if not path.is_file():
-                continue
-            from sessions import Backend
-            owner = Backend(path, root.endpoints, settings=root.settings)
-            if (owner.profile['persona'] != root.profile['persona']+row['number']
-                    or owner.profile['account'] != root.profile['account']+row['number']):
-                raise ValueError('Leaderboard club identity differs from registry')
-        owners[owner.profile['persona']] = owner
-    return owners
+    from accounts import saved_backends
+    return saved_backends(backend)
 
 
 def statistics(owner, group):

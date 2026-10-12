@@ -36,6 +36,7 @@ class Backend:
         self.lock = threading.RLock()
         self.path = Path(profile_path) if profile_path else None
         self.sessions = {}
+        self.presence_last_seen = {}
         self.client_routes = {}
         from matchmaking import MatchmakingQueue
         self.matchmaking = MatchmakingQueue(settings=self.settings)
@@ -67,6 +68,10 @@ class Backend:
                 or type(p['pow_supported_club']) is not int
                 or not 0 <= p['pow_supported_club'] < 2**31):
             raise ValueError('Invalid local account profile')
+        if 'last_login' in p and (type(p['last_login']) is not int or not 0 <= p['last_login'] < 2**63):
+            raise ValueError('Invalid saved login time')
+        if 'display_name' in p and (not isinstance(p['display_name'], str) or not 1 <= len(p['display_name']) <= 32):
+            raise ValueError('Invalid saved display name')
         club = self.profile['fut_club']
         if (not isinstance(club, dict) or not isinstance(club.get('name'), str)
                 or not 1 <= len(club['name']) <= 32
@@ -76,6 +81,8 @@ class Backend:
         from server_plugins import player
         self.fut_inventory.events = self.events
         self.fut_inventory.player = lambda: player(self)
+        if self.events._backend is None:
+            self.events.bind_backend(self)
 
     def save(self):
         with self.lock:
@@ -91,6 +98,15 @@ class Backend:
     def for_user(self, external):
         from accounts import user_backend
         return user_backend(self.root, external) if self.root.multiuser else self
+
+    def close_sessions(self, reason='server_shutdown'):
+        from server_plugins import went_offline
+        root = self.root
+        with root.lock:
+            for session in list(root.sessions.values()):
+                root.matchmaking.remove(session)
+                root.sessions.pop(session.key, None)
+                went_offline(root.for_session(session), session, reason)
 
     def extend_web_session(self, peer=None, client_route=None):
         with self.lock:
@@ -127,6 +143,8 @@ class Session:
     owner: object = None
     peer: str = ''
     np_blob: bytes = b''
+    presence_online: bool = False
+    presence_fut: bool = False
 
 
 class Connection:
@@ -140,21 +158,26 @@ class Connection:
         self.room_updates = 0
         self.room_notifications = False
 
-    def close(self, keep_client_route=False):
-        with self.backend.lock:
+    def close(self, keep_client_route=False, reason='disconnect'):
+        with self.root.lock:
             if self.client_route and not keep_client_route:
                 self.root.client_routes.pop(self.client_route, None)
                 self.client_route = ''
             if self.session:
                 self.root.matchmaking.remove(self.session)
                 self.backend.sessions.pop(self.session.key, None)
+                from server_plugins import went_offline
+                went_offline(self.backend, self.session, reason)
                 self.session = None
                 self.backend = self.root
             self.room_updates = 0
             self.room_notifications = False
 
     def poll_notifications(self):
-        return self.root.matchmaking.poll(self.session) if self.session else []
+        # Queries inside pairing hooks use the same root->queue lock order
+        # as HTTP match actions. Never invoke a plugin holding only queue.lock.
+        with self.root.lock:
+            return self.root.matchmaking.poll(self.session) if self.session else []
 
     def response_sent(self, frame):
         if self.session and (frame['component'], frame['command']) == (4, 13):
@@ -322,7 +345,7 @@ class Connection:
             if not self.backend.identity.consume(code):
                 # Reject locally; no guessed Blaze wire error codes.
                 raise ValueError('Local authorization code invalid, expired or already used')
-            self.close(keep_client_route=self.session is None)
+            self.close(keep_client_route=self.session is None, reason='relogin')
             with self.backend.lock:
                 if self.root.multiuser and any(s.external == external for s in self.root.sessions.values()):
                     raise ValueError('This player already has an active game connection')
@@ -332,18 +355,24 @@ class Connection:
                                        secrets.token_hex(16), external, int(time.time()),
                                        owner=self.backend, peer=self.peer, np_blob=blob)
                 self.backend.sessions[self.session.key] = self.session
+                if np_name: p['display_name'] = np_name
+                p['last_login'] = self.session.login_time
                 self.backend.save()
             return self.login_response(), 'Authentication.Login', self.notifications()
         if pair == (1, 70):
-            self.close()
+            self.close(reason='logout')
             return b'', 'Authentication.Logout', []
         if self.session is None:
             return None
         if pair[0] == 4:
-            return self.root.matchmaking.response(self.session, pair[1], request)
+            with self.root.lock:
+                return self.root.matchmaking.response(self.session, pair[1], request)
         body, name = b'', None
         if pair == (9, 8):
-            self.session.postauth = True
+            with self.root.lock:
+                self.session.postauth = True
+                from server_plugins import came_online
+                came_online(self.backend, self.session)
             body = (tdf.group('TELE', self.telemetry()) + tdf.group('TICK', self.ticker())
                     + tdf.group('UROP', self.options()))
             name = 'Util.PostAuth'

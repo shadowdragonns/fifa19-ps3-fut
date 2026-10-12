@@ -176,9 +176,9 @@ def authenticate(backend, payload):
         session = active[0]
         if not session.fut_key:
             session.fut_key = secrets.token_hex(16)
-            from server_plugins import player
+            from server_plugins import entered_fut
             owner = backend.for_session(session)
-            owner.events.emit('player.login', player=player(owner))
+            entered_fut(owner, session)
         # FUT calls the same WebSession JSON parser as POW at 0x1500b8c.
         fmt = '%Y-%m-%dT%H:%M:%SZ'
         return {'sid': session.fut_key,
@@ -273,7 +273,8 @@ def response(backend, method, path, raw):
                 return json_reply(active_squad(backend, session), 'FUT.ActiveSquad')
             from fut_matches import reset
             reset(session)
-            session.fut_key = ''
+            from server_plugins import left_fut
+            left_fut(backend.for_session(session), session)
             return json_reply({}, 'FUT.Logout')
     if body or parsed.query:
         return json_reply({'error': 'Invalid request'}, 'FUT.InvalidEntryRequest', '400 Bad Request')

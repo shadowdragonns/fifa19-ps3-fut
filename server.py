@@ -116,6 +116,7 @@ def main(argv=None):
                             args.plugin_data_dir or config.parent/'plugin-data', settings)
     backend.events = plugins
     backend.fut_inventory.events = plugins
+    plugins.bind_backend(backend)
     if args.locale_archive:
         from localization import Localizer
         backend.localizer = Localizer(args.locale_archive)
@@ -145,6 +146,10 @@ def main(argv=None):
                 threading.Event().wait()
             except KeyboardInterrupt:
                 pass
+            finally:
+                plugins.emit('server.stopping')
+                backend.close_sessions()
+        plugins.emit('server.stopped')
 
 
 if __name__ == '__main__':
