@@ -99,4 +99,5 @@ respective owners. RPCS3 and RPCN are separate projects; neither is bundled.
 
 A massive disclaimer is most of the code was made made with Codex
 as it involed looking at the raw code of the PS3 rom and i wouldnt know where to start with that
-but a lot of the testing was done by me and a friend
+but a lot of the testing was done by me and a friend and keep in mind you will sometimes just get kicked from fut (it hasnt happened to me while in a match "yet") 
+but overall it works and for being made in about 2 ish days i think its quite decent 
