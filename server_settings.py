@@ -9,6 +9,7 @@ import time
 
 def defaults():
     from fut_packs import PACKS
+    from card_versions import default_editions
     return {
         'version': 1,
         'economy': {'starting_coins': 20000, 'win_coins': 1000,
@@ -19,7 +20,8 @@ def defaults():
         'points': {'win': 3, 'draw': 1, 'loss': 0},
         'cpu_seasons': {'hold': [5+i for i in range(10)], 'promote': [12+i for i in range(10)]},
         'matchmaking': {'search_seconds': 20, 'peer_timeout_seconds': 180},
-        'plugins': {'enabled': True, 'disabled': [], 'settings': {}}
+        'plugins': {'enabled': True, 'disabled': [], 'settings': {}},
+        'custom_cards': {'enabled': True, 'standard_pack_chance_percent': 0, 'editions': default_editions()}
     }
 
 
@@ -27,7 +29,10 @@ def _merge(base, extra, trail='config'):
     if not isinstance(extra, dict): raise ValueError(trail+' must be an object')
     for key, value in extra.items():
         if key not in base: raise ValueError('Unknown setting: '+trail+'.'+key)
-        if isinstance(base[key], dict) and key != 'settings':
+        if key == 'editions' and trail == 'config.custom_cards':
+            from card_versions import merge_editions
+            base[key] = merge_editions(base[key], value)
+        elif isinstance(base[key], dict) and key != 'settings':
             _merge(base[key], value, trail+'.'+key)
         else: base[key] = deepcopy(value)
 
@@ -82,6 +87,8 @@ class Settings:
         if any(not isinstance(n, str) or not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,63}', n)
                or not isinstance(v, dict) for n, v in plugins['settings'].items()):
             raise ValueError('plugins.settings maps plugin names to objects')
+        from card_versions import validate_editions
+        validate_editions(rules['custom_cards'])
         self._rules = rules
 
     @classmethod
@@ -116,6 +123,10 @@ class Settings:
         from fut_packs import PACKS
         spec = deepcopy(PACKS[pack_id])
         spec['price'] = self._rules['packs']['prices'].get(str(pack_id), spec['price'])
+        if spec['edition'] not in ('standard', 'england110'):
+            from card_versions import catalogue_assets
+            try: spec['retired'] = len(catalogue_assets(self, spec['edition'], available=True)) < spec['size']
+            except KeyError: spec['retired'] = True
         return spec
 
     def reward_policy(self, season_id, division_id):

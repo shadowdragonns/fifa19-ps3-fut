@@ -10,6 +10,8 @@ and two-player FUT Online Seasons matchmaking and result saving. Server rules
 and Python domain-event plugins let operators customize the economy.
 Plugin API v2 adds online/offline and FUT entry/leave events, plus structured
 queries for saved players, clubs, cards, equipment, squads and match history.
+Custom Prime editions give selected stars separate 102–115 cards while keeping
+their normal versions available, including Neuer. Definitions reload live.
 
 **This repository contains no ROM, game/update binaries, firmware, emulator,
 private TLS keys, RPCN credentials, saved clubs or captured sessions.** Supply
@@ -80,6 +82,7 @@ reader uses Python only; Windows clients do not need OpenSSL. Use
 - [Linux/Windows client, ISO input and update installation](docs/CLIENT.md)
 - [Prices, rewards, points, divisions, odds and timeouts](docs/CONFIG.md)
 - [Python plugins and game events](docs/PLUGINS.md)
+- [Custom Prime cards, version IDs and packs](docs/CUSTOM_CARDS.md)
 - [Development and tests](docs/DEVELOPMENT.md)
 
 Editable configuration lives in `server-config.json`; Python plugins live in
@@ -97,6 +100,8 @@ further desktop testing across repeated games. Public packaging and custom CA
 support have automated coverage; a fresh Windows desktop installation still
 needs testing. The patch targets the specific v1.02 executable hash and is
 not a general patch for other title IDs or revisions.
+Custom Prime IDs and 102–115 ratings passed the native card parser; their
+desktop rendering and match gameplay still need testing.
 
 Online division promotion/relegation, full quit/disconnect outcomes, transfer
 market trading, official EA accounts and global EA leaderboards are not

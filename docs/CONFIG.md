@@ -55,6 +55,9 @@ reload does not push unsolicited HUD/menu packets or change match gameplay.
 | `plugins.enabled` | true | Live enable/disable of custom plugin hooks |
 | `plugins.disabled` | `[]` | Plugin filenames without `.py` whose hooks are disabled |
 | `plugins.settings` | `{}` | Current per-plugin JSON objects read through `api.settings` |
+| `custom_cards.enabled` | true | Enable custom card draws and packs |
+| `custom_cards.standard_pack_chance_percent` | 0 | Chance for an eligible normal gold draw to become a custom version |
+| `custom_cards.editions` | Prime stars | Version IDs, labels, ratings, attributes, enabled players and custom quick-sell prices |
 
 Division arrays run from **displayed Division 10 to Division 1**. The wire
 division numbers run in the opposite direction: wire 1 is displayed Division
@@ -86,6 +89,8 @@ and in-memory state without duplicating hooks. Source edits are not imported
 again until a server restart. A plugin which caches a setting during registration
 must read `api.settings` in its callbacks or handle `server.config_changed`.
 See [PLUGINS.md](PLUGINS.md).
+Custom definitions affect new cards; issued custom cards preserve their stat
+snapshots. See [CUSTOM_CARDS.md](CUSTOM_CARDS.md) for Prime packs and version IDs.
 
 An example partial configuration (all omitted rules keep defaults):
 

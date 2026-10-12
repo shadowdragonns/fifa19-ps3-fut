@@ -95,22 +95,42 @@ class Queries:
         owners = sorted(self._owners().items())[start:start+count]
         return [self._club(owner) for _,owner in owners]
 
+    def _metadata(self, player, edition, resource_id, rarity, value, label, version):
+        return {'asset_id': player['assetId'], 'resource_id': resource_id, 'name': player['name'],
+                'rating': player['rating'], 'position': player['preferredPosition'],
+                'nation_id': player['nation'], 'team_id': player['teamid'], 'league_id': player['leagueId'],
+                'rare': bool(rarity), 'edition': edition, 'edition_label': label, 'version': version,
+                'attributes': deepcopy(player['attributeList']), 'quick_sell_value': value}
+
     def _catalog_card(self, asset_id, edition):
         from fut_inventory import PLAYER_EDITIONS
         from fut_packs import rare, level
-        if edition not in PLAYER_EDITIONS: raise ValueError('Unknown card edition')
-        p = PLAYER_EDITIONS[edition][asset_id]
-        rarity = bool(rare(p)) if edition == 'standard' else True
-        tier = level(p) if edition == 'standard' else 'gold'
-        return {'asset_id': p['assetId'], 'name': p['name'], 'rating': p['rating'],
-                'position': p['preferredPosition'], 'nation_id': p['nation'], 'team_id': p['teamid'],
-                'league_id': p['leagueId'], 'rare': rarity, 'edition': edition,
-                'attributes': deepcopy(p['attributeList']),
-                'quick_sell_value': self.root.settings.section('economy')['quick_sell'][tier][int(rarity)]}
+        import card_versions
+        if not isinstance(edition, str): raise ValueError('Unknown card edition')
+        if edition in PLAYER_EDITIONS:
+            player = PLAYER_EDITIONS[edition][asset_id]
+            rarity = bool(rare(player)) if edition == 'standard' else True
+            tier = level(player) if edition == 'standard' else 'gold'
+            value = self.root.settings.section('economy')['quick_sell'][tier][int(rarity)]
+            return self._metadata(player, edition, asset_id, rarity, value, edition, 0)
+        if edition not in card_versions.edition_names(self.root.settings): raise ValueError('Unknown card edition')
+        player, variant = card_versions.catalogue_player(self.root.settings, edition, asset_id)
+        return self._metadata(player, edition, (variant['version'] << 24) | asset_id, True,
+                              variant['discard_value'], variant['label'], variant['version'])
 
     def _card(self, record):
-        return {**self._catalog_card(record['assetId'], record.get('edition', 'england110')),
-                'item_id': record['id'], 'pile': record['pile'], 'created_at': record['timestamp'],
+        from fut_inventory import PLAYER_EDITIONS
+        import card_versions
+        edition = record.get('edition', 'england110')
+        if edition in PLAYER_EDITIONS:
+            card = self._catalog_card(record['assetId'], edition)
+        else:
+            variant = record['variant']
+            card = self._metadata(card_versions.variant_player(record['assetId'], variant), edition,
+                                  card_versions.resource_id(record), True,
+                                  card_versions.discard_value(record, self.root.settings),
+                                  variant['label'], variant['version'])
+        return {**card, 'item_id': record['id'], 'pile': record['pile'], 'created_at': record['timestamp'],
                 'condition': {'injury_type': record.get('injuryType', 'none'), 'injury_games': record.get('injuryGames', 0),
                               'suspension': record.get('suspension', 0)}}
 
@@ -118,9 +138,9 @@ class Queries:
         allowed = {'min_rating', 'max_rating', 'name', 'position', 'nation_id', 'team_id', 'league_id', 'rare'}
         if set(filters)-allowed: raise ValueError('Unknown card filter')
         for k in ('min_rating', 'max_rating', 'nation_id', 'team_id', 'league_id'):
-            if k in filters and (type(filters[k]) is not int or not 0 <= filters[k] <= (110 if 'rating' in k else 2**31-1)):
+            if k in filters and (type(filters[k]) is not int or not 0 <= filters[k] <= (115 if 'rating' in k else 2**31-1)):
                 raise ValueError('Invalid card filter: '+k)
-        if filters.get('min_rating', 0) > filters.get('max_rating', 110): raise ValueError('Invalid rating range')
+        if filters.get('min_rating', 0) > filters.get('max_rating', 115): raise ValueError('Invalid rating range')
         if 'rare' in filters and type(filters['rare']) is not bool: raise ValueError('rare must be bool')
         for k in ('name', 'position'):
             if k in filters and (not isinstance(filters[k], str) or not 1 <= len(filters[k]) <= 80):
@@ -128,17 +148,19 @@ class Queries:
         return filters
 
     def _selected(self, card, filters):
-        return (filters.get('min_rating', 0) <= card['rating'] <= filters.get('max_rating', 110)
+        return (filters.get('min_rating', 0) <= card['rating'] <= filters.get('max_rating', 115)
                 and all(card[k] == v for k,v in filters.items() if k in ('position', 'nation_id', 'team_id', 'league_id', 'rare'))
                 and ('name' not in filters or filters['name'].casefold() in card['name'].casefold()))
 
     @snapshot
     def get_cards(self, persona_id, *, pile=None, edition=None, start=0, count=100, **filters):
         from fut_inventory import PLAYER_EDITIONS
+        import card_versions
         _page(start, count); self._filters(filters)
-        if pile not in (None, 'club', 'purchased'): raise ValueError('Unknown card pile')
-        if edition is not None and edition not in PLAYER_EDITIONS: raise ValueError('Unknown card edition')
         owner = self._owner(persona_id)
+        editions = set(PLAYER_EDITIONS) | set(card_versions.edition_names(self.root.settings)) | {r.get('edition', 'england110') for r in owner.fut_inventory.state['items']}
+        if pile not in (None, 'club', 'purchased'): raise ValueError('Unknown card pile')
+        if edition is not None and (not isinstance(edition, str) or edition not in editions): raise ValueError('Unknown card edition')
         cards = (self._card(r) for r in sorted(owner.fut_inventory.state['items'], key=lambda r:r['id'])
                  if (pile is None or r['pile'] == pile) and (edition is None or r.get('edition', 'england110') == edition))
         return list(islice((card for card in cards if self._selected(card, filters)), start, start+count))
@@ -158,9 +180,13 @@ class Queries:
     @snapshot
     def search_catalogue(self, *, edition='standard', start=0, count=100, **filters):
         from fut_inventory import PLAYER_EDITIONS
+        import card_versions
         _page(start, count); self._filters(filters)
-        if edition not in PLAYER_EDITIONS: raise ValueError('Unknown card edition')
-        cards = (self._catalog_card(asset, edition) for asset in sorted(PLAYER_EDITIONS[edition]))
+        if not isinstance(edition, str): raise ValueError('Unknown card edition')
+        if edition in PLAYER_EDITIONS: assets = sorted(PLAYER_EDITIONS[edition])
+        elif edition in card_versions.edition_names(self.root.settings): assets = card_versions.catalogue_assets(self.root.settings, edition)
+        else: raise ValueError('Unknown card edition')
+        cards = (self._catalog_card(asset, edition) for asset in assets)
         return list(islice((card for card in cards if self._selected(card, filters)), start, start+count))
 
     @snapshot
@@ -223,7 +249,7 @@ class Queries:
     def get_packs(self, *, include_retired=False):
         from fut_packs import PACKS
         if type(include_retired) is not bool: raise ValueError('include_retired must be bool')
-        return [self.get_pack(k) for k in sorted(PACKS) if include_retired or not PACKS[k].get('retired')]
+        return [self.get_pack(k) for k in sorted(PACKS) if include_retired or not self.root.settings.pack(k).get('retired')]
 
     @snapshot
     def get_pack(self, pack_id):

@@ -50,10 +50,17 @@ for pack_id, name, size, price, minimum in (
     PACKS[pack_id] = dict(name=name, edition='standard', level='gold', size=size,
         price=price, rares=size, artwork=3, min_rating=minimum)
 
+PACKS[180] = dict(name='Prime Star Player Pack', edition='prime', level='gold', size=1,
+                  price=50000, rares=1, artwork=3)
+PACKS[181] = dict(name='Prime Star Trio Pack', edition='prime', level='gold', size=3,
+                  price=125000, rares=3, artwork=3)
+
 
 def description(spec):
     if spec['edition'] == 'england110':
         text = f"{spec['size']} England players with 110 ratings."
+    elif spec['edition'] == 'prime':
+        text = f"{spec['size']} custom Prime star player(s), rated 102-115. Base player cards remain available separately."
     else:
         text = f"{spec['size']} {spec['level']} players with normal ratings, including {spec['rares']} rare."
         if 'theme' in spec:
@@ -104,10 +111,22 @@ def draw_weights(pool, tier, flag, weights=None):
     return [1/(p['rating']-floor+1)**2 for p in pool]
 
 
-def draw(spec, england, weights=None):
+def draw(spec, england, weights=None, settings=None):
     rng = random.SystemRandom()
     if spec['edition'] == 'england110':
         return rng.sample(england, spec['size'])
+    if spec['edition'] != 'standard':
+        from card_versions import catalogue_assets, catalogue_player
+        if settings is None:
+            from server_settings import DEFAULT
+            settings = DEFAULT
+        pool = catalogue_assets(settings, spec['edition'], available=True)
+        if len(pool) < spec['size']: raise ValueError('Not enough enabled custom players for this pack')
+        selected = []
+        for asset in rng.sample(pool, spec['size']):
+            player, variant = catalogue_player(settings, spec['edition'], asset)
+            selected.append({**player, '_edition': spec['edition'], '_variant': variant})
+        return selected
     chosen = []
     for flag, count in ((0, spec['size']-spec['rares']), (1, spec['rares'])):
         if not count:
@@ -120,4 +139,7 @@ def draw(spec, england, weights=None):
             chosen.append(player)
             pool.remove(player)
     rng.shuffle(chosen)
+    if settings is not None and spec['level'] == 'gold':
+        from card_versions import upgrade_standard_draw
+        chosen = upgrade_standard_draw(chosen, settings, rng)
     return chosen

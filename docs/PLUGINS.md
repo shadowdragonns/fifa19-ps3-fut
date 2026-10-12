@@ -60,7 +60,7 @@ and `last_seen` is an in-memory timestamp reset on server restart.
 | `player.fut_left` | `player`, `reason` | FUT logout or its underlying connection closes |
 | `player.login` | `player` | A new FUT SID is issued; no SID is exposed |
 | `player.logout` | `player`, `reason` | Compatibility companion to `player.login`, emitted alongside `player.fut_left` |
-| `pack.opened` | `player`, `pack_id`, `purchase_id`, `price`, `cards` | New pack saved; cards contain `item_id` and `asset_id` |
+| `pack.opened` | `player`, `pack_id`, `purchase_id`, `price`, `cards` | New pack saved; cards contain `item_id`, `asset_id`, `resource_id` and `edition` |
 | `cards.moved` | `player`, `items` | Club moves saved; per-item success is included |
 | `cards.discarded` | `player`, `item_ids`, `coins` | Quick sell committed |
 | `squad.created`, `squad.saved`, `squad.activated` | `player`, `squad_id`, `name` | Squad change committed |
@@ -160,9 +160,13 @@ IDs are positive integers; the match receipt ID is a string. Queries are
 available during `register(api)` as well as callbacks. An empty new multiuser
 server lists zero players until the first registration.
 
-Card filters: `min_rating`, `max_rating` (0–110), `name` (case-insensitive
+Card filters: `min_rating`, `max_rating` (0–115), `name` (case-insensitive
 substring), `position`, `nation_id`, `team_id`, `league_id`, `rare` (boolean).
-Editions are `standard` and legacy `england110`. Owned-card rows include
+Editions include `standard`, legacy `england110` and configured custom editions
+such as `prime`. Owned snapshots remain queryable when an edition is disabled.
+Rows also include `resource_id`, `version` and `edition_label`; catalogue queries
+show current definitions, while owned-card queries show issued stat snapshots.
+Owned-card rows include
 `item_id`, `asset_id`, `name`, `rating`, `position`, nation/team/league IDs,
 `rare`, `edition`, native indexed `attributes`, `quick_sell_value`, `pile`,
 `created_at`, and `condition` with `injury_type`, `injury_games`, `suspension`.

@@ -36,11 +36,12 @@ def validate(value, items):
     custom = json.loads(value['custom'])
     if not isinstance(custom, list) or len(custom) != 22 or any(not integer(n, -1000, 1000) for n in custom):
         raise ValueError('Invalid custom tactics')
-    owned = {r['id'] for r in items if r['pile'] == 'club'}
+    owned = {r['id']: r for r in items if r['pile'] == 'club'}
     players = value['players']
     if not isinstance(players, list) or len(players) != 23:
         raise ValueError('Expected 23 squad slots')
     selected = set()
+    footballers = set()
     for index, slot in enumerate(players):
         if (not isinstance(slot, dict) or set(slot) != {'index', 'itemData', 'kitNumber'}
                 or type(slot['index']) is not int or slot['index'] != index
@@ -52,6 +53,9 @@ def validate(value, items):
         if not integer(item_id) or (item_id and (item_id not in owned or item_id in selected)):
             raise ValueError('Squad needs distinct owned club cards')
         if item_id:
+            if owned[item_id]['assetId'] in footballers:
+                raise ValueError('Only one version of a footballer can be selected in a squad')
+            footballers.add(owned[item_id]['assetId'])
             selected.add(item_id)
     if value['manager'] != [{'id': 0, 'dream': False}]:
         raise ValueError('No local manager card is owned')
@@ -213,13 +217,19 @@ def save(backend, payload):
         return {'id': value['id']}  # Native result 0x16d5d1c reads this integer only.
 
 
+def one_per_footballer(records):
+    chosen = {}
+    for record in records: chosen.setdefault(record['assetId'], record)
+    return list(chosen.values())
+
+
 def prepare_owned_xi(backend):
     """One explicit preparation of the existing club; never grants cards."""
     with backend.lock:
         store = backend.fut_inventory
         if store.state.get('squad'):
             return False
-        records = [r for r in store.state['items'] if r['pile'] == 'club']
+        records = one_per_footballer(r for r in store.state['items'] if r['pile'] == 'club')
         if len(records) < 11:
             return False
         value = empty(backend.profile['fut_club']['name'])
@@ -257,7 +267,9 @@ def fill_owned_bench(backend):
             return 0
         value = deepcopy(saved(backend))
         selected = {slot['itemData']['id'] for slot in value['players']}
-        available = [r for r in store.state['items'] if r['pile'] == 'club' and r['id'] not in selected]
+        footballers = {r['assetId'] for r in store.state['items'] if r['id'] in selected}
+        available = one_per_footballer(r for r in store.state['items']
+                                     if r['pile'] == 'club' and r['assetId'] not in footballers)
         added = 0
         for slot in value['players'][11:]:
             if slot['itemData']['id'] or not available:
