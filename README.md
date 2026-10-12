@@ -1,4 +1,4 @@
-# FIFA 19 PS3 FUT server and client
+# FIFA 19 PS3 FUT server and client patcher
 
 A community replacement backend and RPCS3 launcher/patcher for **FIFA 19 PS3
 BLES02258 v1.02**. The client supports Linux and Windows. The server uses
