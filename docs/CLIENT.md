@@ -1,22 +1,48 @@
 # Client and patcher
 
 Use Python 3.10+, RPCS3 with your firmware, your own **FIFA 19 BLES02258** game
-and **v1.02** update, and a configured RPCN account/controller. Obtain the
-server's public `root.pem` from its operator. Close RPCS3 before launching.
+and **v1.02** update, and a configured RPCN account/controller. Close RPCS3 before launching.
 Each friend needs a distinct RPCN account. Reusing that account retains its
-saved club, regardless of client IP.
+saved club, regardless of client IP. The launcher fetches the selected server's
+public certificate automatically; no certificate copy or client OpenSSL setup
+is needed.
+
+## Graphical launcher
+
+On Linux run `python3 launcher_gui.py` (or `./Start\ FUT\ Launcher.sh`).
+On Windows double-click **Start FUT Launcher.cmd**, or run
+`py -3 launcher_gui.py`. You can also use `launch.py --gui --server SERVER_IP`.
+The GUI uses Tkinter, included with normal Windows Python installations;
+Debian/Ubuntu users may need `sudo apt install python3-tk`. A minimal embedded
+Python runtime needs Tcl/Tk added by its packager.
+
+The **Play** tab lets you choose RPCS3, a JB game folder or decrypted ISO, and
+the server IP/hostname. **Check setup** validates the game, update, RPCS3 profile,
+server and certificate; **Launch FIFA** applies the temporary patch and starts
+RPCS3. **Stop game** lets the launcher close RPCS3 and restore its patches. Keep
+the launcher running until FIFA closes.
+
+The **Setup** tab opens RPCS3 for account/controller setup and installs your own
+extracted update. For a `.pkg` update use RPCS3's package installer. **Advanced**
+contains an optional data-folder override, manual CA, prepared Linux instance,
+trace logging and deliberate certificate replacement. **Activity** shows progress
+and errors, with copy/open-log buttons. Settings are saved separately per OS user
+in `~/.config/fifa19-fut/launcher.json` (respecting `XDG_CONFIG_HOME`) or
+`%APPDATA%\fifa19-fut\launcher.json` on Windows.
+
+## Command-line launcher
 
 Linux:
 
 ```bash
-python3 launch.py --server 192.0.2.55 --trust-ca /path/to/root.pem \
+python3 launch.py --server 192.0.2.55 \
   --rpcs3 /path/to/rpcs3.AppImage --game /path/to/FIFA19
 ```
 
 Windows PowerShell:
 
 ```powershell
-py -3 launch.py --server 192.0.2.55 --trust-ca "C:\FUT\root.pem" --rpcs3 "F:\rpcs3.exe" --game "D:\Games\FIFA19"
+py -3 launch.py --server 192.0.2.55 --rpcs3 "F:\rpcs3.exe" --game "D:\Games\FIFA19"
 ```
 
 Replace addresses and paths. The launcher accepts a server hostname resolving
@@ -27,6 +53,26 @@ Conflicting portable overrides are refused. Linux AppImage extraction is
 cached automatically. The development setup used RPCS3 revision bb5dc93b;
 other emulator revisions need testing, while the game executable hash remains
 strictly checked against BLES02258 v1.02.
+
+## Automatic public certificate
+
+The launcher reads `http://SERVER_IP:8099/fut-local/health` and
+`/fut-local/root.pem`, validates the public CA's native RSA format, then verifies
+the server's TLS leaf and health response on TCP **44325** before using it.
+Only that exact server address is contacted; redirects and proxy environment
+variables are ignored/refused. CA SHA256 values use the DER certificate bytes.
+No private key is downloaded or embedded in the game.
+
+The first connection trusts the server reached at the address you entered;
+the initial HTTP download is not independently authenticated. Use a trusted
+LAN/VPN or obtain `root.pem` from the operator and pass `--trust-ca` for an
+independently supplied CA. Downloaded certificates are pinned separately by
+IPv4 address under `runtime/server-certs/` for CLI launches, or beside the GUI
+settings file for GUI launches. The launcher rechecks the server on each launch;
+an unexpected CA change fails without replacing the saved pin or applying patches.
+After a deliberate server CA rotation, use `--refresh-server-cert` or select the
+replacement option under Advanced. `--cert-cache` overrides the CLI cache path.
+Older servers without certificate discovery still work with `--trust-ca`.
 
 ## ISO and update input
 
@@ -51,7 +97,7 @@ the client; the public CA reader uses Python's standard library.
 
 ## Temporary patches and validation
 
-Add `--prepare-only` for game/update/profile/network validation without
+Add `--prepare-only` for game/update/profile/network and automatic certificate validation without
 starting RPCS3 or installing temporary patches. A normal launch replaces the
 game's per-launch `cl.ini`, redirects discovery to the chosen server, and
 installs a hash-specific certificate/boot compatibility patch through RPCS3.
@@ -77,8 +123,8 @@ Set a different RPCN account for player 2, then close its configuration window.
 The instances retain separate game/profile/cache files. Launch one per terminal:
 
 ```bash
-python3 launch.py --instance player1 --server 192.0.2.55 --trust-ca /path/to/root.pem --rpcs3 /path/to/rpcs3.AppImage
-python3 launch.py --instance player2 --server 192.0.2.55 --trust-ca /path/to/root.pem --rpcs3 /path/to/rpcs3.AppImage
+python3 launch.py --instance player1 --server 192.0.2.55 --rpcs3 /path/to/rpcs3.AppImage
+python3 launch.py --instance player2 --server 192.0.2.55 --rpcs3 /path/to/rpcs3.AppImage
 ```
 
 Do not add `--game` or `--profile` to prepared instances. A C compiler is needed

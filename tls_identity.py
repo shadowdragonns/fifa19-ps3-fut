@@ -1,6 +1,7 @@
 """Read the RSA public modulus from a server CA using Python's standard library."""
 from pathlib import Path
 import ssl
+import hashlib
 
 
 def _tlv(data, offset=0):
@@ -22,10 +23,18 @@ def _children(data):
     return result
 
 
-def public_modulus(path):
-    """Only the retail patch's 2048-bit RSA / 65537 exponent is supported."""
+def certificate_details(pem):
+    """Validate one public PEM and return its DER fingerprint and native modulus."""
+    if isinstance(pem, bytes):
+        try: pem = pem.decode('ascii')
+        except UnicodeDecodeError as error: raise ValueError('Certificate must be ASCII PEM') from error
+    if (not isinstance(pem, str) or len(pem) > 16384
+            or not pem.strip().startswith('-----BEGIN CERTIFICATE-----')
+            or not pem.strip().endswith('-----END CERTIFICATE-----')
+            or pem.count('-----BEGIN') != 1 or pem.count('-----END') != 1):
+        raise ValueError('Expected one public CA certificate, not a key or certificate bundle')
     try:
-        der = ssl.PEM_cert_to_DER_cert(Path(path).read_text())
+        der = ssl.PEM_cert_to_DER_cert(pem)
         tag, certificate, end = _tlv(der)
         if tag != 0x30 or end != len(der): raise ValueError('Invalid certificate sequence')
         outer = _children(certificate)
@@ -56,6 +65,11 @@ def public_modulus(path):
         modulus = int.from_bytes(numbers[0][1], 'big'); exponent = int.from_bytes(numbers[1][1], 'big')
         if modulus.bit_length() != 2048 or exponent != 65537:
             raise ValueError('CA must have a 2048-bit RSA key and exponent 65537')
-        return modulus.to_bytes(256, 'big')
+        return {'sha256': hashlib.sha256(der).hexdigest(), 'modulus': modulus.to_bytes(256, 'big')}
     except (IndexError, TypeError, ssl.SSLError) as error:
         raise ValueError('Unsupported server CA certificate') from error
+
+
+def public_modulus(path):
+    """Only the retail patch's 2048-bit RSA / 65537 exponent is supported."""
+    return certificate_details(Path(path).read_bytes())['modulus']

@@ -1,7 +1,7 @@
 """Create private TLS keys locally; only root.pem is shared with clients."""
 import argparse
-import hashlib
 from pathlib import Path
+from tls_identity import certificate_details
 import shutil
 import subprocess
 import tempfile
@@ -46,7 +46,7 @@ def main():
     args = parser.parse_args()
     ca = initialize(args.directory)
     print('Created private server keys. Share only this public certificate: '+str(ca))
-    print('Certificate SHA256: '+hashlib.sha256(ca.read_bytes()).hexdigest())
+    print('Certificate SHA256 (DER): '+certificate_details(ca.read_bytes())['sha256'])
 
 
 if __name__ == '__main__':

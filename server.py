@@ -124,6 +124,9 @@ def main(argv=None):
     with StateLock(args.state_dir):
         cert, key = tls_files(endpoints.host, args.state_dir/'tls')
         context = server_context(cert, key)
+        from tls_identity import certificate_details
+        public_ca = (HERE/'tls/root.pem').read_bytes()
+        public_ca_sha256 = certificate_details(public_ca)['sha256']
         if args.check:
             for key, row in backend.accounts['users'].items():
                 if not row['legacy']:
@@ -136,6 +139,8 @@ def main(argv=None):
                 'udp_ports': [8099], 'state_dir': str(args.state_dir), 'valid': True}))
             return
         capture = Capture(logs, backend)
+        capture.public_ca = public_ca
+        capture.public_ca_sha256 = public_ca_sha256
         plugins.logger = lambda record: capture.save(record['event'], **{k:v for k,v in record.items() if k != 'event'})
         plugins.load()
         with listeners(bind, capture, context):

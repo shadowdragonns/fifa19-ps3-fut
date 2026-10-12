@@ -40,17 +40,23 @@ Replace `192.0.2.55` with the server's reachable IPv4 address. Open TCP
 **8990, 8099, 42230, 44325** and UDP **8099** on the network you use. Peer
 gameplay runs between clients and needs working RPCN/peer connectivity.
 
-`initialize_tls.py` creates a unique server identity. Share **only**
-`tls/root.pem`, the public CA certificate, with clients. Never share or commit
-`root.key` or `local.key`. Setup preserves an existing TLS directory.
+`initialize_tls.py` creates a unique server identity. Clients automatically
+fetch its public CA certificate from the server and pin it for that address.
+Never share or commit `root.key` or `local.key`. Setup preserves an existing TLS directory.
 
 ### Client
 
-Copy/clone this project on the client and obtain the server's public `root.pem`.
-Close RPCS3 before launching. On Linux:
+Copy/clone this project on the client. Close RPCS3 before launching.
+Open the GUI with `python3 launcher_gui.py` on Linux or **Start FUT Launcher.cmd**
+on Windows. Choose the emulator/game paths, enter the server address, then click
+**Check setup** or **Launch FIFA**. No manual certificate copy is needed.
+See [client setup](docs/CLIENT.md) for Tkinter requirements, update installation
+and certificate trust details.
+
+The command line also works. On Linux:
 
 ```bash
-python3 launch.py --server 192.0.2.55 --trust-ca /path/to/root.pem \
+python3 launch.py --server 192.0.2.55 \
   --rpcs3 /path/to/rpcs3.AppImage --game /path/to/FIFA19
 ```
 the path /path/to/FIFA19 is the path to the folder with ```PS3_DISC.SFB  PS3_GAME  PS3_UPDATE``` inside 
@@ -59,7 +65,7 @@ the path /path/to/FIFA19 is the path to the folder with ```PS3_DISC.SFB  PS3_GAM
 On Windows, from PowerShell:
 
 ```powershell
-py -3 launch.py --server 192.0.2.55 --trust-ca "C:\FUT\root.pem" --rpcs3 "F:\rpcs3.exe" --game "D:\Games\FIFA19"
+py -3 launch.py --server 192.0.2.55 --rpcs3 "F:\rpcs3.exe" --game "D:\Games\FIFA19"
 ```
 
 The patch is applied temporarily through RPCS3. Original ISO/EBOOT files are

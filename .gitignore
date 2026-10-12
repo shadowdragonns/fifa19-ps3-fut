@@ -23,6 +23,7 @@ state-backups/
 logs/
 plugin-data/
 server-config.json
+launcher-defaults.json
 tls/
 *.key
 *.pem

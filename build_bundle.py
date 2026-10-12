@@ -6,12 +6,12 @@ from pathlib import Path
 import zipfile
 
 HERE = Path(__file__).resolve().parent
-SERVER_MODULES = ('server', 'initialize_tls', 'kits', 'accounts', 'probe', 'endpoints', 'sessions', 'tdf',
+SERVER_MODULES = ('server', 'initialize_tls', 'tls_identity', 'kits', 'accounts', 'probe', 'endpoints', 'sessions', 'tdf',
     'blaze', 'identity', 'tls_bridge', 'qos', 'hospitality', 'fut_services', 'fut_inventory',
     'fut_squads', 'fut_club_assets', 'fut_condition', 'fut_leaderboards', 'fut_matches', 'fut_results',
     'fut_seasons', 'fut_online', 'matchmaking', 'peer_games', 'fut_content', 'fut_packs',
     'pow_services', 'pran', 'localization', 'game_reporting', 'server_settings', 'server_plugins', 'plugin_queries')
-CLIENT_MODULES = ('launch', 'game_input', 'endpoints', 'certificate_patch', 'tls_identity',
+CLIENT_MODULES = ('launch', 'launcher_gui', 'server_trust', 'game_input', 'endpoints', 'certificate_patch', 'tls_identity',
     'profile_trace', 'upgrade_rewards_patch', 'client_platform', 'install_update',
     'client_instances', 'setup_clients')
 SERVER_DATA = ('england-pack-players.json', 'standard-pack-players.json', 'standard-england-players.json',
@@ -34,6 +34,8 @@ def build(output):
             files['plugins/_example_bonus.py'] = (HERE/'plugins/_example_bonus.py').read_bytes()
             files['plugins/_example_presence.py'] = (HERE/'plugins/_example_presence.py').read_bytes()
         else:
+            for name in ('Start FUT Launcher.cmd', 'Start FUT Launcher.sh'):
+                files[name] = (HERE/name).read_bytes()
             files['rpcn_port.c'] = (HERE/'rpcn_port.c').read_bytes()
             files['cl.ini'] = (HERE/'cl.ini').read_bytes()
             files['data/client-native-patch.json'] = (HERE/'data/client-native-patch.json').read_bytes()

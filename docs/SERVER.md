@@ -21,8 +21,13 @@ Game traffic is peer-to-peer; backend reachability alone does not establish it.
 
 Each installation generates its own CA and localhost leaf. For a remote
 advertised IP, the server issues a matching leaf under `state/tls/` from the
-same CA. Existing keys are preserved. Copy only `tls/root.pem` to clients and
-pass it with `launch.py --trust-ca`. The client embeds that RSA public modulus
+same CA. Existing keys are preserved. The server serves **only the public CA**
+at `http://SERVER_IP:8099/fut-local/root.pem`; `/fut-local/health` advertises its
+path and DER SHA256 fingerprint. The GUI and CLI clients fetch it automatically,
+verify the server's TLS leaf on port 44325, then pin it by server address.
+There is no general file-serving route and no endpoint for private `.key` files.
+You can also supply `tls/root.pem` directly with `launch.py --trust-ca`.
+The client embeds that RSA public modulus
 in its temporary hash-specific RPCS3 patch. It does not disable all certificate
 verification. The certificate must use RSA 2048 with exponent 65537.
 Use the supplied initializer: its issuer labels match the game's native CA
@@ -31,7 +36,9 @@ not a public GeoTrust-issued certificate.
 
 Keep private `.key` files on the server. They are deliberately excluded from
 Git and distributable ZIPs. Back them up privately with the saved clubs. If you
-create a different CA, give its new public certificate to every client.
+create a different CA, clients must explicitly replace their saved certificate
+(`--refresh-server-cert` or the GUI's Advanced option). First-contact trust and
+manual certificate options are explained in [CLIENT.md](CLIENT.md).
 
 ## Paths and flags
 

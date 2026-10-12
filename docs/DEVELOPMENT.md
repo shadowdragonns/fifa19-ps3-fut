@@ -11,12 +11,16 @@ Run the publication-safe tests from the source checkout with no game files:
 
 ```bash
 python3 -m unittest discover -s tests -v
+python3 tests/gui_smoke.py # Needs a display; use xvfb-run -a on headless Linux
 python3 audit_public.py
 python3 build_bundle.py --output dist
 ```
 
 Tests exercise fresh local CA generation, custom-certificate patch rows,
-TLS handshakes, backend packs/rules/reward persistence and plugin isolation.
+TLS handshakes, public-certificate discovery/pinning, GUI commands/settings,
+backend packs/rules/reward persistence and plugin isolation. CI renders the
+GUI and checks background progress on Linux and Windows. GUI checks use a
+fake child process and never require a game, emulator or account credentials.
 The development environment has a larger protocol/native regression suite;
 private session fixtures and game executable inputs are not published.
 Automated checks do not replace a desktop test of kickoff, full-time return

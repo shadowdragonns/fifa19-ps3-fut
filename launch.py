@@ -19,6 +19,7 @@ from endpoints import Endpoints, ipv4
 from game_input import prepare_game, validate_update
 import client_instances
 import client_platform
+from server_trust import check_server, fetch_certificate
 
 HERE = Path(__file__).resolve().parent
 GAME = HERE.parents[1]
@@ -199,6 +200,11 @@ def main(argv=None):
     parser.add_argument('--game', type=Path, default=GAME, help='JB folder or decrypted FIFA19.iso')
     parser.add_argument('--server', help='Server IPv4/hostname; omit to start the existing same-PC server')
     parser.add_argument('--trust-ca', type=Path, help='Public root.pem certificate supplied by the server operator')
+    parser.add_argument('--refresh-server-cert', action='store_true', help='Replace the saved certificate after an intentional server CA change')
+    parser.add_argument('--cert-cache', type=Path, default=HERE/'runtime/server-certs', help='Directory for automatically fetched public certificates')
+    parser.add_argument('--gui', action='store_true', help='Open the graphical launcher with these settings')
+    parser.add_argument('--open-rpcs3', action='store_true', help='Open RPCS3 settings without requiring a game or update')
+    parser.add_argument('--stop-file', type=Path, help=argparse.SUPPRESS)
     parser.add_argument('--profile', type=Path, help='RPCS3 data directory; defaults to ~/.config/rpcs3 on Linux, beside rpcs3.exe (or portable/) on Windows')
     parser.add_argument('--instance', help='Isolated Linux client prepared by setup_clients.py (player1/player2)')
     parser.add_argument('--configure', action='store_true', help='Open an isolated client GUI to configure RPCN and controllers')
@@ -210,6 +216,19 @@ def main(argv=None):
     parser.add_argument('--keep-upgrade-rewards', action='store_true',
                         help='Keep the original upgrade-rewards loader for research; it currently stalls local startup')
     args = parser.parse_args(argv)
+    if args.gui:
+        from launcher_gui import main as gui_main
+        gui_main(args)
+        return
+    if args.open_rpcs3:
+        if args.instance: raise ValueError('Use --configure for an isolated instance')
+        executable = client_platform.executable_path(args.rpcs3)
+        if not executable.is_file(): raise ValueError('Choose your RPCS3 executable first')
+        profile = client_platform.profile_path(executable, args.profile)
+        executable = runtime_executable(executable)
+        subprocess.run([str(executable)], env=client_platform.environment(profile),
+                       cwd=executable.parent if client_platform.windows() else None, check=True)
+        return
     if args.configure and not args.instance:
         raise ValueError('--configure requires --instance')
     if args.instance:
@@ -237,6 +256,8 @@ def run(args, root=None):
     host = ipv4(args.server, resolve=True) if args.server else '127.0.0.1'
     endpoints = Endpoints(host)
     args.rpcs3 = client_platform.executable_path(args.rpcs3)
+    if not args.rpcs3.is_file():
+        raise RuntimeError('RPCS3 executable not found; supply --rpcs3 /path/to/executable')
     game_path = prepare_game(args.game, args.iso_cache)
     profile = client_platform.profile_path(args.rpcs3, args.profile)
     validate_update(profile)
@@ -251,11 +272,16 @@ def run(args, root=None):
         text=re.sub(r'^  Window Title Format:[^\n]*$',
                     '  Window Title Format: '+json.dumps('['+args.instance+'] FPS: %F | %R | %V | %T [%t]'),text,flags=re.M)
     config.write_text(text, encoding='utf-8')
+    if not args.configure:
+        if args.server and args.trust_ca is None:
+            args.trust_ca, fingerprint = fetch_certificate(endpoints, args.cert_cache, args.refresh_server_cert)
+            print(f'Server certificate ready: {host} (SHA256 {fingerprint}).', flush=True)
+        elif args.trust_ca is not None:
+            from tls_identity import public_modulus
+            public_modulus(args.trust_ca)
     if args.prepare_only:
         print(f'Prepared {config} for {host}, game {game_path}; no live emulator or game files changed.')
         return
-    if not args.rpcs3.is_file():
-        raise RuntimeError('RPCS3 executable not found; supply --rpcs3 /path/to/executable')
     executable = runtime_executable(args.rpcs3.resolve())
     env = client_instances.environment(root,client_instances.rpcn_port(args.instance)) if root else client_platform.environment(profile)
     working_directory = executable.parent if client_platform.windows() else None
@@ -308,9 +334,9 @@ def run(args, root=None):
                     game = subprocess.Popen(command, env=env, cwd=working_directory, stdout=game_console, stderr=subprocess.STDOUT)
                     print('Try entering Ultimate Team once. Record the message shown, then close the game window to finish.', flush=True)
                     started = time.monotonic()
-                    code = game.wait()
+                    code, stopped = wait_for_game(game, args.stop_file)
                 (logs / 'exit.json').write_text(json.dumps({'exit_code': code, 'elapsed_seconds': round(time.monotonic() - started, 2)}) + '\n')
-                if code or time.monotonic() - started < 5:
+                if not stopped and (code or time.monotonic() - started < 5):
                     raise RuntimeError(f'RPCS3 exited before a useful test (code {code}); see {logs / "rpcs3-console.log"}')
             except KeyboardInterrupt:
                 if game and game.poll() is None:
@@ -334,20 +360,19 @@ def run(args, root=None):
     print(f'Discovery complete. Network captures: {logs}. Local cl.ini removed.', flush=True)
 
 
-def check_server(endpoints):
-    import urllib.request
-    # Never route the private server health check through proxy environment variables.
-    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
-    with opener.open(endpoints.base_url+'/fut-local/health', timeout=5) as reply:
-        body = reply.read(4097)
-    if len(body) > 4096:
-        raise ValueError('Server health response is too large')
-    info = json.loads(body)
-    if info.get('service') != 'fifa19-fut' or info.get('version') != 1:
-        raise ValueError('The address is not a compatible FIFA 19 FUT server')
-    if info.get('advertise') != endpoints.host:
-        raise ValueError(f'Server advertises {info.get("advertise")}; restart it with --advertise {endpoints.host}')
-    return info
+def wait_for_game(game, stop_file=None):
+    """Allow the GUI to stop a game while the launcher still restores its patches."""
+    while True:
+        if stop_file is not None and stop_file.exists():
+            print('Stopping RPCS3 and restoring temporary patches.', flush=True)
+            game.terminate()
+            try: code = game.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                game.kill()
+                code = game.wait()
+            return code, True
+        try: return game.wait(timeout=0.5), False
+        except subprocess.TimeoutExpired: pass
 
 
 if __name__ == '__main__':

@@ -63,6 +63,8 @@ class Capture:
         self.lock = threading.Lock()
         self.backend = backend or Backend()
         self.identity = self.backend.identity
+        self.public_ca = None
+        self.public_ca_sha256 = None
 
     def save(self, event, raw=b'', **details):
         details.update(event=event, time=datetime.now(timezone.utc).isoformat())
@@ -222,11 +224,23 @@ class Handler(socketserver.BaseRequestHandler):
                 capture.save('http-request', raw, listener=self.server.server_address[1], method=method, path=public_path)
                 extra_headers = []
                 if method == 'GET' and path == '/fut-local/health':
-                    body = json.dumps({'service': 'fifa19-fut', 'version': 1,
+                    info = {'service': 'fifa19-fut', 'version': 1,
                         'title': 'BLES02258', 'game_version': '01.02',
                         'advertise': endpoints.host, 'features': ['login', 'packs', 'squads', 'cpu-seasons', 'per-user-clubs', 'club-equipment',
-                            'online-peer-play', 'leaderboards', 'server-config', 'python-plugins']}).encode()
+                            'online-peer-play', 'leaderboards', 'server-config', 'python-plugins']}
+                    if capture.public_ca is not None:
+                        info['features'].append('public-certificate')
+                        info['public_certificate'] = {'path': '/fut-local/root.pem',
+                                                       'sha256': capture.public_ca_sha256}
+                    body = json.dumps(info).encode()
                     status, mime = '200 OK', 'application/json'
+                elif method == 'GET' and path == '/fut-local/root.pem':
+                    if capture.public_ca is None:
+                        body, status, mime = b'{"error":"Public certificate unavailable"}', '404 Not Found', 'application/json'
+                    else:
+                        body, status, mime = capture.public_ca, '200 OK', 'application/x-pem-file'
+                        extra_headers = [('Cache-Control', 'no-store'),
+                                         ('Content-Disposition', 'attachment; filename="root.pem"')]
                 elif path.split('?', 1)[0].endswith('/redirector/getServerInstance'):
                     body, status, mime = redirect_response(self.server.blaze_port, endpoints.host), '200 OK', 'application/xml'
                 elif method == 'GET' and (qos_body := qos.response(path, endpoints.http_port, endpoints.host)) is not None:
