@@ -52,6 +52,8 @@ python3 launch.py --server 192.0.2.55 --trust-ca /path/to/root.pem \
   --rpcs3 /path/to/rpcs3.AppImage --game /path/to/FIFA19
 ```
 the path /path/to/FIFA19 is the path to the folder with ```PS3_DISC.SFB  PS3_GAME  PS3_UPDATE``` inside 
+
+
 On Windows, from PowerShell:
 
 ```powershell
