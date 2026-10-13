@@ -1,11 +1,13 @@
 """Trusted Python extensions receive domain events, never transport credentials."""
 from copy import deepcopy
-import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import re
 import sys
 import threading
+import time
+from types import ModuleType
 from contextlib import nullcontext
 
 EVENTS = {'server.started', 'server.stopping', 'server.stopped', 'server.config_changed',
@@ -37,8 +39,9 @@ class EventBus:
     def subscribe(self, name, callback, plugin='local', filter=False):
         if name not in (FILTERS if filter else EVENTS) or not callable(callback):
             raise ValueError('Unknown event/filter or non-callable handler: '+name)
-        table = self._filters if filter else self._hooks
-        table.setdefault(name, []).append((plugin, callback))
+        with self._lock:
+            table = self._filters if filter else self._hooks
+            table.setdefault(name, []).append((plugin, callback))
 
     def _failure(self, plugin, event, error):
         # Do not log the payload or exception text: they could contain user data.
@@ -114,10 +117,15 @@ class PluginAPI:
 
 
 class PluginManager(EventBus):
-    def __init__(self, directory, data_dir, settings, logger=None):
+    def __init__(self, directory, data_dir, settings, logger=None, clock=None, interval=0.25, settle=0.5):
         super().__init__(logger)
         self.directory, self.data_dir = Path(directory), Path(data_dir)
         self.config = settings; self.loaded = []
+        self.clock = clock or time.monotonic
+        self.interval, self.settle = interval, settle
+        self._modules = {}; self._digests = {}; self._observed = {}; self._attempted = {}
+        self._errors = {}; self.generation = 0
+        self._stop = threading.Event(); self._thread = None
 
     @property
     def settings(self): return self.config.section('plugins')
@@ -126,43 +134,137 @@ class PluginManager(EventBus):
         rules = self.settings
         return rules['enabled'] and plugin not in rules['disabled']
 
-    def active_names(self): return [name for name in self.loaded if self._active(name)]
+    def active_names(self):
+        with self._lock: return [name for name in self.loaded if self._active(name)]
 
-    def load(self, check=False, live=False):
-        if not self.settings['enabled']: return []
-        if not self.directory.exists(): return []
-        checked = []
-        for path in sorted(self.directory.glob('*.py')):
-            name = path.stem
-            if not re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,63}', name) or name in self.settings['disabled']: continue
-            if not check and name in self.loaded: continue
-            # Preflight/startup syntax errors still fail early; a newly enabled
-            # broken plugin is isolated during a live config update.
-            if check or not live: compile(path.read_text(encoding='utf-8'), str(path), 'exec')
-            checked.append(name)
-            if not check:
-                hooks = {key:list(value) for key,value in self._hooks.items()}
-                filters = {key:list(value) for key,value in self._filters.items()}
-                module_name = '_fifa19_plugin_'+name
-                try:
-                    if live: compile(path.read_text(encoding='utf-8'), str(path), 'exec')
-                    spec = importlib.util.spec_from_file_location(module_name, path)
-                    module = importlib.util.module_from_spec(spec)
-                    sys.modules[module_name] = module; spec.loader.exec_module(module)
-                    if not callable(getattr(module, 'register', None)):
-                        raise ValueError('Plugin must define register(api)')
-                    directory = self.data_dir/name; directory.mkdir(parents=True, exist_ok=True)
-                    module.register(PluginAPI(self, name, directory, self.settings['settings'].get(name, {})))
-                except Exception as error:
-                    self._hooks, self._filters = hooks, filters
-                    sys.modules.pop(module_name, None)
-                    self._failure(name, 'register', error)
-                    continue
-                self.loaded.append(name)
-        # Re-enabling an earlier filename retains the documented filter order.
+    def _paths(self):
+        return {path.stem: path for path in sorted(self.directory.glob('*.py'))
+                if re.fullmatch(r'[A-Za-z][A-Za-z0-9_]{0,63}', path.stem)}
+
+    def _remove_hooks(self, name):
+        for table in (self._hooks, self._filters):
+            for key, rows in list(table.items()):
+                table[key] = [row for row in rows if row[0] != name]
+
+    def _replace(self, name, path, source, live=False):
+        """Call under both locks: callbacks see the entire old or new plugin."""
+        hooks = {key:list(value) for key,value in self._hooks.items()}
+        filters = {key:list(value) for key,value in self._filters.items()}
+        module_name = '_fifa19_plugin_'+name
+        previous = sys.modules.get(module_name)
+        replacing = name in self.loaded
+        try:
+            # Execute these exact bytes: timestamp-based .pyc caches can serve
+            # stale source after same-length edits within one second.
+            code = compile(source, str(path), 'exec')
+            module = ModuleType(module_name)
+            module.__file__ = str(path); module.__package__ = ''
+            sys.modules[module_name] = module
+            exec(code, module.__dict__)
+            if not callable(getattr(module, 'register', None)):
+                raise ValueError('Plugin must define register(api)')
+            self._remove_hooks(name)
+            directory = self.data_dir/name; directory.mkdir(parents=True, exist_ok=True)
+            module.register(PluginAPI(self, name, directory, self.settings['settings'].get(name, {})))
+        except Exception as error:
+            self._hooks, self._filters = hooks, filters
+            if previous is None: sys.modules.pop(module_name, None)
+            else: sys.modules[module_name] = previous
+            self._errors[name] = type(error).__name__
+            self._failure(name, 'reload' if replacing else 'register', error)
+            return False
+        self._modules[name] = module
+        self._digests[name] = hashlib.sha256(source).digest()
+        self._errors.pop(name, None)
+        if not replacing: self.loaded.append(name)
+        self.loaded.sort()
         for table in (self._hooks, self._filters):
             for callbacks in table.values(): callbacks.sort(key=lambda pair: pair[0])
-        return checked if check else self.active_names()
+        if live:
+            self.generation += 1
+            self._log_change('plugin.reloaded' if replacing else 'plugin.loaded', name)
+        return True
+
+    def _log_change(self, event, name):
+        try: self.logger({'event': event, 'plugin': name, 'generation': self.generation})
+        except Exception: pass
+
+    def load(self, check=False, live=False):
+        with self._backend_lock(), self._lock:
+            if not self.settings['enabled']: return []
+            checked = []
+            for name, path in self._paths().items():
+                if name in self.settings['disabled'] or not check and name in self.loaded: continue
+                source = path.read_bytes()
+                if check or not live: compile(source, str(path), 'exec')
+                checked.append(name)
+                if not check:
+                    signature = hashlib.sha256(source).digest()
+                    if live and self._attempted.get(name) == signature: continue
+                    self._attempted[name] = signature
+                    self._replace(name, path, source, live=live)
+            return checked if check else self.active_names()
+
+    def poll(self):
+        """Debounce source additions, edits and removals; retry failures on edits."""
+        paths = self._paths()
+        now = self.clock(); changed = False
+        with self._backend_lock(), self._lock:
+            for name in sorted(set(paths) | set(self.loaded) | set(self._observed)):
+                path = paths.get(name)
+                error = None; source = None
+                try:
+                    if path is not None: source = path.read_bytes()
+                    signature = hashlib.sha256(source).digest() if source is not None else None
+                except OSError as failure:
+                    error = failure; signature = ('read-error', type(failure).__name__)
+                observed = self._observed.get(name)
+                if observed is None or signature != observed[0]:
+                    self._observed[name] = (signature, now); continue
+                if now-observed[1] < self.settle or self._attempted.get(name, object()) == signature: continue
+                if error is not None:
+                    self._attempted[name] = signature
+                    self._errors[name] = type(error).__name__
+                    self._failure(name, 'reload', error); continue
+                if source is None:
+                    self._attempted[name] = None
+                    self._errors.pop(name, None)
+                    if name in self.loaded:
+                        self._remove_hooks(name); self.loaded.remove(name)
+                        module = self._modules.pop(name, None)
+                        if sys.modules.get('_fifa19_plugin_'+name) is module:
+                            sys.modules.pop('_fifa19_plugin_'+name, None)
+                        self._digests.pop(name, None)
+                        self.generation += 1; self._log_change('plugin.unloaded', name)
+                        changed = True
+                    continue
+                if not self._active(name): continue
+                self._attempted[name] = signature
+                if self._digests.get(name) != signature:
+                    changed = self._replace(name, path, source, live=True) or changed
+        return changed
+
+    def status(self):
+        with self._backend_lock(), self._lock:
+            return {'watching': self._thread is not None and self._thread.is_alive(),
+                    'generation': self.generation, 'loaded_count': len(self.loaded),
+                    'active_count': len(self.active_names()), 'failed_count': len(self._errors)}
+
+    def start(self):
+        if self._thread is not None: raise RuntimeError('Plugin watcher already started')
+        self._thread = threading.Thread(target=self._run, name='FUT-plugins', daemon=True)
+        self._thread.start()
+        return self
+
+    def _run(self):
+        while not self._stop.is_set():
+            try: self.poll()
+            except Exception as error: self._failure('watcher', 'reload', error)
+            self._stop.wait(self.interval)
+
+    def stop(self):
+        self._stop.set()
+        if self._thread is not None: self._thread.join()
 
 
 def player(backend):

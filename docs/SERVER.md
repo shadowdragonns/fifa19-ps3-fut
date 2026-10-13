@@ -98,8 +98,8 @@ systemctl --user status fifa19-fut.service
 journalctl --user -u fifa19-fut.service -n 80 --no-pager
 ```
 
-Restart between matches after a code, TLS/address or Python plugin source update.
-JSON config edits reload live. Login and
+Restart between matches after a server code or TLS/address update.
+JSON config and standalone Python plugin source edits reload live. Login and
 matchmaking state are in memory, so clients must reconnect afterward.
 Long-running user services may need your system's user-session persistence
 settings. The server can also run directly in a terminal.

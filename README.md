@@ -12,6 +12,10 @@ Plugin API v2 adds online/offline and FUT entry/leave events, plus structured
 queries for saved players, clubs, cards, equipment, squads and match history.
 Custom Prime editions give selected stars separate 102–115 cards while keeping
 their normal versions available, including Neuer. Definitions reload live.
+Single-player divisions progress from weak clubs on Amateur in Division 10
+to strong international teams on World Class in Division 1.
+Standalone Python plugins reload automatically when added, edited or removed;
+broken edits keep the last working hooks.
 
 **This repository contains no ROM, game/update binaries, firmware, emulator,
 private TLS keys, RPCN credentials, saved clubs or captured sessions.** Supply

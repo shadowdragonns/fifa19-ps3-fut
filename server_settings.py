@@ -10,6 +10,7 @@ import time
 def defaults():
     from fut_packs import PACKS
     from card_versions import default_editions
+    from fut_seasons import CPU_TIERS, CPU_DIFFICULTIES, DIFFICULTY_NAMES
     return {
         'version': 1,
         'economy': {'starting_coins': 20000, 'win_coins': 1000,
@@ -18,7 +19,9 @@ def defaults():
         'packs': {'prices': {str(k): v['price'] for k, v in PACKS.items() if not v.get('retired')},
                   'gold_rare_weights': [30, 30, 30, 10]},
         'points': {'win': 3, 'draw': 1, 'loss': 0},
-        'cpu_seasons': {'hold': [5+i for i in range(10)], 'promote': [12+i for i in range(10)]},
+        'cpu_seasons': {'hold': [5+i for i in range(10)], 'promote': [12+i for i in range(10)],
+                        'difficulties': [DIFFICULTY_NAMES[level] for level in CPU_DIFFICULTIES],
+                        'opponents': [list(teams) for teams in CPU_TIERS]},
         'matchmaking': {'search_seconds': 20, 'peer_timeout_seconds': 180},
         'plugins': {'enabled': True, 'disabled': [], 'settings': {}},
         'custom_cards': {'enabled': True, 'standard_pack_chance_percent': 0, 'editions': default_editions()}
@@ -73,6 +76,18 @@ class Settings:
             for value in values: _integer(value, 0, 30, 'cpu_seasons.'+name)
         if any(a >= b for a, b in zip(hold, promote)):
             raise ValueError('Hold points must be below promotion points')
+        from fut_seasons import DIFFICULTY_NAMES
+        difficulties = rules['cpu_seasons']['difficulties']
+        opponents = rules['cpu_seasons']['opponents']
+        if (not isinstance(difficulties, list) or len(difficulties) != 10
+                or any(not isinstance(level, str) or level not in DIFFICULTY_NAMES for level in difficulties)):
+            raise ValueError('cpu_seasons.difficulties needs ten named difficulty levels')
+        if not isinstance(opponents, list) or len(opponents) != 10:
+            raise ValueError('cpu_seasons.opponents needs ten division fixture lists')
+        for teams in opponents:
+            if not isinstance(teams, list) or len(teams) != 10:
+                raise ValueError('Each CPU division needs ten opponent team IDs')
+            for team in teams: _integer(team, 1, 2**31-1, 'opponent team ID')
         _integer(rules['matchmaking']['search_seconds'], 1, 60, 'matchmaking.search_seconds')
         _integer(rules['matchmaking']['peer_timeout_seconds'], 30, 3600, 'matchmaking.peer_timeout_seconds')
         plugins = rules['plugins']

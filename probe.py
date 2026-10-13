@@ -66,6 +66,7 @@ class Capture:
         self.public_ca = None
         self.public_ca_sha256 = None
         self.config_watcher = None
+        self.plugin_manager = None
 
     def save(self, event, raw=b'', **details):
         details.update(event=event, time=datetime.now(timezone.utc).isoformat())
@@ -236,6 +237,9 @@ class Handler(socketserver.BaseRequestHandler):
                     if capture.config_watcher is not None:
                         info['features'].append('live-config')
                         info['config'] = capture.config_watcher.status()
+                    if capture.plugin_manager is not None:
+                        info['features'].append('live-plugins')
+                        info['plugins'] = capture.plugin_manager.status()
                     body = json.dumps(info).encode()
                     status, mime = '200 OK', 'application/json'
                 elif method == 'GET' and path == '/fut-local/root.pem':

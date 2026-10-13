@@ -150,17 +150,20 @@ def main(argv=None):
         plugins.load()
         watcher = ConfigWatcher(backend, config, plugins.logger)
         capture.config_watcher = watcher
+        capture.plugin_manager = plugins
         with listeners(bind, capture, context):
             capture.save('ready', bind=bind, advertise=endpoints.host, ports=list(PORTS), udp_ports=[8099],
                 status='Per-user FUT clubs, CPU seasons and paired online matches', plugins=plugins.loaded)
             plugins.emit('server.started', advertise=endpoints.host, plugins=plugins.loaded)
             try:
                 watcher.start()
+                plugins.start()
                 threading.Event().wait()
             except KeyboardInterrupt:
                 pass
             finally:
                 watcher.stop()
+                plugins.stop()
                 plugins.emit('server.stopping')
                 backend.close_sessions()
         plugins.emit('server.stopped')

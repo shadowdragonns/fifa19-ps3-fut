@@ -8,6 +8,8 @@ Place standalone `.py` files in `/path/to/fifa19-ps3-fut/plugins` on
 your server. Names must start with a letter and contain only letters, numbers
 and underscores (up to 64 characters). Files beginning with `_` are ignored.
 Plugins load in filename order at startup and survive code deployments.
+The server watches this directory and automatically loads added files, replaces
+changed plugins and unloads deleted files after about one second of stable content.
 Use trusted code: plugins run as the server's OS user with normal Python
 access to files and network. The API gives domain events instead of raw
 HTTP, Blaze packets, passwords or session tokens.
@@ -17,7 +19,9 @@ or its decorator form. Handlers receive an independent copy of a dictionary;
 mutating it does not change server state or another handler's payload.
 Exceptions are logged as `plugin.error`, isolated from the match response,
 and do not undo a successful save. A registration failure removes all hooks
-that plugin registered. Syntax errors fail preflight; `--check` compiles
+that plugin registered. During live replacement, a failed registration or syntax
+error retains the previous working module and its hooks. Syntax errors fail
+preflight; `--check` compiles
 plugins without executing their code. Runtime registration errors skip the
 affected plugin and are visible in the capture log.
 
@@ -36,7 +40,7 @@ def register(api):
 
 The bundled `_example_bonus.py` is disabled by its name. Copy it to
 `win_bonus.py`, set `plugins.settings.win_bonus.bonus_coins` in the JSON config,
-then restart once to load the new Python file. Its bonus is read in the reward
+and it will load automatically. Its bonus is read in the reward
 callback, so later JSON changes apply live. Set `plugins.disabled` to `["win_bonus"]` or
 `plugins.enabled` to `false` to disable hooks live. Removing a plugin does not remove
 its stored data or change previously paid rewards.
@@ -105,10 +109,39 @@ should change without restart. A value cached during registration does not
 update itself; `server.config_changed` can rebuild a plugin's own cache.
 Disabled plugins receive no hooks/filters; re-enabling preserves their loaded
 module and registrations without duplication. Previously unloaded enabled
-files register once. Editing Python source requires a restart. Broken new
-plugins are logged/skipped during live reload while valid global rules apply.
+files register once. Editing an enabled Python file replaces its module and
+hooks automatically; disabled files wait until enabled. Broken new plugins are
+logged/skipped while valid global rules apply. The previous working version
+survives a broken edit, with one error logged per distinct attempted content.
 `api.log(message)` writes `plugin.log` to the normal capture event index.
 Do not put credentials or private player data in these messages.
+
+## Live source reload
+
+The watcher hashes file contents, so same-size edits with unchanged timestamps
+still reload and do not reuse stale Python bytecode. It waits about half a
+second after observing an edit before applying it. A callback already running
+finishes before its plugin is replaced; subsequent events use the complete new
+hook set. Reloading does not replay `server.started`, player logins or completed
+match events. Successfully paid match receipts keep their original reward.
+
+Module globals and callback closures start fresh after a successful source
+replacement. Use `api.data_dir` for state that must survive reloads or restarts.
+Deleting a file removes only its hooks/module; private data remains. Config
+disable/re-enable without a source edit keeps the loaded module's memory.
+
+Keep module initialization and `register(api)` quick and safe to repeat. Hook
+registrations are rolled back on failure; arbitrary file writes, network calls
+or threads created by plugin code cannot be rolled back. Background workers
+belong to the plugin and are not automatically stopped on reload. The watcher
+loads standalone files in this directory; imported dependencies elsewhere are
+not watched or reloaded automatically.
+
+The log records `plugin.loaded`, `plugin.reloaded` and `plugin.unloaded`, with
+the plugin name and a generation counter. Failures use `plugin.error` without
+source text or exception messages. `/fut-local/health` includes a `plugins`
+status with `watching`, `generation`, `loaded_count`, `active_count` and
+`failed_count`; the generation resets on server restart.
 
 ## Presence semantics
 
@@ -183,7 +216,7 @@ report payloads. Rankings use `competitor`, `collector`, `seasonpoints` or
 
 ## Example: join logging with club/card lookups
 
-Copy `plugins/_example_presence.py` to `plugins/presence.py` and restart to
+Copy `plugins/_example_presence.py` to `plugins/presence.py` to automatically
 enable the supplied example. A shorter version:
 
 ```python

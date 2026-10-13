@@ -16,19 +16,23 @@ from pow_services import json_reply
 
 PREFIX = '/ut/game/fifa19'
 SEASON_ID, DIVISION_ID = 1, 1  # Native internal division is 11 - wire division.
-CPU_TEAMS = (1, 9, 11, 18, 5, 1, 9, 11, 18, 5)
+# Curated against the installed v1.02 database. Wire 1 is displayed Division 10.
+# Keep boosted England out of the default ladder: its local 110 patch changes
+# its strength independently of this server's progression.
+CPU_TEAMS = (838, 111285, 563, 445, 305, 121, 357, 423, 1936, 1959)
 CPU_TIERS = (
     CPU_TEAMS,
-    (1, 5, 9, 11, 18, 73, 1, 9, 5, 18),
-    (5, 9, 11, 18, 73, 10, 5, 9, 11, 18),
-    (5, 9, 18, 10, 21, 73, 240, 9, 10, 21),
-    (9, 18, 10, 21, 45, 73, 240, 10, 21, 45),
-    (10, 21, 45, 73, 240, 241, 243, 10, 21, 45),
-    (10, 21, 45, 73, 240, 241, 243, 240, 241, 243),
-    (21, 45, 73, 240, 241, 243, 21, 45, 241, 243),
-    (45, 21, 240, 241, 243, 241, 243, 21, 45, 241),
-    (21, 45, 241, 243, 241, 243, 241, 243, 241, 243))
-CPU_DIFFICULTIES = (0, 1, 1, 2, 2, 3, 3, 4, 4, 5)
+    (92, 361, 1944, 112254, 346, 1480, 1928, 1934, 143, 561),
+    (27, 33, 127, 142, 149, 172, 83, 299, 487, 837),
+    (3, 4, 15, 57, 64, 77, 80, 88, 89, 106),
+    (2, 8, 12, 14, 28, 50, 76, 86, 91, 229),
+    (13, 17, 31, 36, 38, 39, 72, 110, 175, 245),
+    (7, 19, 22, 32, 34, 46, 47, 52, 236, 461),
+    (1, 5, 11, 18, 44, 48, 105035, 111109, 1370, 1377),
+    (105035, 111109, 1370, 1377, 1354, 1343, 1369, 1325, 1335, 1337),
+    (1354, 1343, 1369, 1325, 1335, 1337, 1362, 1325, 1335, 1362))
+DIFFICULTY_NAMES = ('beginner', 'amateur', 'semi_pro', 'professional', 'world_class', 'legendary', 'ultimate')
+CPU_DIFFICULTIES = (1, 1, 1, 2, 2, 2, 3, 3, 4, 4)
 LIST = PREFIX+'/season/list'
 PROGRESS = PREFIX+'/season/user'
 HISTORY = PROGRESS+'/history'
@@ -68,7 +72,10 @@ def season_list(backend=None):
     # 0x16d83c0. The client resolves each teamId against its installed DB.
     cycle = len(backend.fut_inventory.state.get('offlineSeasonHistory', [])) if backend else 0
     division = active_division(backend) if backend else 1
-    teams = CPU_TIERS[division-1]
+    from server_settings import DEFAULT
+    rules = (backend.settings if backend else DEFAULT).snapshot().section('cpu_seasons')
+    teams = rules['opponents'][division-1]
+    difficulty = DIFFICULTY_NAMES.index(rules['difficulties'][division-1])
     shift = cycle % len(teams)
     teams = teams[shift:]+teams[:shift]
     return {'seasons': [{
@@ -79,7 +86,7 @@ def season_list(backend=None):
         'startDateTime': 1, 'endDateTime': 2147483647,
         'untilStartSeconds': 0, 'untilEndSeconds': 2147483647,
         'visStartDays': 0, 'visEndDays': 0,
-        'matches': [{'teamId': team, 'difficulty': CPU_DIFFICULTIES[division-1], 'roundId': i+1,
+        'matches': [{'teamId': team, 'difficulty': difficulty, 'roundId': i+1,
                      'rewardMult': 100, 'coins': 0} for i, team in enumerate(teams)]}]}
 
 
