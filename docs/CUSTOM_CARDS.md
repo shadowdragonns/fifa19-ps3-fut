@@ -1,87 +1,85 @@
 # Custom player versions
 
-Custom editions keep a footballer's normal card available and create a separate
-version with its own rating, face attributes and native resource ID. The default
-**Prime** pool contains Cristiano Ronaldo, Messi, Kane, Neymar, Neuer,
-Lewandowski, De Bruyne, Hazard, Salah, Van Dijk, Mbappé and De Gea.
+Every one of the 17,656 stock players has a separate **Prime** version by
+default. Prime overall and all six face attributes are **base +15**, including
+goalkeeper attributes. For example, Ronaldo and Messi are 109 overall, Kane is
+104 and Neuer is 105. The complete default Prime pool spans 62–109 overall.
+Normal player cards remain available with their original ratings and IDs.
 
-| Player | Prime rating |
-|---|---:|
-| Cristiano Ronaldo / Messi | 115 |
-| Neymar | 112 |
-| De Bruyne | 111 |
-| Neuer / Lewandowski / Mbappé | 110 |
-| Hazard | 109 |
-| Kane / Salah / De Gea | 108 |
-| Van Dijk | 107 |
+In FUT's store, **Prime Player Pack** (ID 180) gives one Prime for 50,000 coins,
+and **Prime Trio Pack** (ID 181) gives three distinct Prime footballers for
+125,000 coins. These packs draw uniformly from the entire enabled pool,
+including Primes of bronze and silver players; they do not guarantee a star.
+Prices use `packs.prices`. Repeated purchases can draw a version you already own.
 
-In FUT's store, **Prime Star Player Pack** (ID 180) gives one Prime card for
-50,000 coins, and **Prime Star Trio Pack** (ID 181) gives three distinct Prime
-footballers for 125,000 coins. Their prices use `packs.prices` like other packs.
-Each enabled footballer has an equal chance; repeated purchases can draw a
-version you already own.
-
-Normal packs keep stock cards by default. Set
-`custom_cards.standard_pack_chance_percent` to 1–100 to allow eligible cards
-drawn from normal gold packs to become custom versions. This is a per-eligible
-player chance, not a guarantee per pack. A gold player without a configured
-custom version stays normal. Several eligible editions are chosen uniformly.
-Leave it at 0 for dedicated custom packs only.
+Every standard **gold** pack also has a **0.001% chance per player card** to
+upgrade that drawn player to Prime: precisely **1 in 100,000**. This includes
+premium, rare, jumbo, ultimate, rating-restricted, nation, league and position
+packs. The same footballer is upgraded, preserving the pack's eligibility rules.
+A 12-player pack has approximately a 0.012% chance of at least one Prime.
+Bronze and silver packs do not upgrade. These are local server odds, not EA odds.
 
 ## Live definitions
 
-`server-config.json` accepts a `custom_cards` section. Changes reload live and
-affect future pack draws/catalogue queries. Defaults remain unless overridden;
-player entries merge by asset ID. Disable an unwanted entry with
-`enabled: false`. An additional edition needs an unused version number.
+`custom_cards.standard_pack_chance_percent` accepts finite decimal percentages
+from 0 to 100. Set 0 for dedicated custom packs only, or 100 for every eligible
+gold card. This controls the combined custom-edition chance; if several enabled
+editions cover that player, one is chosen uniformly after a successful roll.
+Disabling a player/edition prevents new draws but keeps owned cards readable.
+
+`server-config.json` changes reload live and affect future draws/catalogue
+queries. The compact `all_players` rule covers the full stock catalogue without
+listing thousands of IDs. `players` contains optional individual overrides;
+entries merge by asset ID. An additional edition needs an unused version number.
 
 ```json
 {
-  "packs": {"prices": {"180": 50000, "181": 125000}},
   "custom_cards": {
     "enabled": true,
-    "standard_pack_chance_percent": 0,
+    "standard_pack_chance_percent": 0.001,
     "editions": {
       "prime": {
+        "enabled": true,
         "label": "Prime",
         "version": 1,
         "rareflag": 3,
         "discard_value": 5000,
-        "players": {
-          "20801": {"rating": 115, "attributes": [115, 115, 105, 115, 60, 108]},
-          "167495": {"rating": 112, "attributes": [115, 112, 115, 115, 88, 114]}
-        }
-      },
-      "flashback": {
-        "label": "Flashback",
-        "version": 2,
-        "players": {"20801": {"rating": 102, "position": "RW"}}
+        "all_players": true,
+        "rating_boost": 15,
+        "attribute_boost": 15,
+        "players": {}
       }
     }
   }
 }
 ```
 
-This overrides Ronaldo and Neuer while retaining the other default Prime stars.
-Flashback can be drawn through mixed normal gold packs when that chance is
-enabled; dedicated Prime packs select Prime only.
+An override such as `"players": {"20801": {"enabled": false}}` excludes Ronaldo
+from new draws. Set `all_players: false` to use only listed players. An entry
+such as `"167495": {"rating": 107, "attributes": [110, 105, 108, 110, 80, 108]}`
+replaces Neuer's generated stats. Overrides take precedence over edition boosts.
 
 Edition names use lowercase letters/numbers/underscores, starting with a letter,
 up to 24 characters; `standard` and `england110` are reserved. At most 32 editions
-and 2,000 entries per edition are accepted. Versions are unique integers **1–127**.
-Keep version numbers stable once cards have been issued. Each player must be an
-existing stock asset ID; the plugin catalogue can find IDs. Prime OVR is
-**102–115**; other custom editions allow 1–115. `rareflag` is 1 or 3, using native
-item styles. `discard_value` is 0–1,000,000 coins per card.
+and 2,000 explicit overrides per edition are accepted. `all_players` covers the
+whole catalogue independently of that override limit. Versions are unique
+integers **1–127**; keep them stable once cards have been issued. Player IDs must
+exist in the stock catalogue. OVR is **1–115**, `rareflag` is 1 or 3, and
+`discard_value` is 0–1,000,000 coins per card.
+
+`rating_boost` and `attribute_boost` accept integers from 0–115; generated stats
+are capped at 115. Other editions default to `all_players: false`,
+`rating_boost: 0`, and `attribute_boost: null`. A null attribute boost uses the
+positive difference between that card's OVR and its base OVR, retaining the
+previous behavior for individually configured editions.
 
 `attributes` optionally supplies six integers from 0–115. Outfield order is
 **pace, shooting, passing, dribbling, defending, physical**; goalkeeper order is
-**diving, handling, kicking, reflexes, speed, positioning**. Without an override,
-the server adds the OVR increase to stock face values, capped at 115, retaining
-strengths and weaknesses. These values are local estimates, as with the normal
-catalogue. `position` optionally uses existing position names such as ST/RW/GK.
-Invalid definitions retain the last valid config; `--check-config` validates
-while running.
+**diving, handling, kicking, reflexes, speed, positioning**. These are the server's
+locally estimated face values, as in the normal catalogue. This does not establish
+that every underlying engine match skill exceeds the game's normal limits.
+`position` optionally overrides the stock position (ST/RW/GK, etc.). Invalid
+config edits retain the last valid rules; `--check-config` validates while running.
 
 ## Ownership, squads and persistence
 
@@ -93,21 +91,35 @@ while two identical Prime Ronaldos require resolving the duplicate. Legacy
 England 110 and stock cards retain existing resource IDs and save compatibility.
 
 Only **one version of a footballer** can be selected in a squad, including bench
-and reserves. Different squads can use different versions. Conditions and
-match reports stay attached to owned item IDs. Choosing a custom version
-preserves coins, squads, receipts and other cards.
+and reserves. Different squads can use different versions. Conditions and match
+reports stay attached to owned item IDs. Choosing a custom version preserves
+coins, squads, receipts and other cards.
 
 Issued cards save their version/rating/attributes/position/label snapshot.
-Changing definitions affects future pulls; owned cards keep issued stats and
-remain readable when disabled. Quick-sell uses the current edition value if its
-version matches, otherwise the saved value. Disabling custom cards hides their
-packs; a pack also hides when too few enabled players remain for its distinct
-player count. Pending packs still resume without charging again.
+Later config edits affect future pulls; owned cards keep issued stats. Quick-sell
+uses the current edition value if its version matches, otherwise the saved value.
+Disabling custom cards hides their packs; a pack also hides when too few enabled
+players remain for its distinct player count. Pending packs resume without
+charging again. The game gets names/portraits from its original player database.
+Custom labels appear in server/plugin metadata and store descriptions.
 
-The game gets names/portraits from its original player database. Custom labels
-appear in server/plugin metadata and store descriptions. The native parser was
-executed against the matching v1.02 binary for version IDs, rarity and every
-rating from 102 to 115, including Neuer's GK attributes. This validates the card
-data path; full desktop rendering/gameplay at 115 still needs testing and does
-not establish that all underlying match skills exceed the engine's normal
-limits. No game/model/texture changes are needed to send these versioned cards.
+## Updating already-owned Primes to +15
+
+Existing installations may still have the former selected-star rating overrides
+in their config. Replace `custom_cards` with the compact example above to enable
+the new rules for future draws. Other server settings can remain as they are.
+
+To explicitly rebalance already-owned Primes, **stop the server** first, then run:
+
+```bash
+python3 rebalance_primes.py --state-dir /path/to/state
+python3 rebalance_primes.py --state-dir /path/to/state --apply
+```
+
+The first command previews the count. The second backs up the entire stopped
+state into a timestamped sibling `state-backups` directory, then sets only owned
+Prime OVR and six attributes to stock +15. It includes unassigned pending-pack
+cards and per-user inventories, preserves IDs, coins, squads, conditions and
+receipts, and leaves historical backups untouched. It refuses an active server
+lock and is safe to repeat; no automatic rebalance runs on ordinary startup.
+Restart the server and re-enter FUT to refresh cached cards.

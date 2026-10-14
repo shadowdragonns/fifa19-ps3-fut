@@ -236,7 +236,7 @@
   },
   "custom_cards": {
     "enabled": true,
-    "standard_pack_chance_percent": 0,
+    "standard_pack_chance_percent": 0.001,
     "editions": {
       "prime": {
         "enabled": true,
@@ -244,56 +244,10 @@
         "version": 1,
         "rareflag": 3,
         "discard_value": 5000,
-        "players": {
-          "20801": {
-            "enabled": true,
-            "rating": 115
-          },
-          "158023": {
-            "enabled": true,
-            "rating": 115
-          },
-          "202126": {
-            "enabled": true,
-            "rating": 108
-          },
-          "190871": {
-            "enabled": true,
-            "rating": 112
-          },
-          "167495": {
-            "enabled": true,
-            "rating": 110
-          },
-          "188545": {
-            "enabled": true,
-            "rating": 110
-          },
-          "192985": {
-            "enabled": true,
-            "rating": 111
-          },
-          "183277": {
-            "enabled": true,
-            "rating": 109
-          },
-          "209331": {
-            "enabled": true,
-            "rating": 108
-          },
-          "203376": {
-            "enabled": true,
-            "rating": 107
-          },
-          "231747": {
-            "enabled": true,
-            "rating": 110
-          },
-          "193080": {
-            "enabled": true,
-            "rating": 108
-          }
-        }
+        "all_players": true,
+        "rating_boost": 15,
+        "attribute_boost": 15,
+        "players": {}
       }
     }
   }

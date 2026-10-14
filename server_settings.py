@@ -24,7 +24,7 @@ def defaults():
                         'opponents': [list(teams) for teams in CPU_TIERS]},
         'matchmaking': {'search_seconds': 20, 'peer_timeout_seconds': 180},
         'plugins': {'enabled': True, 'disabled': [], 'settings': {}},
-        'custom_cards': {'enabled': True, 'standard_pack_chance_percent': 0, 'editions': default_editions()}
+        'custom_cards': {'enabled': True, 'standard_pack_chance_percent': 0.001, 'editions': default_editions()}
     }
 
 

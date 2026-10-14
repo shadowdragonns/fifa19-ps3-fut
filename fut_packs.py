@@ -50,9 +50,9 @@ for pack_id, name, size, price, minimum in (
     PACKS[pack_id] = dict(name=name, edition='standard', level='gold', size=size,
         price=price, rares=size, artwork=3, min_rating=minimum)
 
-PACKS[180] = dict(name='Prime Star Player Pack', edition='prime', level='gold', size=1,
+PACKS[180] = dict(name='Prime Player Pack', edition='prime', level='gold', size=1,
                   price=50000, rares=1, artwork=3)
-PACKS[181] = dict(name='Prime Star Trio Pack', edition='prime', level='gold', size=3,
+PACKS[181] = dict(name='Prime Trio Pack', edition='prime', level='gold', size=3,
                   price=125000, rares=3, artwork=3)
 
 
@@ -60,7 +60,7 @@ def description(spec):
     if spec['edition'] == 'england110':
         text = f"{spec['size']} England players with 110 ratings."
     elif spec['edition'] == 'prime':
-        text = f"{spec['size']} custom Prime star player(s), rated 102-115. Base player cards remain available separately."
+        text = f"{spec['size']} Prime player(s) from the full player catalogue. Default Prime ratings and attributes: base +15."
     else:
         text = f"{spec['size']} {spec['level']} players with normal ratings, including {spec['rares']} rare."
         if 'theme' in spec:
@@ -139,7 +139,10 @@ def draw(spec, england, weights=None, settings=None):
             chosen.append(player)
             pool.remove(player)
     rng.shuffle(chosen)
-    if settings is not None and spec['level'] == 'gold':
+    if spec['level'] == 'gold':
         from card_versions import upgrade_standard_draw
+        if settings is None:
+            from server_settings import DEFAULT
+            settings = DEFAULT
         chosen = upgrade_standard_draw(chosen, settings, rng)
     return chosen

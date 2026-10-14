@@ -10,8 +10,10 @@ and two-player FUT Online Seasons matchmaking and result saving. Server rules
 and Python domain-event plugins let operators customize the economy.
 Plugin API v2 adds online/offline and FUT entry/leave events, plus structured
 queries for saved players, clubs, cards, equipment, squads and match history.
-Custom Prime editions give selected stars separate 102–115 cards while keeping
-their normal versions available, including Neuer. Definitions reload live.
+Every player has a separate Prime card with +15 overall and +15 to all six face
+attributes. Gold packs have a 1 in 100,000 Prime chance per player card; dedicated
+Prime packs draw from the full catalogue. Normal cards remain available, and
+definitions reload live.
 Single-player divisions progress from weak clubs on Amateur in Division 10
 to strong international teams on World Class in Division 1.
 Standalone Python plugins reload automatically when added, edited or removed;

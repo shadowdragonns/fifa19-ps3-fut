@@ -59,8 +59,8 @@ reload does not push unsolicited HUD/menu packets or change match gameplay.
 | `plugins.disabled` | `[]` | Plugin filenames without `.py` whose hooks are disabled |
 | `plugins.settings` | `{}` | Current per-plugin JSON objects read through `api.settings` |
 | `custom_cards.enabled` | true | Enable custom card draws and packs |
-| `custom_cards.standard_pack_chance_percent` | 0 | Chance for an eligible normal gold draw to become a custom version |
-| `custom_cards.editions` | Prime stars | Version IDs, labels, ratings, attributes, enabled players and custom quick-sell prices |
+| `custom_cards.standard_pack_chance_percent` | 0.001 | Decimal percentage per eligible gold player; default 1 in 100,000 |
+| `custom_cards.editions` | All-player Prime +15 | Version IDs, catalogue coverage, stat boosts, player overrides and custom quick-sell prices |
 
 Division arrays run from **displayed Division 10 to Division 1**. The wire
 division numbers run in the opposite direction: wire 1 is displayed Division

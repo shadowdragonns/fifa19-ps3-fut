@@ -1,18 +1,17 @@
 """Configurable custom player editions with stable native IDs and saved card stats."""
 from copy import deepcopy
+from fractions import Fraction
+import math
 import re
 
 BASE_EDITIONS = {'standard', 'england110'}
 POSITIONS = {'GK', 'RB', 'RWB', 'CB', 'LB', 'LWB', 'CDM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'CF', 'ST'}
-STARTERS = {20801: 115, 158023: 115, 202126: 108, 190871: 112, 167495: 110,
-            188545: 110, 192985: 111, 183277: 109, 209331: 108, 203376: 107,
-            231747: 110, 193080: 108}
 
 
 def default_editions():
     return {'prime': {'enabled': True, 'label': 'Prime', 'version': 1, 'rareflag': 3,
-                      'discard_value': 5000,
-                      'players': {str(asset): {'enabled': True, 'rating': rating} for asset, rating in STARTERS.items()}}}
+                      'discard_value': 5000, 'all_players': True, 'rating_boost': 15,
+                      'attribute_boost': 15, 'players': {}}}
 
 
 def merge_editions(base, extra):
@@ -20,10 +19,12 @@ def merge_editions(base, extra):
     result = deepcopy(base)
     for name, fields in extra.items():
         if not isinstance(fields, dict): raise ValueError('Custom edition must be an object')
-        allowed = {'enabled', 'label', 'version', 'rareflag', 'discard_value', 'players'}
+        allowed = {'enabled', 'label', 'version', 'rareflag', 'discard_value', 'players',
+                   'all_players', 'rating_boost', 'attribute_boost'}
         if set(fields)-allowed: raise ValueError('Unknown custom edition setting')
         spec = result.setdefault(name, {'enabled': True, 'label': name, 'version': None,
-                                       'rareflag': 3, 'discard_value': 5000, 'players': {}})
+                                       'rareflag': 3, 'discard_value': 5000, 'players': {},
+                                       'all_players': False, 'rating_boost': 0, 'attribute_boost': None})
         for key, value in fields.items():
             if key != 'players': spec[key] = deepcopy(value); continue
             if not isinstance(value, dict): raise ValueError('Custom players must be an object')
@@ -42,8 +43,9 @@ def _label(value):
 
 def validate_editions(section):
     from fut_packs import STANDARD_PLAYERS
+    chance = section['standard_pack_chance_percent']
     if (type(section['enabled']) is not bool
-            or not _integer(section['standard_pack_chance_percent'], 0, 100)
+            or type(chance) not in (int, float) or not 0 <= chance <= 100 or not math.isfinite(chance)
             or not isinstance(section['editions'], dict) or len(section['editions']) > 32):
         raise ValueError('Invalid custom card settings')
     versions = set()
@@ -53,6 +55,9 @@ def validate_editions(section):
                 or not _integer(spec['version'], 1, 127) or spec['version'] in versions
                 or spec['rareflag'] not in (1, 3) or type(spec['rareflag']) is not int
                 or not _integer(spec['discard_value'], 0, 1000000)
+                or type(spec['all_players']) is not bool
+                or not _integer(spec['rating_boost'], 0, 115)
+                or spec['attribute_boost'] is not None and not _integer(spec['attribute_boost'], 0, 115)
                 or not isinstance(spec['players'], dict) or len(spec['players']) > 2000):
             raise ValueError('Invalid custom edition or reused version number')
         versions.add(spec['version'])
@@ -61,7 +66,7 @@ def validate_editions(section):
                     or int(asset) not in STANDARD_PLAYERS or int(asset) >= 1 << 24
                     or not isinstance(player, dict) or set(player)-{'enabled', 'rating', 'attributes', 'position'}
                     or type(player.get('enabled')) is not bool
-                    or not _integer(player.get('rating'), 102 if name == 'prime' else 1, 115)
+                    or 'rating' in player and not _integer(player['rating'], 1, 115)
                     or 'position' in player and (not isinstance(player['position'], str) or player['position'] not in POSITIONS)):
                 raise ValueError('Invalid custom player definition')
             if 'attributes' in player and (not isinstance(player['attributes'], list)
@@ -73,21 +78,30 @@ def edition_names(settings): return sorted(settings.section('custom_cards')['edi
 
 
 def catalogue_assets(settings, edition, available=False):
+    from fut_packs import STANDARD_PLAYERS
     section = settings.section('custom_cards')
     spec = section['editions'][edition]
     if available and (not section['enabled'] or not spec['enabled']): return []
-    return sorted(int(asset) for asset, player in spec['players'].items() if not available or player['enabled'])
+    assets = set(STANDARD_PLAYERS) if spec['all_players'] else set()
+    assets.update(int(asset) for asset in spec['players'])
+    return sorted(asset for asset in assets if not available or _enabled(spec, asset))
+
+
+def _enabled(spec, asset):
+    return spec['players'].get(str(asset), {}).get('enabled', spec['all_players'])
 
 
 def catalogue_player(settings, edition, asset):
     from fut_packs import STANDARD_PLAYERS
     spec = settings.section('custom_cards')['editions'][edition]
-    rule = spec['players'][str(asset)]
+    if not spec['all_players'] and str(asset) not in spec['players']: raise KeyError(asset)
+    rule = spec['players'].get(str(asset), {})
     base = STANDARD_PLAYERS[asset]
-    rating = rule['rating']
+    rating = rule.get('rating', min(115, base['rating']+spec['rating_boost']))
     # Keep each footballer's strengths/weaknesses; custom attributes may override
     # these six locally estimated faces. GK slots retain their native GK order.
-    attributes = rule.get('attributes', [min(115, row['value']+max(0, rating-base['rating']))
+    boost = spec['attribute_boost'] if spec['attribute_boost'] is not None else max(0, rating-base['rating'])
+    attributes = rule.get('attributes', [min(115, row['value']+boost)
                                          for row in base['attributeList']])
     variant = {'version': spec['version'], 'label': spec['label'], 'rareflag': spec['rareflag'],
                'discard_value': spec['discard_value'], 'rating': rating,
@@ -104,7 +118,7 @@ def validate_variant(edition, asset, variant):
             or not _integer(variant['version'], 1, 127) or not _label(variant['label'])
             or type(variant['rareflag']) is not int or variant['rareflag'] not in (1, 3)
             or not _integer(variant['discard_value'], 0, 1000000)
-            or not _integer(variant['rating'], 102 if edition == 'prime' else 1, 115)
+            or not _integer(variant['rating'], 1, 115)
             or not isinstance(variant['position'], str) or variant['position'] not in POSITIONS or not isinstance(variant['attributes'], list)
             or len(variant['attributes']) != 6 or any(not _integer(v, 0, 115) for v in variant['attributes'])):
         raise ValueError('Invalid saved custom card snapshot')
@@ -136,11 +150,13 @@ def upgrade_standard_draw(players, settings, rng):
     section = settings.section('custom_cards')
     chance = section['standard_pack_chance_percent']
     if not section['enabled'] or not chance: return players
+    # Use the exact decimal percentage: 0.001% is precisely 1 in 100,000.
+    odds = Fraction(str(chance))/100
     chosen = []
     for player in players:
         editions = [name for name, spec in section['editions'].items() if spec['enabled']
-                    and spec['players'].get(str(player['assetId']), {}).get('enabled')]
-        if editions and rng.randrange(100) < chance:
+                    and _enabled(spec, player['assetId'])]
+        if editions and rng.randrange(odds.denominator) < odds.numerator:
             edition = rng.choice(editions)
             upgraded, variant = catalogue_player(settings, edition, player['assetId'])
             chosen.append({**upgraded, '_edition': edition, '_variant': variant})
