@@ -209,17 +209,68 @@ class CardVersionTests(unittest.TestCase):
         with patch.object(fut_packs.random.SystemRandom, 'randrange', return_value=0):
             self.assertTrue(all(p['_edition'] == 'prime' for p in fut_packs.draw(fut_packs.PACKS[6], [])))
 
-    def test_low_rated_prime_purchase_persists_and_pending_pack_retry_is_free(self):
+    def test_existing_low_rated_pending_prime_pack_still_resumes_without_charge(self):
         asset = min(fut_packs.STANDARD_PLAYERS, key=lambda a: fut_packs.STANDARD_PLAYERS[a]['rating'])
         store = self.backend.fut_inventory
         payload = {'packId': 180, 'useCredits': 1, 'usePreOrder': 0, 'currency': 'COINS'}
-        with patch.object(fut_packs.random.SystemRandom, 'sample', return_value=[asset]):
-            purchase = store.open_pack(payload)
+        # Seed a pack bought before the 95+ guarantee, with the original low card.
+        state = deepcopy(store.state)
+        state.update(coins=150000, purchaseCount=1, nextPackId=2, nextItemId=3,
+                     packPurchaseCounts={'180': 1}, items=[self.variant(asset, pile='purchased')],
+                     pendingPack={'packId': 180, 'id': 1, 'itemIds': [2]})
+        store.commit(state)
+        purchase = store.open_pack(payload)
         self.assertEqual(purchase['itemList'][0]['rating'], 62)
         restored = Backend(self.backend.path, settings=self.settings).fut_inventory
         self.assertEqual(restored.state['coins'], 150000)
         self.assertEqual(restored.open_pack(payload), purchase)
         self.assertEqual(restored.state, store.state)
+
+    def test_dedicated_prime_packs_filter_final_rating_and_trio_remains_distinct(self):
+        minimum = min(fut_packs.STANDARD_PLAYERS, key=lambda asset: fut_packs.STANDARD_PLAYERS[asset]['rating'])
+        boundary = next(asset for asset, p in fut_packs.STANDARD_PLAYERS.items() if p['rating'] == 80)
+        below = next(asset for asset, p in fut_packs.STANDARD_PLAYERS.items() if p['rating'] == 79)
+        # Explicit overrides, rather than base ratings alone, determine eligibility.
+        settings = Settings({'custom_cards': {'editions': {'prime': {'players': {
+            str(minimum): {'rating': 95}, '20801': {'rating': 94}}}}}})
+        real_sample = fut_packs.random.SystemRandom.sample
+        pools = []
+        def sample(rng, population, count):
+            pools.append(set(population))
+            self.assertIn(minimum, population)
+            self.assertIn(boundary, population)
+            self.assertNotIn(below, population)
+            self.assertNotIn(20801, population)
+            return real_sample(rng, population, count)
+        with patch.object(fut_packs.random.SystemRandom, 'sample', new=sample):
+            for pack_id in (180, 181):
+                spec = settings.pack(pack_id)
+                self.assertFalse(spec['retired'])
+                cards = fut_packs.draw(spec, [], settings=settings)
+                self.assertTrue(all(p['rating'] >= 95 and p['_edition'] == 'prime' for p in cards))
+                self.assertEqual(len({p['assetId'] for p in cards}), spec['size'])
+                self.assertIn('95 or higher', fut_packs.description(spec))
+        self.assertEqual(pools[0], pools[1])
+        # Gold packs retain their existing ultra-rare Prime rule, including 90 OVR.
+        gold = next(p for p in fut_packs.STANDARD_PLAYERS.values() if p['rating'] == 75)
+        always = Settings({'custom_cards': {'standard_pack_chance_percent': 100}})
+        chosen = card_versions.upgrade_standard_draw([gold], always, fut_packs.random.SystemRandom())[0]
+        self.assertEqual((chosen['_edition'], chosen['rating']), ('prime', 90))
+
+    def test_prime_packs_hide_when_too_few_95_plus_players_and_failed_purchase_is_free(self):
+        settings = Settings({'custom_cards': {'editions': {'prime': {
+            'all_players': False, 'players': {'20801': {'rating': 94}, '167495': {'rating': 95}}}}}})
+        self.assertFalse(settings.pack(180)['retired'])
+        self.assertTrue(settings.pack(181)['retired'])
+        self.backend.settings.replace(settings)
+        store = self.backend.fut_inventory
+        before = deepcopy(store.state)
+        with self.assertRaises(fut_inventory.Conflict):
+            store.open_pack({'packId': 181, 'useCredits': 1, 'usePreOrder': 0, 'currency': 'COINS'})
+        self.assertEqual(store.state, before)
+        empty = Settings({'custom_cards': {'editions': {'prime': {'rating_boost': 0}}}})
+        self.assertTrue(empty.pack(180)['retired'])
+        self.assertTrue(empty.pack(181)['retired'])
 
     def test_all_player_rule_allows_individual_exclusions_and_selected_pools(self):
         disabled = Settings({'custom_cards': {'editions': {'prime': {'players': {'20801': {'enabled': False}}}}}})

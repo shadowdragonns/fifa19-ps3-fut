@@ -6,10 +6,13 @@ goalkeeper attributes. For example, Ronaldo and Messi are 109 overall, Kane is
 104 and Neuer is 105. The complete default Prime pool spans 62–109 overall.
 Normal player cards remain available with their original ratings and IDs.
 
-In FUT's store, **Prime Player Pack** (ID 180) gives one Prime for 50,000 coins,
-and **Prime Trio Pack** (ID 181) gives three distinct Prime footballers for
-125,000 coins. These packs draw uniformly from the entire enabled pool,
-including Primes of bronze and silver players; they do not guarantee a star.
+In FUT's store, **95+ Prime Player Pack** (ID 180) gives one Prime for 50,000 coins,
+and **95+ Prime Trio Pack** (ID 181) gives three distinct Prime footballers for
+125,000 coins. These packs draw uniformly from enabled Primes whose final overall rating is
+**95 or higher**. This minimum applies after boosts and individual rating
+overrides, not to the base card. All players still have Prime versions; lower
+rated Primes remain in the catalogue and can still appear through eligible gold
+pack upgrades. A previously purchased pending pack retains its original cards.
 Prices use `packs.prices`. Repeated purchases can draw a version you already own.
 
 Every standard **gold** pack also has a **0.001% chance per player card** to

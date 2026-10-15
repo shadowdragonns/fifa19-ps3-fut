@@ -77,18 +77,23 @@ def validate_editions(section):
 def edition_names(settings): return sorted(settings.section('custom_cards')['editions'])
 
 
-def catalogue_assets(settings, edition, available=False):
+def catalogue_assets(settings, edition, available=False, min_rating=0):
     from fut_packs import STANDARD_PLAYERS
     section = settings.section('custom_cards')
     spec = section['editions'][edition]
     if available and (not section['enabled'] or not spec['enabled']): return []
     assets = set(STANDARD_PLAYERS) if spec['all_players'] else set()
     assets.update(int(asset) for asset in spec['players'])
-    return sorted(asset for asset in assets if not available or _enabled(spec, asset))
+    return sorted(asset for asset in assets if (not available or _enabled(spec, asset))
+                  and _rating(spec, STANDARD_PLAYERS[asset], spec['players'].get(str(asset), {})) >= min_rating)
 
 
 def _enabled(spec, asset):
     return spec['players'].get(str(asset), {}).get('enabled', spec['all_players'])
+
+
+def _rating(spec, base, rule):
+    return rule.get('rating', min(115, base['rating']+spec['rating_boost']))
 
 
 def catalogue_player(settings, edition, asset):
@@ -97,7 +102,7 @@ def catalogue_player(settings, edition, asset):
     if not spec['all_players'] and str(asset) not in spec['players']: raise KeyError(asset)
     rule = spec['players'].get(str(asset), {})
     base = STANDARD_PLAYERS[asset]
-    rating = rule.get('rating', min(115, base['rating']+spec['rating_boost']))
+    rating = _rating(spec, base, rule)
     # Keep each footballer's strengths/weaknesses; custom attributes may override
     # these six locally estimated faces. GK slots retain their native GK order.
     boost = spec['attribute_boost'] if spec['attribute_boost'] is not None else max(0, rating-base['rating'])

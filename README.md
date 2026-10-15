@@ -12,7 +12,7 @@ Plugin API v2 adds online/offline and FUT entry/leave events, plus structured
 queries for saved players, clubs, cards, equipment, squads and match history.
 Every player has a separate Prime card with +15 overall and +15 to all six face
 attributes. Gold packs have a 1 in 100,000 Prime chance per player card; dedicated
-Prime packs draw from the full catalogue. Normal cards remain available, and
+Prime packs guarantee 95+ rated Primes. Normal cards remain available, and
 definitions reload live.
 Single-player divisions progress from weak clubs on Amateur in Division 10
 to strong international teams on World Class in Division 1.

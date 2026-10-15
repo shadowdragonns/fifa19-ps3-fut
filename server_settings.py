@@ -140,7 +140,9 @@ class Settings:
         spec['price'] = self._rules['packs']['prices'].get(str(pack_id), spec['price'])
         if spec['edition'] not in ('standard', 'england110'):
             from card_versions import catalogue_assets
-            try: spec['retired'] = len(catalogue_assets(self, spec['edition'], available=True)) < spec['size']
+            try:
+                spec['retired'] = len(catalogue_assets(self, spec['edition'], available=True,
+                                                     min_rating=spec.get('min_rating', 0))) < spec['size']
             except KeyError: spec['retired'] = True
         return spec
 

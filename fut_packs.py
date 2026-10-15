@@ -50,17 +50,17 @@ for pack_id, name, size, price, minimum in (
     PACKS[pack_id] = dict(name=name, edition='standard', level='gold', size=size,
         price=price, rares=size, artwork=3, min_rating=minimum)
 
-PACKS[180] = dict(name='Prime Player Pack', edition='prime', level='gold', size=1,
-                  price=50000, rares=1, artwork=3)
-PACKS[181] = dict(name='Prime Trio Pack', edition='prime', level='gold', size=3,
-                  price=125000, rares=3, artwork=3)
+PACKS[180] = dict(name='95+ Prime Player Pack', edition='prime', level='gold', size=1,
+                  price=50000, rares=1, artwork=3, min_rating=95)
+PACKS[181] = dict(name='95+ Prime Trio Pack', edition='prime', level='gold', size=3,
+                  price=125000, rares=3, artwork=3, min_rating=95)
 
 
 def description(spec):
     if spec['edition'] == 'england110':
         text = f"{spec['size']} England players with 110 ratings."
     elif spec['edition'] == 'prime':
-        text = f"{spec['size']} Prime player(s) from the full player catalogue. Default Prime ratings and attributes: base +15."
+        text = f"{spec['size']} Prime player(s) rated {spec.get('min_rating', 1)} or higher. Default Prime ratings and attributes: base +15."
     else:
         text = f"{spec['size']} {spec['level']} players with normal ratings, including {spec['rares']} rare."
         if 'theme' in spec:
@@ -120,7 +120,7 @@ def draw(spec, england, weights=None, settings=None):
         if settings is None:
             from server_settings import DEFAULT
             settings = DEFAULT
-        pool = catalogue_assets(settings, spec['edition'], available=True)
+        pool = catalogue_assets(settings, spec['edition'], available=True, min_rating=spec.get('min_rating', 0))
         if len(pool) < spec['size']: raise ValueError('Not enough enabled custom players for this pack')
         selected = []
         for asset in rng.sample(pool, spec['size']):
