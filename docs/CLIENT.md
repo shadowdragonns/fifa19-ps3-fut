@@ -102,7 +102,13 @@ starting RPCS3 or installing temporary patches. A normal launch replaces the
 game's per-launch `cl.ini`, redirects discovery to the chosen server, and
 installs a hash-specific certificate/boot compatibility patch through RPCS3.
 It restores patch settings and removes its temporary files after exit.
-Existing ambiguous patch settings are refused instead of overwritten. The
+An existing launcher-generated FIFA patch, including one left by an interrupted
+launch, is backed up and refreshed for the selected server, then restored on
+exit. Existing settings for that patch are updated without duplicating its hash
+or replacing other FIFA patch entries. Backups are saved in the launch log
+directory as `BLES02258_patch.yml.before` and `patch_config.yml.before` when
+those files existed. Unrecognised/custom title patches, linked files and
+ambiguous settings are refused with an error identifying the conflict. The
 launcher does not rewrite the ISO or EBOOT on disk. Network diagnostics are
 captured privately; `--trace-network` enables verbose tracing if needed.
 

@@ -7,6 +7,7 @@ import re
 import struct
 import subprocess
 import sys
+import tempfile
 import client_platform
 import profile_trace
 import upgrade_rewards_patch
@@ -108,6 +109,80 @@ def prepare_portable(include_profile_trace, skip_upgrade_rewards, trust_ca=None)
     return target
 
 
+def _launcher_patch(content, desired):
+    """Recognise our exact schema/rows, allowing a different server public key."""
+    try:
+        text = content.decode('utf-8').replace('\r\n', '\n')
+        header, separator, body = text.partition('    Patch:\n')
+        wanted_header = desired.decode('utf-8').replace('\r\n', '\n').partition('    Patch:\n')[0]
+        if not separator or header != wanted_header: return False
+        lines = body.splitlines(keepends=True)
+        if len(lines) < KEY_SIZE//4: return False
+        for offset in range(0, KEY_SIZE, 4):
+            pattern = rf'      - \[ be32, 0x{KEY_ADDRESS+offset:08x}, 0x[0-9a-fA-F]{{8}} \]\n'
+            if not re.fullmatch(pattern, lines[offset//4]): return False
+        metadata = json.loads((HERE/'data/client-native-patch.json').read_text())
+        tail = ''.join(lines[KEY_SIZE//4:])
+        return tail in ('', metadata['trace_rows'], metadata['rewards_rows'],
+                        metadata['trace_rows']+metadata['rewards_rows'])
+    except (UnicodeError, ValueError):
+        return False
+
+
+def _enabled_settings(prior):
+    """Splice our entry into RPCS3's block mapping, preserving other entries."""
+    text = prior.decode('utf-8') if prior is not None else ''
+    entry = (f'  "{DESCRIPTION}":\n    "FIFA 19":\n'
+             '      BLES02258:\n        "01.02":\n          Enabled: true\n')
+    if text.strip() in ('', '{}'): return (f'{PPU_HASH}:\n'+entry).encode()
+    if re.search(r'^(?:---|\.\.\.|\{|\[)', text, re.M):
+        raise RuntimeError('Existing patch configuration needs a manual merge; it has not been changed.')
+    if not re.search(r'^\S[^\n]*:\s*$', text, re.M):
+        raise RuntimeError('Unrecognised patch configuration; it has not been changed.')
+    lines = text.splitlines(keepends=True)
+    hash_key = re.escape(PPU_HASH)
+    hash_heads = [i for i, line in enumerate(lines)
+                  if re.match(rf'(?:{hash_key}|"{hash_key}"|\'{hash_key}\'):', line)]
+    headers = [i for i, line in enumerate(lines)
+               if re.fullmatch(rf'(?:{hash_key}|"{hash_key}"|\'{hash_key}\'):[ \t]*(?:#[^\r\n]*)?\r?\n?', line)]
+    if hash_heads != headers:
+        raise RuntimeError('Unsupported FIFA patch configuration; it has not been changed.')
+    if not headers:
+        if PPU_HASH in text:
+            raise RuntimeError('Ambiguous FIFA patch configuration; it has not been changed.')
+        return (text+('' if text.endswith('\n') else '\n')+f'{PPU_HASH}:\n'+entry).encode()
+    if len(headers) != 1:
+        raise RuntimeError('Duplicate FIFA patch configuration; it has not been changed.')
+    start = headers[0]+1
+    end = next((i for i in range(start, len(lines)) if re.match(r'[^\s#]', lines[i])), len(lines))
+    name = re.escape(DESCRIPTION)
+    entry_heads = [i for i in range(start, end)
+                   if re.match(rf'  (?:{name}|"{name}"|\'{name}\'):', lines[i])]
+    entries = [i for i in range(start, end)
+               if re.fullmatch(rf'  (?:{name}|"{name}"|\'{name}\'):[ \t]*(?:#[^\r\n]*)?\r?\n?', lines[i])]
+    if len(entry_heads) > 1:
+        raise RuntimeError('Duplicate local certificate patch settings; they have not been changed.')
+    if entry_heads != entries:
+        raise RuntimeError('Unsupported local certificate patch settings; they have not been changed.')
+    if entries:
+        begin = entries[0]
+        finish = next((i for i in range(begin+1, end) if re.match(r'  \S', lines[i])), end)
+        # Replace only our named entry, not other FIFA patches under this hash.
+        lines[begin:finish] = [entry]
+    else:
+        if end and not lines[end-1].endswith('\n'): lines[end-1] += '\n'
+        lines.insert(end, entry)
+    return ''.join(lines).encode()
+
+
+def _write_atomic(path, content):
+    with tempfile.NamedTemporaryFile(dir=path.parent, prefix='.fut-patch-', delete=False) as stream:
+        temporary = Path(stream.name)
+        stream.write(content)
+    try: temporary.replace(path)
+    finally: temporary.unlink(missing_ok=True)
+
+
 @contextmanager
 def temporary_patch(profile, backup_directory, skip_upgrade_rewards=True, trust_ca=None):
     """Run by the user's desktop launcher; restore existing patch settings."""
@@ -118,45 +193,42 @@ def temporary_patch(profile, backup_directory, skip_upgrade_rewards=True, trust_
         desired = source.read_bytes()
     target = profile / 'patches/BLES02258_patch.yml'
     settings = client_platform.settings_directory(profile) / 'patch_config.yml'
-    if target.exists() or target.is_symlink() or settings.is_symlink():
-        raise RuntimeError('Existing FIFA patch file or linked patch configuration requires review before installing the local certificate patch.')
+    if target.is_symlink() or settings.is_symlink():
+        linked = target if target.is_symlink() else settings
+        raise RuntimeError(f'Linked patch file requires review before installing the local certificate patch: {linked}')
+    prior_patch = target.read_bytes() if target.exists() else None
+    if prior_patch is not None and not _launcher_patch(prior_patch, desired):
+        raise RuntimeError(f'Existing FIFA patch is not a recognised launcher patch: {target}. It has not been changed.')
     prior = settings.read_bytes() if settings.exists() else None
-    text = prior.decode() if prior is not None else ''
-    if text.strip() in ('', '{}'):
-        prefix = ''
-    else:
-        # Append a separate top-level hash to an existing block mapping, leaving
-        # every existing setting byte-for-byte intact. Refuse ambiguous YAML.
-        if PPU_HASH in text or re.search(r'^(?:---|\.\.\.|\{|\[)', text, re.M):
-            raise RuntimeError('Existing patch configuration needs a manual merge; it has not been changed.')
-        if not re.search(r'^\S[^\n]*:\s*$', text, re.M):
-            raise RuntimeError('Unrecognised patch configuration; it has not been changed.')
-        prefix = text + ('\n' if not text.endswith('\n') else '')
-    enabled = (prefix + f'{PPU_HASH}:\n  "{DESCRIPTION}":\n    "FIFA 19":\n'
-               '      BLES02258:\n        "01.02":\n          Enabled: true\n').encode()
+    enabled = _enabled_settings(prior)
     backup_directory.mkdir(parents=True, exist_ok=True)
     (backup_directory / 'patch-config-before.json').write_text(json.dumps({'existed': prior is not None}) + '\n')
+    if prior_patch is not None:
+        (backup_directory / 'BLES02258_patch.yml.before').write_bytes(prior_patch)
+        print('Refreshing an existing launcher-generated FIFA patch; original backed up for restoration on exit.', flush=True)
     if prior is not None:
         (backup_directory / 'patch_config.yml.before').write_bytes(prior)
     installed = False
     changed_settings = False
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
-        with target.open('xb') as stream:
-            installed = True
-            stream.write(desired)
+        _write_atomic(target, desired)
+        installed = True
         settings.parent.mkdir(parents=True, exist_ok=True)
-        settings.write_bytes(enabled)
+        _write_atomic(settings, enabled)
         changed_settings = True
         yield
     finally:
-        if changed_settings and settings.exists() and settings.read_bytes() == enabled:
-            if prior is None:
-                settings.unlink()
-            else:
-                settings.write_bytes(prior)
-        if installed and target.exists() and not target.is_symlink() and target.read_bytes() == desired:
-            target.unlink()
+        try:
+            if changed_settings and settings.exists() and settings.read_bytes() == enabled:
+                if prior is None:
+                    settings.unlink()
+                else:
+                    _write_atomic(settings, prior)
+        finally:
+            if installed and target.exists() and not target.is_symlink() and target.read_bytes() == desired:
+                if prior_patch is None: target.unlink()
+                else: _write_atomic(target, prior_patch)
 
 
 if __name__ == '__main__':
