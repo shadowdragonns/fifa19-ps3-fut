@@ -23,7 +23,11 @@ class CatalogueEncodingTests(unittest.TestCase):
         labels = HERE/'data/web-pack-labels.json'
         expected_labels = json.loads(labels.read_bytes())
         expected_managers = json.loads((HERE/'data/support-items.json').read_bytes())['managers']
-        with patch.object(io,'open',side_effect=cp1252_open):
+        # Force the simulated default even when this interpreter was launched
+        # in UTF-8 mode (where pathlib resolves None to UTF-8 before io.open).
+        def text_encoding(encoding, *args):
+            return 'cp1252' if encoding in (None,'locale') else encoding
+        with patch.object(io,'text_encoding',side_effect=text_encoding), patch.object(io,'open',side_effect=cp1252_open):
             # Reproduce the original Windows failure, then exercise both fixed
             # loaders against the real non-ASCII catalogue data.
             with self.assertRaises(UnicodeDecodeError): labels.read_text()
