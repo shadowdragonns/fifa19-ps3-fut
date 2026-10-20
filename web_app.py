@@ -23,7 +23,7 @@ class WebApp:
     def __init__(self, backend, accounts=None):
         self.root = backend.root
         self.auth = accounts or WebAccounts(self.root.path.parent/'web-accounts.sqlite3')
-        self.labels = json.loads((HERE/'data/web-pack-labels.json').read_text())
+        self.labels = json.loads((HERE/'data/web-pack-labels.json').read_text(encoding='utf-8'))
 
     def owner(self, persona):
         root = self.root

@@ -1,6 +1,7 @@
 """Live edition edits update online/offline ownership without resetting saves."""
 from copy import deepcopy
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -70,7 +71,7 @@ class CardRebalanceTests(unittest.TestCase):
         events = [row for row in self.logs if row['event'] == 'custom_cards.updated']
         self.assertEqual((events[0]['cards'], events[0]['clubs']), (3, 3))
         backup = Path(events[0]['backup'])
-        self.assertEqual(backup.stat().st_mode & 0o777, 0o700)
+        if os.name != 'nt': self.assertEqual(backup.stat().st_mode & 0o777, 0o700)
         for owner in (self.root, self.loaded, self.offline):
             store = owner.fut_inventory
             actual = json.loads(store.path.read_text())

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 import random
 
-MANAGERS = json.loads((Path(__file__).parent/'data/support-items.json').read_text())['managers']
+MANAGERS = json.loads((Path(__file__).parent/'data/support-items.json').read_text(encoding='utf-8'))['managers']
 CATALOGUE = {row['resourceId']: dict(row, itemType='manager', cardsubtypeid=4,
                                   discardValue=250 if row['rareflag'] else 100)
              for row in MANAGERS}
