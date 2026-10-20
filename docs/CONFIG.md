@@ -138,3 +138,8 @@ An example partial configuration (all omitted rules keep defaults):
   "plugins": {"settings": {"win_bonus": {"bonus_coins": 300}}}
 }
 ```
+
+## Custom web packs
+
+The `web_packs` section controls live pack-builder prices. See [WEB.md](WEB.md)
+for pricing formulas, authentication, the web interface and operator commands.

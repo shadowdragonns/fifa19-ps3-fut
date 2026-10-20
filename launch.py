@@ -11,6 +11,7 @@ import re
 import stat
 import subprocess
 import sys
+import tempfile
 import time
 
 from certificate_patch import temporary_patch
@@ -172,24 +173,35 @@ def copy_profile_trace(source, target, before):
 
 
 @contextmanager
-def local_settings(target, desired=None):
+def local_settings(target, desired=None, backup_directory=None):
     desired = desired if desired is not None else (HERE / 'cl.ini').read_bytes()
-    if target.exists() or target.is_symlink():
-        raise RuntimeError(f'{target} already exists; preserve and review it before installing discovery settings.')
+    if target.is_symlink():
+        raise RuntimeError(f'Linked game settings require review: {target}')
+    prior = target.read_bytes() if target.exists() else None
+    if prior is not None and backup_directory is not None:
+        backup_directory.mkdir(parents=True, exist_ok=True)
+        (backup_directory/'cl.ini.before').write_bytes(prior)
+        print('Refreshing existing cl.ini; original saved in this launch\'s logs and restored on exit.', flush=True)
     mode = stat.S_IMODE(target.parent.stat().st_mode)
     installed = False
+    def write(content):
+        with tempfile.NamedTemporaryFile(dir=target.parent, prefix='.fut-settings-', delete=False) as stream:
+            stage = Path(stream.name)
+            stream.write(content)
+        try: stage.replace(target)
+        finally: stage.unlink(missing_ok=True)
     try:
         target.parent.chmod(mode | stat.S_IWUSR)
-        with target.open('xb') as out:
-            installed = True
-            out.write(desired)
+        write(desired)
+        installed = True
         target.parent.chmod(mode)
         yield
     finally:
         try:
             if installed and target.exists() and not target.is_symlink() and target.read_bytes() == desired:
                 target.parent.chmod(mode | stat.S_IWUSR)
-                target.unlink()
+                if prior is None: target.unlink()
+                else: write(prior)
         finally:
             target.parent.chmod(mode)
 
@@ -309,7 +321,7 @@ def run(args, root=None):
     tty_log = cache/'TTY.log'
     before_tty = log_position(tty_log)
     print('Temporarily enabling local game patches and native diagnostics; patch settings are backed up and restored on exit.', flush=True)
-    with client_platform.file_lock(profile/'.fifa19-fut-launch.lock', blocking=False), temporary_patch(profile, logs, skip_upgrade_rewards=not args.keep_upgrade_rewards, trust_ca=args.trust_ca), local_settings(game_path / 'PS3_GAME/USRDIR/cl.ini', endpoints.settings()):
+    with client_platform.file_lock(profile/'.fifa19-fut-launch.lock', blocking=False), temporary_patch(profile, logs, skip_upgrade_rewards=not args.keep_upgrade_rewards, trust_ca=args.trust_ca), local_settings(game_path / 'PS3_GAME/USRDIR/cl.ini', endpoints.settings(), logs):
         with (logs / 'probe-console.log').open('w') as console:
             server = None
             game = None

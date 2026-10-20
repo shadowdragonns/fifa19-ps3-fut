@@ -101,7 +101,10 @@ Add `--prepare-only` for game/update/profile/network and automatic certificate v
 starting RPCS3 or installing temporary patches. A normal launch replaces the
 game's per-launch `cl.ini`, redirects discovery to the chosen server, and
 installs a hash-specific certificate/boot compatibility patch through RPCS3.
-It restores patch settings and removes its temporary files after exit.
+It restores patch settings and removes newly created temporary files after exit.
+An existing regular `cl.ini` is backed up as `cl.ini.before` in the launch logs,
+refreshed for the selected server, then restored byte-for-byte on exit. This
+also handles settings left behind by an interrupted launch.
 An existing launcher-generated FIFA patch, including one left by an interrupted
 launch, is backed up and refreshed for the selected server, then restored on
 exit. Existing settings for that patch are updated without duplicating its hash

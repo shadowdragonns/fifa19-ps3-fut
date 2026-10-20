@@ -135,6 +135,9 @@ class Inventory:
             from fut_club_assets import VENUES
             if type(state['homeStadium']) is not int or state['homeStadium'] not in VENUES:
                 raise ValueError('Unknown local home stadium')
+        if 'webPackReceipts' in state:
+            from web_packs import validate_receipts
+            validate_receipts(state)
 
     def commit(self, state):
         self.validate(state)

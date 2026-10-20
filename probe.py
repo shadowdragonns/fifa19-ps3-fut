@@ -67,6 +67,7 @@ class Capture:
         self.public_ca_sha256 = None
         self.config_watcher = None
         self.plugin_manager = None
+        self.web = None
 
     def save(self, event, raw=b'', **details):
         details.update(event=event, time=datetime.now(timezone.utc).isoformat())
@@ -220,6 +221,17 @@ class Handler(socketserver.BaseRequestHandler):
                     buffer.extend(part)
             if buffer.startswith((b'GET ', b'POST ', b'PUT ', b'DELET', b'HEAD ', b'OPTIO')):
                 method, path, raw = http_request(sock, buffer)
+                # Website passwords, cookies, invite codes and purchase tokens
+                # must never enter the game's raw protocol capture files.
+                if path == '/club' or path.startswith('/club/'):
+                    if capture.web is None:
+                        status, body, mime, extra = '404 Not Found', b'Website unavailable', 'text/plain', []
+                    else:
+                        status, body, mime, extra = capture.web.handle(method, path, raw, self.client_address[0],
+                                                                     secure=isinstance(sock, TLSStream))
+                    headers = ''.join(f'{key}: {value}\r\n' for key, value in extra)
+                    sock.sendall((f'HTTP/1.1 {status}\r\n{headers}Content-Type: {mime}\r\nContent-Length: {len(body)}\r\nConnection: close\r\n\r\n').encode()+body)
+                    return
                 # Keep query values (including authorization codes) out of the
                 # console/event summary. Original wire bytes remain in captures.
                 public_path = hospitality.public_path(path)
@@ -230,6 +242,7 @@ class Handler(socketserver.BaseRequestHandler):
                         'title': 'BLES02258', 'game_version': '01.02',
                         'advertise': endpoints.host, 'features': ['login', 'packs', 'squads', 'cpu-seasons', 'per-user-clubs', 'club-equipment',
                             'online-peer-play', 'leaderboards', 'server-config', 'python-plugins']}
+                    if capture.web is not None: info['features'].append('web-pack-builder')
                     if capture.public_ca is not None:
                         info['features'].append('public-certificate')
                         info['public_certificate'] = {'path': '/fut-local/root.pem',

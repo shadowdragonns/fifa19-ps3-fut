@@ -14,6 +14,8 @@ Every player has a separate Prime card with +15 overall and +15 to all six face
 attributes. Gold packs have a 1 in 100,000 Prime chance per player card; dedicated
 Prime packs guarantee 95+ rated Primes. Normal cards remain available, and
 definitions reload live.
+FUT Lab adds a club-linked website for building custom packs with live prices
+and opening them into the same saved FUT inventory.
 Single-player divisions progress from weak clubs on Amateur in Division 10
 to strong international teams on World Class in Division 1.
 Standalone Python plugins reload automatically when added, edited or removed;
@@ -89,6 +91,7 @@ reader uses Python only; Windows clients do not need OpenSSL. Use
 - [Prices, rewards, points, divisions, odds and timeouts](docs/CONFIG.md)
 - [Python plugins and game events](docs/PLUGINS.md)
 - [Custom Prime cards, version IDs and packs](docs/CUSTOM_CARDS.md)
+- [Web pack builder, club logins and pricing](docs/WEB.md)
 - [Development and tests](docs/DEVELOPMENT.md)
 
 Editable configuration lives in `server-config.json`; Python plugins live in

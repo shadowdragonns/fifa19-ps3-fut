@@ -250,5 +250,14 @@
         "players": {}
       }
     }
+  },
+  "web_packs": {
+    "enabled": true,
+    "base_per_player": 750,
+    "filter_surcharge": 750,
+    "extra_filter_percent": 20,
+    "prime_surcharge": 30000,
+    "rating_step_surcharge": 500,
+    "rare_surcharge": 750
   }
 }

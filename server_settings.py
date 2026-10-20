@@ -10,6 +10,7 @@ import time
 def defaults():
     from fut_packs import PACKS
     from card_versions import default_editions
+    from web_packs import DEFAULT_PRICING
     from fut_seasons import CPU_TIERS, CPU_DIFFICULTIES, DIFFICULTY_NAMES
     return {
         'version': 1,
@@ -24,7 +25,8 @@ def defaults():
                         'opponents': [list(teams) for teams in CPU_TIERS]},
         'matchmaking': {'search_seconds': 20, 'peer_timeout_seconds': 180},
         'plugins': {'enabled': True, 'disabled': [], 'settings': {}},
-        'custom_cards': {'enabled': True, 'standard_pack_chance_percent': 0.001, 'editions': default_editions()}
+        'custom_cards': {'enabled': True, 'standard_pack_chance_percent': 0.001, 'editions': default_editions()},
+        'web_packs': deepcopy(DEFAULT_PRICING)
     }
 
 
@@ -104,6 +106,9 @@ class Settings:
             raise ValueError('plugins.settings maps plugin names to objects')
         from card_versions import validate_editions
         validate_editions(rules['custom_cards'])
+        if type(rules['web_packs']['enabled']) is not bool: raise ValueError('web_packs.enabled must be a boolean')
+        for name, value in rules['web_packs'].items():
+            if name != 'enabled': _integer(value, 1, 1000000, 'web_packs.'+name)
         self._rules = rules
 
     @classmethod

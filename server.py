@@ -144,6 +144,8 @@ def main(argv=None):
                 'udp_ports': [8099], 'state_dir': str(args.state_dir), 'valid': True}))
             return
         capture = Capture(logs, backend)
+        from web_app import WebApp
+        capture.web = WebApp(backend)
         capture.public_ca = public_ca
         capture.public_ca_sha256 = public_ca_sha256
         plugins.logger = lambda record: capture.save(record['event'], **{k:v for k,v in record.items() if k != 'event'})

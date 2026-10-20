@@ -65,6 +65,7 @@ and `last_seen` is an in-memory timestamp reset on server restart.
 | `player.login` | `player` | A new FUT SID is issued; no SID is exposed |
 | `player.logout` | `player`, `reason` | Compatibility companion to `player.login`, emitted alongside `player.fut_left` |
 | `pack.opened` | `player`, `pack_id`, `purchase_id`, `price`, `cards` | New pack saved; cards contain `item_id`, `asset_id`, `resource_id` and `edition` |
+| `web.pack.opened` | `player`, `parameters`, `price`, `duplicate_refund`, `cards` | Custom web pack saved; cards contain `item_id`, `asset_id`, `edition` and `duplicate`. See [WEB.md](WEB.md). |
 | `cards.moved` | `player`, `items` | Club moves saved; per-item success is included |
 | `cards.discarded` | `player`, `item_ids`, `coins` | Quick sell committed |
 | `squad.created`, `squad.saved`, `squad.activated` | `player`, `squad_id`, `name` | Squad change committed |
