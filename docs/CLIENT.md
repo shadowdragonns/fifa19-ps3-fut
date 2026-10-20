@@ -50,8 +50,14 @@ to IPv4. `--profile` can select RPCS3's existing data root containing `dev_hdd0`
 Linux defaults to `~/.config/rpcs3`. Windows uses the folder beside `rpcs3.exe`
 or its existing `portable` folder; do not point at its nested `config` folder.
 Conflicting portable overrides are refused. Linux AppImage extraction is
-cached automatically. The development setup used RPCS3 revision bb5dc93b;
-other emulator revisions need testing, while the game executable hash remains
+cached by the image's SHA256: replacing your AppImage automatically prepares
+a separate runtime on the next launch and preserves the previous cache.
+Close RPCS3 before updating, then reopen it through the FUT launcher.
+
+Keep RPCS3 current on every PC. An outdated RPCN protocol can make FIFA report
+that you must log in even when an RPCN account is configured. Check RPCS3's
+log for a server/client protocol mismatch and use RPCS3's updater or an
+[official build](https://rpcs3.net/download). The game executable hash remains
 strictly checked against BLES02258 v1.02.
 
 ## Automatic public certificate

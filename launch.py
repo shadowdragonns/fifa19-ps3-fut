@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import stat
 import subprocess
 import sys
@@ -85,30 +86,48 @@ def network_config(source, trace_network=False, host='127.0.0.1'):
 
 
 def runtime_executable(image):
-    """Use a persistent extraction: extract-and-run can exit before game boot."""
+    """Use an atomic, hash-specific extraction so AppImage updates take effect."""
     if image.suffix.lower() != '.appimage':
         return image
-    root = HERE / 'rpcs3-runtime'
-    manifest = root / 'manifest.json'
+    base = HERE / 'rpcs3-runtime'
+    base.mkdir(exist_ok=True)
     digest = hashlib.sha256(image.read_bytes()).hexdigest()
-    if manifest.exists():
-        saved = json.loads(manifest.read_text())
-        if saved['sha256'] != digest:
-            raise RuntimeError('The AppImage changed. Preserve or move mods/fut-local/rpcs3-runtime before preparing a new extraction.')
-    else:
-        root.mkdir(exist_ok=True)
-        env = dict(os.environ)
-        env.pop('APPIMAGE_EXTRACT_AND_RUN', None)
-        with (root / 'extract.log').open('w') as log:
-            result = subprocess.run([str(image), '--appimage-extract'], cwd=root,
-                                    stdout=log, stderr=subprocess.STDOUT, env=env, timeout=60)
-        if result.returncode:
-            raise RuntimeError(f'AppImage extraction failed; see {root / "extract.log"}')
-        manifest.write_text(json.dumps({'appimage': str(image), 'sha256': digest}, indent=2) + '\n')
-    executable = root / 'squashfs-root/AppRun'
-    if not executable.is_file():
-        raise RuntimeError(f'Extracted executable is absent: {executable}')
-    return executable
+    with client_platform.file_lock(base/'.extract.lock'):
+        # Existing unchanged installations can keep their old extraction. A new
+        # image gets a separate cache; the old runtime remains available to revert.
+        legacy = base/'manifest.json'
+        if legacy.is_file():
+            saved = json.loads(legacy.read_text())
+            if saved.get('sha256') == digest and (base/'squashfs-root/AppRun').is_file():
+                return base/'squashfs-root/AppRun'
+        root = base/digest
+        executable = root/'squashfs-root/AppRun'
+        if root.exists():
+            manifest = root/'manifest.json'
+            if not manifest.is_file() or json.loads(manifest.read_text()).get('sha256') != digest or not executable.is_file():
+                raise RuntimeError(f'Incomplete cached RPCS3 runtime: {root}')
+            return executable
+        stage = Path(tempfile.mkdtemp(prefix='.extract-', dir=base))
+        failure_log = base/('extract-failed-'+digest[:16]+'.log')
+        try:
+            env = dict(os.environ)
+            env.pop('APPIMAGE_EXTRACT_AND_RUN', None)
+            env.pop('APPIMAGE', None)
+            with (stage/'extract.log').open('w') as log:
+                result = subprocess.run([str(image), '--appimage-extract'], cwd=stage,
+                                        stdout=log, stderr=subprocess.STDOUT, env=env, timeout=60)
+            if result.returncode or not (stage/'squashfs-root/AppRun').is_file():
+                raise RuntimeError('RPCS3 extraction did not produce an executable')
+            if hashlib.sha256(image.read_bytes()).hexdigest() != digest:
+                raise RuntimeError('AppImage changed during extraction; retry the launcher')
+            (stage/'manifest.json').write_text(json.dumps({'appimage':str(image),'sha256':digest},indent=2)+'\n')
+            stage.rename(root)
+        except (OSError, RuntimeError, subprocess.SubprocessError) as error:
+            if (stage/'extract.log').is_file(): shutil.copy2(stage/'extract.log', failure_log)
+            raise RuntimeError(f'AppImage extraction failed; see {failure_log}: {error}') from error
+        finally:
+            if stage.exists(): shutil.rmtree(stage)
+        return executable
 
 
 def log_position(path):
