@@ -30,6 +30,19 @@ def complete_squad(backend, session, squad_id):
     return squad
 
 
+def owned_match_managers(backend, squad):
+    """Authorize only selected staff still owned by this club.
+
+    Retail PlayGame includes the selected manager after the XI. Keep staff
+    separate from played_items, which drives player appearances and reports.
+    """
+    from fut_items import CATALOGUE
+    selected = {row['id'] for row in squad.get('manager', [])}
+    return {row['id'] for row in backend.fut_inventory.state.get('supportItems', [])
+            if row['id'] in selected and row['pile'] == 'club'
+            and CATALOGUE[row['definitionId']]['itemType'] == 'manager'}
+
+
 def create(backend, session, payload):
     backend = backend.for_session(session)
     if isinstance(payload, dict) and payload.get('type') == 'ONLINE':
@@ -81,7 +94,7 @@ def play(backend, session, payload):
     current = getattr(session, 'local_fut_match', None)
     if (not current or current.get('finished')
             or not isinstance(payload, dict) or set(payload) != {'items'}
-            or not isinstance(payload['items'], list) or not 1 <= len(payload['items']) <= 23):
+            or not isinstance(payload['items'], list) or not 1 <= len(payload['items']) <= 24):
         raise ValueError('A pending offline match and valid player list are required')
     ids = []
     for item in payload['items']:
@@ -91,6 +104,12 @@ def play(backend, session, payload):
         ids.append(item['id'])
     if len(set(ids)) != len(ids):
         raise ValueError('Match players must be distinct')
+    squad = (current['squad'] if current.get('playing') else
+             complete_squad(backend, session, current['request']['squadId']))
+    managers = owned_match_managers(backend, squad)
+    ids = [item_id for item_id in ids if item_id not in managers]
+    if not ids:
+        raise ValueError('At least one match player is required')
     if current.get('playing'):
         # FIFA reuses PlayGame for a substitution, sending just the incoming
         # card(s). Native 0x16d0994 serializes the supplied item count, not a
@@ -104,7 +123,6 @@ def play(backend, session, payload):
             raise ValueError('Incoming players must be owned match starters or substitutes')
         current['played_items'] = tuple(dict.fromkeys((*current['played_items'], *ids)))
         return {}
-    squad = complete_squad(backend, session, current['request']['squadId'])
     starters = [slot for slot in squad['players'] if slot['index'] < 11]
     if (len(ids) != 11 or set(ids) != {slot['itemData']['id'] for slot in starters}
             or len(starters) != 11 or starters[0]['itemData']['preferredPosition'] != 'GK'):

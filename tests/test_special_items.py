@@ -12,6 +12,7 @@ import fut_condition
 import fut_inventory
 import fut_items
 import fut_matches
+import fut_online
 import fut_packs
 import fut_results
 import fut_squads
@@ -196,12 +197,22 @@ class SupportItemTests(unittest.TestCase):
         current=self.session.local_fut_match
         ids=[p['itemData']['id'] for p in current['squad']['players'] if p['index']<11]
         self.assertIn(target,ids)
-        fut_matches.play(self.backend,self.session,{'items':[{'id':i} for i in ids]})
+        # Retail includes the selected manager after the XI at kickoff.
+        fut_matches.play(self.backend,self.session,{'items':[{'id':i} for i in ids+[manager['id']]]})
+        self.assertEqual(current['played_items'],tuple(ids))
+        reported=[p['itemData']['id'] for p in current['squad']['players']]+[manager['id']]
         report={'matchReportId':0,'endReason':'WIN','secondsPlayed':5400,
-                'items':[{'id':i} for i in ids],'matchData':'',
+                'items':[{'id':i} for i in reported],'matchData':'',
                 'myMatchStats':{k:0 for k in fut_results.STATS},
                 'opponentMatchStats':{k:0 for k in fut_results.STATS}}
         report['myMatchStats']['goals']=1
+        before=deepcopy(self.store.state)
+        for bad_items in (report['items']+[{'id':manager['id']}],
+                          report['items'][:-1]+[{'id':self.source(201)}],
+                          report['items'][1:],report['items'][:-1]+[{'id':99999999}]):
+            with self.assertRaises(ValueError):
+                fut_results.finish(self.backend,self.session,{**report,'items':bad_items})
+            self.assertEqual(self.store.state,before)
         first=fut_results.finish(self.backend,self.session,report)
         after=deepcopy(self.store.state)
         self.assertEqual(fut_results.finish(self.backend,self.session,report),first)
@@ -209,7 +220,62 @@ class SupportItemTests(unittest.TestCase):
         self.assertNotIn('trainingBoost',next(r for r in after['items'] if r['id']==target))
         row=next(r for r in after['supportItems'] if r['id']==manager['id'])
         self.assertEqual(row['contract'],34)
+        self.assertNotIn(manager['id'],after['matchHistory'][-1]['playedItems'])
+        self.assertEqual(Backend(self.backend.path,settings=self.backend.settings).fut_inventory.state,after)
         self.assertEqual(Queries(self.backend).get_support_items(self.backend.profile['persona'],item_type='manager')[0]['contract'],34)
+
+    def test_kickoff_with_manager_accepts_retail_payload_but_rejects_other_owned_cards(self):
+        manager=self.buy(190)['itemList'][0]
+        self.buy(191)
+        squad=deepcopy(fut_squads.saved(self.backend))
+        squad['manager']=[{'id':manager['id'],'dream':False}]
+        fut_squads.save(self.backend,squad)
+        fut_matches.create(self.backend,self.session,{'type':'OFFLINE','squadId':1})
+        current=self.session.local_fut_match
+        ids=[p['itemData']['id'] for p in current['squad']['players'] if p['index']<11]
+        bench=next(p['itemData']['id'] for p in current['squad']['players'] if p['index']==11)
+        supplies=self.source(57)
+        def request(selected):
+            payload={'items':[{'id':i} for i in selected]}
+            raw=b'PUT /ut/game/fifa19/match HTTP/1.1\r\nX-UT-SID: test-fut\r\n\r\n'+json.dumps(payload).encode()
+            return fut_matches.response(self.backend,'PUT',fut_matches.BASE,raw)[0]
+        before=deepcopy(self.store.state)
+        for invalid in (ids+[supplies],ids+[bench],ids+[manager['id']]*2,
+                        ids[:-1]+[manager['id']],ids+[99999999]):
+            self.assertEqual(request(invalid),'400 Bad Request')
+            self.assertFalse(current.get('playing'))
+        self.assertEqual(request(ids+[manager['id']]),'200 OK')
+        self.assertEqual(current['played_items'],tuple(ids))
+        self.assertEqual(request([bench]),'200 OK')
+        self.assertNotIn(manager['id'],current['played_items'])
+        self.assertEqual(request([manager['id']]),'400 Bad Request')
+        self.assertEqual(self.store.state,before)
+
+    def test_online_ready_kickoff_and_substitution_only_track_players_with_selected_manager(self):
+        manager=self.buy(190)['itemList'][0]
+        squad=deepcopy(fut_squads.saved(self.backend))
+        squad['manager']=[{'id':manager['id'],'dream':False}]
+        fut_squads.save(self.backend,squad)
+        current={'squad':fut_squads.retrieve(self.backend,self.session)}
+        ids=[p['itemData']['id'] for p in current['squad']['players'] if p['index']<11]
+        bench=next(p['itemData']['id'] for p in current['squad']['players'] if p['index']==11)
+        def cards(selected,ready=False):
+            return fut_online.online_cards(self.backend,self.session,current,
+                {'items':[{'id':i} for i in selected]},starters_only=ready)
+        self.assertEqual(cards(ids+[manager['id']],True),tuple(ids))
+        self.assertEqual(cards(ids+[manager['id']]),tuple(ids))
+        self.assertEqual(cards(ids),tuple(ids))
+        current['playing']=True
+        self.assertEqual(cards([bench,manager['id']]),(bench,))
+        for invalid in ([manager['id']],[99999999],ids+[manager['id']]*2):
+            with self.assertRaises(ValueError):cards(invalid)
+        # A different selected squad or a manager no longer owned by the club
+        # cannot authorize this staff card.
+        current['squad']['manager']=[]
+        with self.assertRaises(ValueError):cards(ids+[manager['id']])
+        current['squad']['manager']=[manager]
+        self.store.discard({'itemId':[manager['id']]})
+        with self.assertRaises(ValueError):cards(ids+[manager['id']])
 
     def test_native_item_search_apply_and_quick_sell_routes_are_authenticated(self):
         self.buy(191)

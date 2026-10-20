@@ -23,7 +23,7 @@ def online_cards(backend, session, current, payload, starters_only=False):
     """Validate submitted IDs against this user's reserved owned XI/bench."""
     from fut_inventory import integer
     if (not isinstance(payload, dict) or set(payload) != {'items'}
-            or not isinstance(payload['items'], list) or not 1 <= len(payload['items']) <= 23):
+            or not isinstance(payload['items'], list) or not 1 <= len(payload['items']) <= 24):
         raise ValueError('Invalid online player list')
     ids = []
     for item in payload['items']:
@@ -32,7 +32,13 @@ def online_cards(backend, session, current, payload, starters_only=False):
         ids.append(item['id'])
     if len(set(ids)) != len(ids):
         raise ValueError('Online players must be distinct')
-    inventory = backend.for_session(session).fut_inventory.state
+    owner = backend.for_session(session)
+    from fut_matches import owned_match_managers
+    managers = owned_match_managers(owner, current['squad'])
+    ids = [item_id for item_id in ids if item_id not in managers]
+    if not ids:
+        raise ValueError('At least one online match player is required')
+    inventory = owner.fut_inventory.state
     from fut_condition import available
     owned = {row['id'] for row in inventory['items'] if row['pile'] == 'club' and available(row)}
     slots = current['squad']['players']

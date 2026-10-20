@@ -62,7 +62,7 @@ def validate_report(payload):
             or not integer(payload['secondsPlayed'], 0, 86400)
             or not isinstance(payload['matchData'], str) or len(payload['matchData']) > 131072
             or any(not integer(payload[k], 0, 100) for k in ('myRating', 'opponentRating') if k in payload)
-            or not isinstance(payload['items'], list) or not 11 <= len(payload['items']) <= 23):
+            or not isinstance(payload['items'], list) or not 11 <= len(payload['items']) <= 24):
         raise ValueError('Invalid offline match report')
     for key in ('myMatchStats', 'opponentMatchStats'):
         if key not in payload:
@@ -129,7 +129,9 @@ def save_result(backend, current, payload):
             return deepcopy(previous['award'])
         selected = {slot['itemData']['id'] for slot in current['squad']['players']}
         owned = {row['id'] for row in store.state['items'] if row['pile'] == 'club'}
-        if not reported <= selected & owned or not set(current['played_items']) <= reported:
+        from fut_matches import owned_match_managers
+        managers = owned_match_managers(backend, current['squad'])
+        if not reported <= (selected & owned) | managers or not set(current['played_items']) <= reported:
             raise ValueError('Report must contain owned match starters and selected substitutes')
         # Only a completed full game earns the local practice bonus. Quit,
         # DNF and no-contest reports are acknowledged without a coin reward.
