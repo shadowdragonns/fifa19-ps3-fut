@@ -38,6 +38,13 @@ cached, leave and re-enter FUT. Server purchases, quick sells and match rewards
 use the latest accepted rules even while an old menu is visible. Automatic
 reload does not push unsolicited HUD/menu packets or change match gameplay.
 
+Custom-card stat edits also update already-owned cards in every saved club,
+including offline users and pending packs. Affected inventory files are backed
+up under `state-backups/custom-cards-<timestamp>/` before applying the edit.
+The server also reconciles cards on startup for edits made while stopped.
+Issued card IDs, coins, squads, conditions and historical receipts are preserved;
+active matches keep their captured squads. See [CUSTOM_CARDS.md](CUSTOM_CARDS.md).
+
 | Setting | Default | Meaning |
 |---|---:|---|
 | `economy.starting_coins` | 20000 | Initial balance of a newly created inventory; existing balances are preserved |
@@ -60,7 +67,7 @@ reload does not push unsolicited HUD/menu packets or change match gameplay.
 | `plugins.settings` | `{}` | Current per-plugin JSON objects read through `api.settings` |
 | `custom_cards.enabled` | true | Enable custom card draws and packs |
 | `custom_cards.standard_pack_chance_percent` | 0.001 | Decimal percentage per eligible gold player; default 1 in 100,000 |
-| `custom_cards.editions` | All-player Prime +15 | Version IDs, catalogue coverage, stat boosts, player overrides and custom quick-sell prices |
+| `custom_cards.editions` | All-player Prime +15 | Version IDs, catalogue coverage, stat boosts, player overrides and custom quick-sell prices; stat edits also refresh owned cards |
 
 Division arrays run from **displayed Division 10 to Division 1**. The wire
 division numbers run in the opposite direction: wire 1 is displayed Division

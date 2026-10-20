@@ -199,7 +199,9 @@ substring), `position`, `nation_id`, `team_id`, `league_id`, `rare` (boolean).
 Editions include `standard`, legacy `england110` and configured custom editions
 such as `prime`. Owned snapshots remain queryable when an edition is disabled.
 Rows also include `resource_id`, `version` and `edition_label`; catalogue queries
-show current definitions, while owned-card queries show issued stat snapshots.
+show current definitions. Owned-card queries show the saved stats, automatically
+refreshed when custom-card definitions reload or the server starts; issued item
+and resource IDs stay stable.
 Owned-card rows include
 `item_id`, `asset_id`, `name`, `rating`, `position`, nation/team/league IDs,
 `rare`, `edition`, native indexed `attributes`, `quick_sell_value`, `pile`,

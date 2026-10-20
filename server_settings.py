@@ -229,6 +229,17 @@ class ConfigWatcher:
             changed = sorted(key for key in current if current[key] != previous[key])
             self.last_error_type = None
             if not changed: return False
+            if 'custom_cards' in changed:
+                from card_rebalance import reconcile
+                try:
+                    rebalanced = reconcile(root, candidate)
+                except (OSError, ValueError, RuntimeError) as failure:
+                    self.last_error_type = type(failure).__name__
+                    self._log(event='config.error', error_type=type(failure).__name__,
+                              retained_generation=self.generation)
+                    return False
+                if rebalanced['cards']:
+                    self._log(event='custom_cards.updated', reason='config', **rebalanced)
             root.settings.replace(candidate)
             # Plugin modules keep their registrations/state; newly enabled files
             # register once. Errors in custom code cannot reject valid server rules.

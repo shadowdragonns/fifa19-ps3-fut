@@ -30,8 +30,10 @@ gold card. This controls the combined custom-edition chance; if several enabled
 editions cover that player, one is chosen uniformly after a successful roll.
 Disabling a player/edition prevents new draws but keeps owned cards readable.
 
-`server-config.json` changes reload live and affect future draws/catalogue
-queries. The compact `all_players` rule covers the full stock catalogue without
+`server-config.json` changes reload live and update future draws, catalogue
+queries and **already-owned cards in every club**, including offline users and
+unassigned pending-pack cards. The same reconciliation runs on server startup
+to apply edits made while it was stopped. The compact `all_players` rule covers the full stock catalogue without
 listing thousands of IDs. `players` contains optional individual overrides;
 entries merge by asset ID. An additional edition needs an unused version number.
 
@@ -99,20 +101,42 @@ reports stay attached to owned item IDs. Choosing a custom version preserves
 coins, squads, receipts and other cards.
 
 Issued cards save their version/rating/attributes/position/label snapshot.
-Later config edits affect future pulls; owned cards keep issued stats. Quick-sell
-uses the current edition value if its version matches, otherwise the saved value.
+Valid config edits refresh owned ratings, six attributes, positions, labels,
+rarity and discard values from the current edition rules. This includes cards
+excluded from future draws or in a disabled edition. Removing an edition
+entirely preserves its last saved card data. Owned item IDs, asset IDs and issued
+version/resource IDs never change, even if the configured version changes.
+Coins, squad selection, injuries, bans and historical purchase/match receipts
+are preserved. An in-progress match retains its captured squad; updated cards
+are used when preparing the next match. Reopen the squad/club menu, or leave and
+re-enter FUT if FIFA still shows cached stats; no game restart is required.
+
+Before changing saves, the server validates all inventories and backs up each
+affected file under the state directory's sibling
+`state-backups/custom-cards-<timestamp>/`. It stages changes under the shared
+backend lock and rolls back failed writes before accepting the new rules.
+Only changed inventories are saved; repeating the same rules is a no-op.
+`custom_cards.updated` records the card/club counts and backup directory.
+
+Quick-sell uses the current edition value if its version matches, otherwise the
+saved value.
 Disabling custom cards hides their packs; a pack also hides when too few enabled
 players remain for its distinct player count. Pending packs resume without
 charging again. The game gets names/portraits from its original player database.
 Custom labels appear in server/plugin metadata and store descriptions.
 
-## Updating already-owned Primes to +15
+## Older manual +15 tool
 
-Existing installations may still have the former selected-star rating overrides
-in their config. Replace `custom_cards` with the compact example above to enable
-the new rules for future draws. Other server settings can remain as they are.
+For normal rebalancing, edit `rating_boost`, `attribute_boost` or individual
+overrides in `server-config.json`; already-owned cards update automatically.
+For example, changing `attribute_boost` from 15 to 25 refreshes every owned
+Prime's six attributes to base +25, capped at 115, without changing its OVR.
+Individual overrides still take precedence over the boosts.
 
-To explicitly rebalance already-owned Primes, **stop the server** first, then run:
+The older tool below forcibly resets only Prime OVR and six attributes to base
++15, independently of config. It is retained for manual recovery, and the
+server's current configured rules are reapplied on startup. **Stop the server**
+before running it:
 
 ```bash
 python3 rebalance_primes.py --state-dir /path/to/state
@@ -124,5 +148,5 @@ state into a timestamped sibling `state-backups` directory, then sets only owned
 Prime OVR and six attributes to stock +15. It includes unassigned pending-pack
 cards and per-user inventories, preserves IDs, coins, squads, conditions and
 receipts, and leaves historical backups untouched. It refuses an active server
-lock and is safe to repeat; no automatic rebalance runs on ordinary startup.
+lock and is safe to repeat.
 Restart the server and re-enter FUT to refresh cached cards.

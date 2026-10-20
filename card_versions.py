@@ -97,9 +97,15 @@ def _rating(spec, base, rule):
 
 
 def catalogue_player(settings, edition, asset):
-    from fut_packs import STANDARD_PLAYERS
     spec = settings.section('custom_cards')['editions'][edition]
     if not spec['all_players'] and str(asset) not in spec['players']: raise KeyError(asset)
+    variant = edition_variant(spec, asset)
+    return variant_player(asset, variant), variant
+
+
+def edition_variant(spec, asset):
+    """Current stats, independent of whether this player is available to draw."""
+    from fut_packs import STANDARD_PLAYERS
     rule = spec['players'].get(str(asset), {})
     base = STANDARD_PLAYERS[asset]
     rating = _rating(spec, base, rule)
@@ -108,10 +114,9 @@ def catalogue_player(settings, edition, asset):
     boost = spec['attribute_boost'] if spec['attribute_boost'] is not None else max(0, rating-base['rating'])
     attributes = rule.get('attributes', [min(115, row['value']+boost)
                                          for row in base['attributeList']])
-    variant = {'version': spec['version'], 'label': spec['label'], 'rareflag': spec['rareflag'],
-               'discard_value': spec['discard_value'], 'rating': rating,
-               'attributes': deepcopy(attributes), 'position': rule.get('position', base['preferredPosition'])}
-    return variant_player(asset, variant), variant
+    return {'version': spec['version'], 'label': spec['label'], 'rareflag': spec['rareflag'],
+            'discard_value': spec['discard_value'], 'rating': rating,
+            'attributes': deepcopy(attributes), 'position': rule.get('position', base['preferredPosition'])}
 
 
 def validate_variant(edition, asset, variant):

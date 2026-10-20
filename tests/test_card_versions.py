@@ -1,4 +1,4 @@
-"""Separate card versions, immutable owned snapshots and unchanged base player cards."""
+"""Separate card versions, persistent ownership and unchanged base player cards."""
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -82,13 +82,17 @@ class CardVersionTests(unittest.TestCase):
         self.assertEqual(purchase['duplicateItemIdList'], [])
         self.assertTrue(store.move({'itemData': [{'id': 2, 'pile': 'club'}]})['itemData'][0]['success'])
         coins = store.state['coins']
-        self.settings.replace(Settings({'custom_cards': {'editions': {'prime': {'players': {'20801': {'rating': 102}}}}}}))
-        self.assertEqual(store.card(store.state['items'][1], self.settings)['rating'], 109)
+        config = self.path/'server-config.json'
+        config.write_text(json.dumps({'custom_cards': {'editions': {'prime': {'players': {'20801': {'rating': 102}}}}}}))
+        times = [0]
+        watcher = ConfigWatcher(self.backend, config, clock=lambda: times[0])
+        watcher.poll(); times[0] = 1; self.assertTrue(watcher.poll())
+        self.assertEqual(store.card(store.state['items'][1], self.settings)['rating'], 102)
         new, _ = card_versions.catalogue_player(self.settings, 'prime', 20801)
         self.assertEqual(new['rating'], 102)
         restored = Backend(self.backend.path, settings=Settings({'custom_cards': {'enabled': False}}))
         self.assertEqual(restored.fut_inventory.state['coins'], coins)
-        self.assertEqual([restored.fut_inventory.card(r, restored.settings)['rating'] for r in restored.fut_inventory.state['items']], [94, 109])
+        self.assertEqual([restored.fut_inventory.card(r, restored.settings)['rating'] for r in restored.fut_inventory.state['items']], [94, 102])
 
     def test_one_version_per_squad_and_versions_in_separate_squads_are_valid(self):
         self.own_base_and_prime()

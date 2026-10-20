@@ -149,6 +149,10 @@ def main(argv=None):
         capture.public_ca = public_ca
         capture.public_ca_sha256 = public_ca_sha256
         plugins.logger = lambda record: capture.save(record['event'], **{k:v for k,v in record.items() if k != 'event'})
+        from card_rebalance import reconcile
+        rebalanced = reconcile(backend, settings)
+        if rebalanced['cards']:
+            capture.save('custom_cards.updated', reason='startup', **rebalanced)
         plugins.load()
         watcher = ConfigWatcher(backend, config, plugins.logger)
         capture.config_watcher = watcher
