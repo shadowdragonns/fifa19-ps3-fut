@@ -51,7 +51,9 @@
       "163": 20000,
       "164": 50000,
       "180": 50000,
-      "181": 125000
+      "181": 125000,
+      "190": 1000,
+      "191": 2000
     },
     "gold_rare_weights": [
       30,
@@ -236,7 +238,7 @@
   },
   "custom_cards": {
     "enabled": true,
-    "standard_pack_chance_percent": 0.001,
+    "standard_pack_chance_percent": null,
     "editions": {
       "prime": {
         "enabled": true,
@@ -245,8 +247,33 @@
         "rareflag": 3,
         "discard_value": 5000,
         "all_players": true,
-        "rating_boost": 15,
-        "attribute_boost": 15,
+        "rating_boost": 10,
+        "attribute_boost": 10,
+        "one_in": 400,
+        "players": {}
+      },
+      "toty": {
+        "enabled": true,
+        "label": "Team of the Year",
+        "version": 2,
+        "rareflag": 5,
+        "discard_value": 10000,
+        "all_players": true,
+        "rating_boost": 20,
+        "attribute_boost": 20,
+        "one_in": 2000,
+        "players": {}
+      },
+      "otw": {
+        "enabled": true,
+        "label": "Ones to Watch",
+        "version": 3,
+        "rareflag": 21,
+        "discard_value": 15000,
+        "all_players": true,
+        "rating_boost": 25,
+        "attribute_boost": 25,
+        "one_in": 10000,
         "players": {}
       }
     }
@@ -257,6 +284,8 @@
     "filter_surcharge": 750,
     "extra_filter_percent": 20,
     "prime_surcharge": 30000,
+    "toty_surcharge": 60000,
+    "otw_surcharge": 100000,
     "rating_step_surcharge": 500,
     "rare_surcharge": 750
   }

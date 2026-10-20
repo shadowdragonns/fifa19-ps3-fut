@@ -8,6 +8,18 @@ def validate(record):
             or not isinstance(kind, str) or not 1 <= len(kind) <= 32 or not kind.isalpha()
             or (games == 0) != (kind == 'none')):
         raise ValueError('Invalid saved player condition')
+    if (not integer(record.get('contract',7),0,99) or not integer(record.get('fitness',99),0,99)):
+        raise ValueError('Invalid player contracts/fitness')
+    training = {'trainingBoost','trainingDefinition','trainingItemId'} & set(record)
+    if training:
+        from fut_items import CATALOGUE
+        spec = CATALOGUE.get(record.get('trainingDefinition'))
+        if (training != {'trainingBoost','trainingDefinition','trainingItemId'}
+                or spec is None or spec['itemType'] not in ('playerTraining','GKTraining')
+                or record['trainingBoost'] != [spec['amount']]*6
+                or any(type(v) is not int for v in record['trainingBoost'])
+                or not integer(record['trainingItemId'],1)):
+            raise ValueError('Invalid temporary player training')
 
 
 def available(card):
@@ -22,6 +34,7 @@ def apply(state, current, payload):
         if record['pile'] != 'club':
             continue
         if complete and record['id'] not in played:
+            if 'fitness' in record: record['fitness'] = min(99,record['fitness']+15)
             if record.get('injuryGames', 0):
                 record['injuryGames'] -= 1
                 if not record['injuryGames']:
@@ -31,6 +44,10 @@ def apply(state, current, payload):
         if record['id'] not in played or payload['endReason'] == 'NO_CONTEST':
             continue
         report = reported[record['id']]
+        if complete:
+            record['contract'] = max(0,record.get('contract',7)-1)
+            record['fitness'] = report.get('fitness',record.get('fitness',99))
+            for field in ('trainingBoost','trainingDefinition','trainingItemId'): record.pop(field,None)
         kind = report.get('injuryType', 'none').lower()
         games = report.get('injuryGames', 1 if kind != 'none' else 0)
         if games:
@@ -41,3 +58,7 @@ def apply(state, current, payload):
         ban = max(report.get('suspension', 0), int(report.get('redCards', 0) > 0))
         if ban:
             record['suspension'] = max(record.get('suspension', 0), ban)
+    if complete:
+        selected = {row['id'] for row in current['squad'].get('manager',[])}
+        for manager in state.get('supportItems',[]):
+            if manager['id'] in selected: manager['contract'] = max(0,manager.get('contract',7)-1)

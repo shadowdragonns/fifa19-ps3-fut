@@ -24,7 +24,7 @@ def empty(name, squad_id=1):
             'kicktakers': [{'index': i, 'id': 0, 'dream': False} for i in range(5)]}
 
 
-def validate(value, items):
+def validate(value, items, support_items=None):
     if not isinstance(value, dict) or set(value) != set(empty('')):
         raise ValueError('Invalid stored squad')
     if (not integer(value['id'], 1, 999999999)
@@ -57,8 +57,14 @@ def validate(value, items):
                 raise ValueError('Only one version of a footballer can be selected in a squad')
             footballers.add(owned[item_id]['assetId'])
             selected.add(item_id)
-    if value['manager'] != [{'id': 0, 'dream': False}]:
-        raise ValueError('No local manager card is owned')
+    from fut_items import CATALOGUE
+    managers = {row['id'] for row in support_items or [] if row['pile']=='club'
+                and CATALOGUE[row['definitionId']]['itemType']=='manager'}
+    if (not isinstance(value['manager'],list) or len(value['manager'])!=1
+            or not isinstance(value['manager'][0],dict) or set(value['manager'][0])!={'id','dream'}
+            or value['manager'][0]['dream'] is not False or not integer(value['manager'][0]['id'])
+            or value['manager'][0]['id'] not in managers | {0}):
+        raise ValueError('Select an owned manager')
     if not integer(value['captain']) or value['captain'] not in selected | {0}:
         raise ValueError('Captain must be in this squad')
     kicks = value['kicktakers']
@@ -141,7 +147,7 @@ def create(backend, payload):
         # Keep the persisted 23-slot representation used by later edits.
         if payload.get('players') == []:
             value['players'] = empty('', squad_id)['players']
-        validate(value, state['items'])
+        validate(value, state['items'], state.get('supportItems',[]))
         state.setdefault('squad', deepcopy(saved(backend)))
         state.setdefault('otherSquads', {})[str(squad_id)] = value
         state['nextSquadId'] = squad_id+1
@@ -177,7 +183,10 @@ def retrieve(backend, session, squad_id=None):
     with backend.lock:
         store = backend.fut_inventory
         value = deepcopy(saved(backend, squad_id))
-        value['manager'] = []  # Constructor supplies the absent manager wrapper.
+        from fut_items import records as support_records, card as support_card
+        manager_id = value['manager'][0]['id']
+        value['manager'] = [support_card(row) for row in support_records(store.state)
+                            if row['id']==manager_id and row['pile']=='club']
         by_id = {r['id']: r for r in store.state['items']}
         # Clear slots are represented by the constructor's empty wrappers.
         # Only occupied rows need full player objects in the response.
@@ -205,7 +214,7 @@ def save(backend, payload):
             raise ValueError('Unknown squad')
         value = deepcopy(saved(backend, payload['id']))
         value.update({k: deepcopy(v) for k, v in payload.items() if k in value})
-        validate(value, store.state['items'])
+        validate(value, store.state['items'], store.state.get('supportItems',[]))
         state = deepcopy(store.state)
         if saved(backend)['id'] == value['id']:
             state['squad'] = value

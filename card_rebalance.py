@@ -15,7 +15,8 @@ def updated_state(state, editions):
     from fut_inventory import Inventory
     Inventory.validate(state)
     updated = deepcopy(state)
-    count = 0
+    from player_statistics import backfill
+    changed = backfill(updated)
     for record in updated['items']:
         edition = record.get('edition', 'england110')
         if edition in BASE_EDITIONS or edition not in editions: continue
@@ -25,9 +26,9 @@ def updated_state(state, editions):
         variant['version'] = record['variant']['version']
         if variant != record['variant']:
             record['variant'] = variant
-            count += 1
+            changed.add(record['id'])
     Inventory.validate(updated)
-    return updated, count
+    return updated, len(changed)
 
 
 def _stage(path, content, mode):

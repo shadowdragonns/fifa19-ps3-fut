@@ -43,7 +43,7 @@ class CardRebalanceTests(unittest.TestCase):
         self.root.fut_inventory.commit(state)
         self.item_id = item_id
         for owner in (self.loaded, self.offline):
-            with patch('fut_packs.random.SystemRandom.sample', return_value=[20801]):
+            with patch.dict(__import__('fut_packs').PACKS[180], retired=False), patch('fut_packs.random.SystemRandom.sample', return_value=[20801]):
                 owner.fut_inventory.open_pack(BUY)
         for key, owner in list(self.root.users.items()):
             if owner is self.offline: self.root.users.pop(key)
@@ -77,7 +77,7 @@ class CardRebalanceTests(unittest.TestCase):
             expected = deepcopy(before[store.path])
             for record in expected['items']:
                 if record.get('edition') == 'prime':
-                    record['variant'].update(rating=104, attributes=[115, 115, 106, 114, 60, 104],
+                    record['variant'].update(rating=104, attributes=[115, 118, 106, 114, 60, 104],
                                              discard_value=7000, label='Prime updated')
             self.assertEqual(actual, expected)
             self.assertEqual((backup/store.path.relative_to(self.root.path.parent)).read_bytes(), raw[store.path])
@@ -104,7 +104,7 @@ class CardRebalanceTests(unittest.TestCase):
 
     def test_disabled_and_excluded_owners_still_update_and_issued_resource_id_is_stable(self):
         identity = card_versions.resource_id(self.root.fut_inventory.state['items'][-1])
-        self.assertTrue(self.apply({'enabled': False, 'all_players': False, 'version': 2,
+        self.assertTrue(self.apply({'enabled': False, 'all_players': False, 'version': 10,
                                    'rating_boost': 1, 'attribute_boost': 1,
                                    'players': {'20801': {'enabled': False, 'rating': 112,
                                                         'attributes': [110]*6, 'position': 'RW'}}}))

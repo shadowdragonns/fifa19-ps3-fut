@@ -5,13 +5,21 @@ import math
 import re
 
 BASE_EDITIONS = {'standard', 'england110'}
+MAX_OVR = 255  # Native card field is an unsigned byte.
+MAX_ATTRIBUTE = (1 << 32)-1  # Native indexed card attributes are uint32.
 POSITIONS = {'GK', 'RB', 'RWB', 'CB', 'LB', 'LWB', 'CDM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'CF', 'ST'}
 
 
 def default_editions():
     return {'prime': {'enabled': True, 'label': 'Prime', 'version': 1, 'rareflag': 3,
-                      'discard_value': 5000, 'all_players': True, 'rating_boost': 15,
-                      'attribute_boost': 15, 'players': {}}}
+                      'discard_value': 5000, 'all_players': True, 'rating_boost': 10,
+                      'attribute_boost': 10, 'one_in': 400, 'players': {}},
+            'toty': {'enabled': True, 'label': 'Team of the Year', 'version': 2, 'rareflag': 5,
+                     'discard_value': 10000, 'all_players': True, 'rating_boost': 20,
+                     'attribute_boost': 20, 'one_in': 2000, 'players': {}},
+            'otw': {'enabled': True, 'label': 'Ones to Watch', 'version': 3, 'rareflag': 21,
+                    'discard_value': 15000, 'all_players': True, 'rating_boost': 25,
+                    'attribute_boost': 25, 'one_in': 10000, 'players': {}}}
 
 
 def merge_editions(base, extra):
@@ -20,11 +28,11 @@ def merge_editions(base, extra):
     for name, fields in extra.items():
         if not isinstance(fields, dict): raise ValueError('Custom edition must be an object')
         allowed = {'enabled', 'label', 'version', 'rareflag', 'discard_value', 'players',
-                   'all_players', 'rating_boost', 'attribute_boost'}
+                   'all_players', 'rating_boost', 'attribute_boost', 'one_in'}
         if set(fields)-allowed: raise ValueError('Unknown custom edition setting')
         spec = result.setdefault(name, {'enabled': True, 'label': name, 'version': None,
                                        'rareflag': 3, 'discard_value': 5000, 'players': {},
-                                       'all_players': False, 'rating_boost': 0, 'attribute_boost': None})
+                                       'all_players': False, 'rating_boost': 0, 'attribute_boost': None, 'one_in': 0})
         for key, value in fields.items():
             if key != 'players': spec[key] = deepcopy(value); continue
             if not isinstance(value, dict): raise ValueError('Custom players must be an object')
@@ -45,7 +53,7 @@ def validate_editions(section):
     from fut_packs import STANDARD_PLAYERS
     chance = section['standard_pack_chance_percent']
     if (type(section['enabled']) is not bool
-            or type(chance) not in (int, float) or not 0 <= chance <= 100 or not math.isfinite(chance)
+            or chance is not None and (type(chance) not in (int, float) or not 0 <= chance <= 100 or not math.isfinite(chance))
             or not isinstance(section['editions'], dict) or len(section['editions']) > 32):
         raise ValueError('Invalid custom card settings')
     versions = set()
@@ -53,11 +61,12 @@ def validate_editions(section):
         if (not isinstance(name, str) or not re.fullmatch(r'[a-z][a-z0-9_]{0,23}', name)
                 or name in BASE_EDITIONS or type(spec['enabled']) is not bool or not _label(spec['label'])
                 or not _integer(spec['version'], 1, 127) or spec['version'] in versions
-                or spec['rareflag'] not in (1, 3) or type(spec['rareflag']) is not int
+                or not _integer(spec['rareflag'], 0, 255)
                 or not _integer(spec['discard_value'], 0, 1000000)
                 or type(spec['all_players']) is not bool
-                or not _integer(spec['rating_boost'], 0, 115)
-                or spec['attribute_boost'] is not None and not _integer(spec['attribute_boost'], 0, 115)
+                or not _integer(spec['rating_boost'], 0, MAX_ATTRIBUTE)
+                or spec['attribute_boost'] is not None and not _integer(spec['attribute_boost'], 0, MAX_ATTRIBUTE)
+                or not _integer(spec['one_in'], 0, 1000000000)
                 or not isinstance(spec['players'], dict) or len(spec['players']) > 2000):
             raise ValueError('Invalid custom edition or reused version number')
         versions.add(spec['version'])
@@ -66,12 +75,15 @@ def validate_editions(section):
                     or int(asset) not in STANDARD_PLAYERS or int(asset) >= 1 << 24
                     or not isinstance(player, dict) or set(player)-{'enabled', 'rating', 'attributes', 'position'}
                     or type(player.get('enabled')) is not bool
-                    or 'rating' in player and not _integer(player['rating'], 1, 115)
+                    or 'rating' in player and not _integer(player['rating'], 1, MAX_OVR)
                     or 'position' in player and (not isinstance(player['position'], str) or player['position'] not in POSITIONS)):
                 raise ValueError('Invalid custom player definition')
             if 'attributes' in player and (not isinstance(player['attributes'], list)
-                    or len(player['attributes']) != 6 or any(not _integer(v, 0, 115) for v in player['attributes'])):
-                raise ValueError('Custom attributes need six integers from 0 to 115')
+                    or len(player['attributes']) != 6 or any(not _integer(v, 0, MAX_ATTRIBUTE) for v in player['attributes'])):
+                raise ValueError('Custom attributes need six unsigned 32-bit integers')
+    if sum((Fraction(1, spec['one_in']) for spec in section['editions'].values()
+            if spec['enabled'] and spec['one_in']), Fraction()) > 1:
+        raise ValueError('Custom card probabilities must total at most 100%')
 
 
 def edition_names(settings): return sorted(settings.section('custom_cards')['editions'])
@@ -93,7 +105,7 @@ def _enabled(spec, asset):
 
 
 def _rating(spec, base, rule):
-    return rule.get('rating', min(115, base['rating']+spec['rating_boost']))
+    return rule.get('rating', min(MAX_OVR, base['rating']+spec['rating_boost']))
 
 
 def catalogue_player(settings, edition, asset):
@@ -112,7 +124,7 @@ def edition_variant(spec, asset):
     # Keep each footballer's strengths/weaknesses; custom attributes may override
     # these six locally estimated faces. GK slots retain their native GK order.
     boost = spec['attribute_boost'] if spec['attribute_boost'] is not None else max(0, rating-base['rating'])
-    attributes = rule.get('attributes', [min(115, row['value']+boost)
+    attributes = rule.get('attributes', [min(MAX_ATTRIBUTE, row['value']+boost)
                                          for row in base['attributeList']])
     return {'version': spec['version'], 'label': spec['label'], 'rareflag': spec['rareflag'],
             'discard_value': spec['discard_value'], 'rating': rating,
@@ -126,11 +138,11 @@ def validate_variant(edition, asset, variant):
             or not isinstance(variant, dict)
             or set(variant) != {'version', 'label', 'rareflag', 'discard_value', 'rating', 'attributes', 'position'}
             or not _integer(variant['version'], 1, 127) or not _label(variant['label'])
-            or type(variant['rareflag']) is not int or variant['rareflag'] not in (1, 3)
+            or not _integer(variant['rareflag'], 0, 255)
             or not _integer(variant['discard_value'], 0, 1000000)
-            or not _integer(variant['rating'], 1, 115)
+            or not _integer(variant['rating'], 1, MAX_OVR)
             or not isinstance(variant['position'], str) or variant['position'] not in POSITIONS or not isinstance(variant['attributes'], list)
-            or len(variant['attributes']) != 6 or any(not _integer(v, 0, 115) for v in variant['attributes'])):
+            or len(variant['attributes']) != 6 or any(not _integer(v, 0, MAX_ATTRIBUTE) for v in variant['attributes'])):
         raise ValueError('Invalid saved custom card snapshot')
 
 
@@ -159,7 +171,29 @@ def discard_value(record, settings):
 def upgrade_standard_draw(players, settings, rng):
     section = settings.section('custom_cards')
     chance = section['standard_pack_chance_percent']
-    if not section['enabled'] or not chance: return players
+    if not section['enabled']: return players
+    if chance is None:
+        # One mutually exclusive roll per card gives exact, unconditional odds.
+        # Unavailable editions leave their tickets as base cards, not rerolls.
+        editions = [(name, spec) for name, spec in section['editions'].items()
+                    if spec['enabled'] and spec['one_in']]
+        if not editions: return players
+        wheel = math.lcm(*(spec['one_in'] for _, spec in editions))
+        chosen = []
+        for player in players:
+            roll, cursor, edition = rng.randrange(wheel), 0, None
+            for name, spec in editions:
+                cursor += wheel//spec['one_in']
+                if roll < cursor:
+                    if _enabled(spec, player['assetId']): edition = name
+                    break
+            if edition is None: chosen.append(player)
+            else:
+                upgraded, variant = catalogue_player(settings, edition, player['assetId'])
+                chosen.append({**upgraded, '_edition': edition, '_variant': variant})
+        return chosen
+    if not chance: return players
+    # Explicit legacy percentages retain the older combined-chance behavior.
     # Use the exact decimal percentage: 0.001% is precisely 1 in 100,000.
     odds = Fraction(str(chance))/100
     chosen = []

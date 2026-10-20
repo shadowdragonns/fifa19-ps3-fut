@@ -46,15 +46,16 @@ hosts are the advertised server IP and localhost on port 8099.
 ## Build and open a pack
 
 Choose 1, 3, 6 or 12 distinct players. Optional filters cover club, nationality,
-league, position, base-card tier, minimum overall, rare base players and Prime.
+league, position, base-card tier, minimum overall, rare base players, Prime/TOTW, TOTY and Ones to Watch.
 The price and number of matching players update as selections change. The
 minimum overall applies to the final edition; other filters retain the selected
 footballer's club/nation/league. Prime stats and individual overrides use the
-same live custom-card definitions as FUT. Dedicated in-game Prime packs retain
-their 95+ guarantee; the custom builder uses the minimum overall you select.
+same live custom-card definitions as FUT. Prime packs are web-only;
+the builder uses the minimum overall you select.
 
-Standard custom packs explicitly restricted to gold use the usual extremely
-rare Prime-upgrade chance. Prime-only packs always draw Prime. Players are
+Standard custom packs explicitly restricted to gold use the usual
+special-edition probabilities: Prime/TOTW 1 in 400, TOTY 1 in 2,000 and
+OTW 1 in 10,000 per card. Edition-specific packs always draw that edition. Players are
 sampled uniformly from the eligible pool without duplicates within a pack.
 No purchase is possible if fewer distinct players match than the selected size.
 
@@ -86,6 +87,8 @@ Add this section to `server-config.json`; it reloads using the existing watcher:
     "filter_surcharge": 750,
     "extra_filter_percent": 20,
     "prime_surcharge": 30000,
+    "toty_surcharge": 60000,
+    "otw_surcharge": 100000,
     "rating_step_surcharge": 500,
     "rare_surcharge": 750
   }
@@ -95,7 +98,7 @@ Add this section to `server-config.json`; it reloads using the existing watcher:
 All numeric prices/percentages must be integers from 1 to 1,000,000. Positive
 surcharges ensure that adding a filter always increases the price. The base is
 per player. Each filled filter adds `filter_surcharge` per player. Prime adds
-`prime_surcharge`, rare-only adds `rare_surcharge`, and minimum rating adds
+`prime_surcharge`, TOTY adds `toty_surcharge`, OTW adds `otw_surcharge`, rare-only adds `rare_surcharge`, and minimum rating adds
 `max(0, minimum - 74) * rating_step_surcharge`. Each filter after the first also
 adds `extra_filter_percent` to the subtotal. The interface shows the full
 breakdown. Size multiplies the per-player costs. All prices are calculated by

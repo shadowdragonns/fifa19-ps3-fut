@@ -51,16 +51,23 @@ for pack_id, name, size, price, minimum in (
         price=price, rares=size, artwork=3, min_rating=minimum)
 
 PACKS[180] = dict(name='95+ Prime Player Pack', edition='prime', level='gold', size=1,
-                  price=50000, rares=1, artwork=3, min_rating=95)
+                  price=50000, rares=1, artwork=3, min_rating=95, retired=True)
 PACKS[181] = dict(name='95+ Prime Trio Pack', edition='prime', level='gold', size=3,
-                  price=125000, rares=3, artwork=3, min_rating=95)
+                  price=125000, rares=3, artwork=3, min_rating=95, retired=True)
+PACKS[190] = dict(name='Manager Pack', edition='support', support_type='manager',
+                  level='gold', size=1, price=1000, rares=0, artwork=3)
+PACKS[191] = dict(name='Training and Club Supplies Pack', edition='support', support_type='consumable',
+                  level='gold', size=7, price=2000, rares=7, artwork=3)
 
 
 def description(spec):
-    if spec['edition'] == 'england110':
+    if spec['edition'] == 'support':
+        text = ('One manager for your squad.' if spec['support_type']=='manager' else
+                'Player and goalkeeper training, player and manager contracts, player and squad fitness, and injury healing.')
+    elif spec['edition'] == 'england110':
         text = f"{spec['size']} England players with 110 ratings."
     elif spec['edition'] == 'prime':
-        text = f"{spec['size']} Prime player(s) rated {spec.get('min_rating', 1)} or higher. Default Prime ratings and attributes: base +15."
+        text = f"{spec['size']} Prime player(s) rated {spec.get('min_rating', 1)} or higher. Prime packs are now web-only."
     else:
         text = f"{spec['size']} {spec['level']} players with normal ratings, including {spec['rares']} rare."
         if 'theme' in spec:

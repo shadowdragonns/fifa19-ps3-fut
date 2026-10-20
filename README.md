@@ -10,10 +10,11 @@ and two-player FUT Online Seasons matchmaking and result saving. Server rules
 and Python domain-event plugins let operators customize the economy.
 Plugin API v2 adds online/offline and FUT entry/leave events, plus structured
 queries for saved players, clubs, cards, equipment, squads and match history.
-Every player has a separate Prime card with +15 overall and +15 to all six face
-attributes. Gold packs have a 1 in 100,000 Prime chance per player card; dedicated
-Prime packs guarantee 95+ rated Primes. Normal cards remain available, and
-definitions reload live.
+Every player has Prime/TOTW (+10), TOTY (+20) and Ones to Watch (+25) versions.
+Gold-player odds are respectively 1 in 400, 1 in 2,000 and 1 in 10,000; edition
+packs are available on the web. Rules reload live and refresh already-owned
+cards. Managers and club supplies have their own in-game packs; fitness,
+contracts, temporary training and player match totals persist.
 FUT Lab adds a club-linked website for building custom packs with live prices
 and opening them into the same saved FUT inventory.
 Single-player divisions progress from weak clubs on Amateur in Division 10
@@ -109,8 +110,9 @@ further desktop testing across repeated games. Public packaging and custom CA
 support have automated coverage; a fresh Windows desktop installation still
 needs testing. The patch targets the specific v1.02 executable hash and is
 not a general patch for other title IDs or revisions.
-Custom Prime IDs and 102–115 ratings passed the native card parser; their
-desktop rendering and match gameplay still need testing.
+Special IDs/rarity flags and OVR through 255 passed the native card parser.
+The new special artwork, managers and consumable menu flows still need live
+RPCS3 testing; parser/backend checks do not establish their match-engine behavior.
 
 Online division promotion/relegation, full quit/disconnect outcomes, transfer
 market trading, official EA accounts and global EA leaderboards are not

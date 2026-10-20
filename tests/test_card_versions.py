@@ -24,7 +24,11 @@ class CardVersionTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.path = Path(self.directory.name)
-        self.settings = Settings({'economy': {'starting_coins': 200000}})
+        self.settings = Settings({'economy': {'starting_coins': 200000}, 'custom_cards': {
+            'standard_pack_chance_percent': 0.001, 'editions': {'toty': {'enabled': False}, 'otw': {'enabled': False}}}})
+        # Exercise legacy pending-pack compatibility; current offers are tested separately.
+        for pack_id in (180,181):
+            legacy = patch.dict(fut_packs.PACKS[pack_id], retired=False); legacy.start(); self.addCleanup(legacy.stop)
         self.backend = Backend(self.path/'profile.json', settings=self.settings)
 
     def variant(self, asset=20801, edition='prime', item_id=2, pile='club'):
@@ -37,20 +41,20 @@ class CardVersionTests(unittest.TestCase):
         state['nextItemId'] = 3
         self.backend.fut_inventory.commit(state)
 
-    def test_every_player_has_exact_plus15_prime_stats_and_base_data_is_unmodified(self):
+    def test_every_player_has_exact_plus10_prime_stats_and_base_data_is_unmodified(self):
         before = deepcopy(fut_packs.STANDARD_PLAYERS)
         self.assertEqual(set(card_versions.catalogue_assets(self.settings, 'prime', available=True)), set(before))
         for asset, base in before.items():
             player, snapshot = card_versions.catalogue_player(self.settings, 'prime', asset)
             card_versions.validate_variant('prime', asset, snapshot)
-            self.assertEqual(player['rating'], base['rating']+15)
+            self.assertEqual(player['rating'], base['rating']+10)
             self.assertEqual([a['value'] for a in player['attributeList']],
-                             [a['value']+15 for a in base['attributeList']])
+                             [a['value']+10 for a in base['attributeList']])
             self.assertEqual(player['preferredPosition'], base['preferredPosition'])
         neuer = fut_inventory.Inventory.card(self.variant(167495), self.settings)
         self.assertEqual(neuer['preferredPosition'], 'GK')
-        self.assertEqual(neuer['rating'], 105)
-        self.assertEqual([a['value'] for a in neuer['attributeList']], [106, 103, 106, 103, 72, 103])
+        self.assertEqual(neuer['rating'], 100)
+        self.assertEqual([a['value'] for a in neuer['attributeList']], [101, 98, 101, 98, 67, 98])
         self.assertEqual(neuer['resourceId'], (1 << 24) | 167495)
         self.assertEqual(neuer['rareflag'], 3)
         base = fut_inventory.Inventory.card({'id': 1, 'assetId': 20801, 'edition': 'standard', 'timestamp': 1})
@@ -111,7 +115,7 @@ class CardVersionTests(unittest.TestCase):
         session = Session(self.backend.profile['persona'], self.backend.profile['account'], 'Synthetic', 'test', 0, 0)
         retrieved = fut_squads.retrieve(self.backend, session)
         prime = next(p['itemData'] for p in retrieved['players'] if p['index'] == 9)
-        self.assertEqual((prime['assetId'], prime['resourceId'], prime['rating']), (20801, (1 << 24) | 20801, 109))
+        self.assertEqual((prime['assetId'], prime['resourceId'], prime['rating']), (20801, (1 << 24) | 20801, 104))
 
     def test_custom_card_is_selectable_for_cpu_match_and_commits_a_normal_result(self):
         session = club(self.backend)
@@ -125,7 +129,7 @@ class CardVersionTests(unittest.TestCase):
         store.commit(state)
         fut_matches.create(self.backend, session, {'type': 'OFFLINE', 'squadId': 1})
         current = session.local_fut_match
-        self.assertEqual(current['squad']['players'][9]['itemData']['rating'], 109)
+        self.assertEqual(current['squad']['players'][9]['itemData']['rating'], 104)
         ids = [p['itemData']['id'] for p in current['squad']['players'] if p['index'] < 11]
         fut_matches.play(self.backend, session, {'items': [{'id': i} for i in ids]})
         report = {'matchReportId': 0, 'endReason': 'WIN', 'secondsPlayed': 5400,
@@ -143,7 +147,7 @@ class CardVersionTests(unittest.TestCase):
         api = Queries(self.backend); persona = self.backend.profile['persona']
         cards = api.get_cards(persona)
         self.assertEqual({c['edition'] for c in cards}, {'standard', 'prime'})
-        prime = api.get_cards(persona, edition='prime', min_rating=105, max_rating=115)[0]
+        prime = api.get_cards(persona, edition='prime', min_rating=100, max_rating=115)[0]
         self.assertEqual(prime['version'], 1)
         self.assertEqual(prime['edition_label'], 'Prime')
         self.assertEqual(api.get_catalogue_card(167495, edition='prime')['position'], 'GK')
@@ -167,7 +171,7 @@ class CardVersionTests(unittest.TestCase):
         self.assertNotIn(181, offers)
         with self.assertRaises(fut_inventory.Conflict):
             self.backend.fut_inventory.open_pack({'packId': 180, 'useCredits': 1, 'usePreOrder': 0, 'currency': 'COINS'})
-        self.assertEqual(Queries(self.backend).get_card(self.backend.profile['persona'], 2)['rating'], 109)
+        self.assertEqual(Queries(self.backend).get_card(self.backend.profile['persona'], 2)['rating'], 104)
         self.assertFalse(any(p['pack_id'] == 180 for p in Queries(self.backend).get_packs()))
 
     def test_normal_gold_prime_odds_are_exact_and_can_be_disabled(self):
@@ -178,7 +182,7 @@ class CardVersionTests(unittest.TestCase):
         rng.randrange.return_value = 0
         chosen = card_versions.upgrade_standard_draw([standard], self.settings, rng)[0]
         rng.randrange.assert_called_once_with(100000)
-        self.assertEqual((chosen['assetId'], chosen['_edition'], chosen['rating']), (20801, 'prime', 109))
+        self.assertEqual((chosen['assetId'], chosen['_edition'], chosen['rating']), (20801, 'prime', 104))
         rng.randrange.return_value = 1
         self.assertEqual(card_versions.upgrade_standard_draw([standard], self.settings, rng), [standard])
         for value in (1, 99999):
@@ -186,13 +190,13 @@ class CardVersionTests(unittest.TestCase):
             self.assertNotIn('_edition', card_versions.upgrade_standard_draw([standard], self.settings, rng)[0])
         disabled = Settings({'custom_cards': {'standard_pack_chance_percent': 0}})
         self.assertEqual(card_versions.upgrade_standard_draw([standard], disabled, object()), [standard])
-        always = Settings({'custom_cards': {'standard_pack_chance_percent': 100}})
+        always = Settings({'custom_cards': {'standard_pack_chance_percent': 100, 'editions': {'toty': {'enabled': False}, 'otw': {'enabled': False}}}})
         rng.randrange.return_value = 0
         self.assertEqual(card_versions.upgrade_standard_draw([standard], always, rng)[0]['_edition'], 'prime')
         self.assertEqual(standard['rating'], 94)
 
     def test_all_gold_pack_types_upgrade_same_player_and_retain_theme_filters(self):
-        always = Settings({'custom_cards': {'standard_pack_chance_percent': 100}})
+        always = Settings({'custom_cards': {'standard_pack_chance_percent': 100, 'editions': {'toty': {'enabled': False}, 'otw': {'enabled': False}}}})
         for pack_id, spec in fut_packs.PACKS.items():
             if spec['edition'] != 'standard': continue
             with self.subTest(pack=pack_id):
@@ -203,7 +207,7 @@ class CardVersionTests(unittest.TestCase):
                     base = fut_packs.STANDARD_PLAYERS[card['assetId']]
                     if spec['level'] == 'gold':
                         self.assertEqual(card['_edition'], 'prime')
-                        self.assertEqual(card['rating'], base['rating']+15)
+                        self.assertEqual(card['rating'], base['rating']+10)
                     else: self.assertNotIn('_edition', card)
                     self.assertEqual(fut_packs.level(base), spec['level'])
                     for field in ('nation', 'leagueId'):
@@ -224,7 +228,7 @@ class CardVersionTests(unittest.TestCase):
                      pendingPack={'packId': 180, 'id': 1, 'itemIds': [2]})
         store.commit(state)
         purchase = store.open_pack(payload)
-        self.assertEqual(purchase['itemList'][0]['rating'], 62)
+        self.assertEqual(purchase['itemList'][0]['rating'], 57)
         restored = Backend(self.backend.path, settings=self.settings).fut_inventory
         self.assertEqual(restored.state['coins'], 150000)
         self.assertEqual(restored.open_pack(payload), purchase)
@@ -232,8 +236,8 @@ class CardVersionTests(unittest.TestCase):
 
     def test_dedicated_prime_packs_filter_final_rating_and_trio_remains_distinct(self):
         minimum = min(fut_packs.STANDARD_PLAYERS, key=lambda asset: fut_packs.STANDARD_PLAYERS[asset]['rating'])
-        boundary = next(asset for asset, p in fut_packs.STANDARD_PLAYERS.items() if p['rating'] == 80)
-        below = next(asset for asset, p in fut_packs.STANDARD_PLAYERS.items() if p['rating'] == 79)
+        boundary = next(asset for asset, p in fut_packs.STANDARD_PLAYERS.items() if p['rating'] == 85)
+        below = next(asset for asset, p in fut_packs.STANDARD_PLAYERS.items() if p['rating'] == 84)
         # Explicit overrides, rather than base ratings alone, determine eligibility.
         settings = Settings({'custom_cards': {'editions': {'prime': {'players': {
             str(minimum): {'rating': 95}, '20801': {'rating': 94}}}}}})
@@ -257,9 +261,9 @@ class CardVersionTests(unittest.TestCase):
         self.assertEqual(pools[0], pools[1])
         # Gold packs retain their existing ultra-rare Prime rule, including 90 OVR.
         gold = next(p for p in fut_packs.STANDARD_PLAYERS.values() if p['rating'] == 75)
-        always = Settings({'custom_cards': {'standard_pack_chance_percent': 100}})
+        always = Settings({'custom_cards': {'standard_pack_chance_percent': 100, 'editions': {'toty': {'enabled': False}, 'otw': {'enabled': False}}}})
         chosen = card_versions.upgrade_standard_draw([gold], always, fut_packs.random.SystemRandom())[0]
-        self.assertEqual((chosen['_edition'], chosen['rating']), ('prime', 90))
+        self.assertEqual((chosen['_edition'], chosen['rating']), ('prime', 85))
 
     def test_prime_packs_hide_when_too_few_95_plus_players_and_failed_purchase_is_free(self):
         settings = Settings({'custom_cards': {'editions': {'prime': {
@@ -345,34 +349,34 @@ class CardVersionTests(unittest.TestCase):
 
     def test_invalid_definitions_and_saved_snapshots_are_rejected(self):
         cases = [{'standard_pack_chance_percent': True}, {'editions': {'prime': {'version': 128}}},
-                 {'editions': {'prime': {'rareflag': 255}}}, {'editions': {'standard': {'version': 2}}},
+                 {'editions': {'prime': {'rareflag': 256}}}, {'editions': {'standard': {'version': 2}}},
                  {'editions': {'flashback': {'version': 1, 'players': {'20801': {'rating': 99}}}}},
                  {'standard_pack_chance_percent': -0.001}, {'standard_pack_chance_percent': 100.001},
                  {'standard_pack_chance_percent': float('nan')}, {'standard_pack_chance_percent': float('inf')},
                  {'editions': {'prime': {'all_players': 1}}}, {'editions': {'prime': {'attribute_boost': True}}},
                  {'editions': {'prime': {'rating_boost': -1}}},
                  {'editions': {'prime': {'players': {'20801': {'rating': 0}}}}},
-                 {'editions': {'prime': {'players': {'20801': {'rating': 116}}}}},
+                 {'editions': {'prime': {'players': {'20801': {'rating': 256}}}}},
                  {'editions': {'prime': {'players': {'20801': {'position': []}}}}},
-                 {'editions': {'prime': {'players': {'20801': {'attributes': [116]*6}}}}},
+                 {'editions': {'prime': {'players': {'20801': {'attributes': [1<<32]*6}}}}},
                  {'editions': {'prime': {'players': {'9999999': {'rating': 110}}}}}]
         for value in cases:
             with self.subTest(value=value), self.assertRaises(ValueError): Settings({'custom_cards': value})
         self.own_base_and_prime()
-        for key, value in (('rating', 116), ('version', 128), ('attributes', [True]*6), ('position', [])):
+        for key, value in (('rating', 256), ('version', 128), ('attributes', [True]*6), ('position', [])):
             state = deepcopy(self.backend.fut_inventory.state); state['items'][1]['variant'][key] = value
             with self.assertRaises(ValueError): self.backend.fut_inventory.validate(state)
 
     def test_additional_editions_and_neuer_attribute_overrides_use_distinct_native_ids(self):
         settings = Settings({'custom_cards': {'editions': {'prime': {'players': {'167495': {'attributes': [115, 110, 113, 115, 88, 114]}}},
-                                                          'flashback': {'label': 'Flashback', 'version': 2,
+                                                          'flashback': {'label': 'Flashback', 'version': 4,
                                                                         'players': {'20801': {'rating': 102, 'position': 'RW'}}}}}})
         player, _ = card_versions.catalogue_player(settings, 'prime', 167495)
         self.assertEqual([a['value'] for a in player['attributeList']], [115, 110, 113, 115, 88, 114])
         player, snapshot = card_versions.catalogue_player(settings, 'flashback', 20801)
         self.assertEqual(player['preferredPosition'], 'RW')
         record = {'assetId': 20801, 'edition': 'flashback', 'variant': snapshot}
-        self.assertEqual(card_versions.resource_id(record), (2 << 24) | 20801)
+        self.assertEqual(card_versions.resource_id(record), (4 << 24) | 20801)
         self.assertNotEqual(card_versions.resource_id(record), card_versions.resource_id(self.variant()))
 
 

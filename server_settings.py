@@ -17,7 +17,7 @@ def defaults():
         'economy': {'starting_coins': 20000, 'win_coins': 1000,
                     'cpu_division_bonus': 500, 'draw_percent': 75, 'loss_percent': 50,
                     'quick_sell': {'bronze': [20, 75], 'silver': [100, 250], 'gold': [300, 600]}},
-        'packs': {'prices': {str(k): v['price'] for k, v in PACKS.items() if not v.get('retired')},
+        'packs': {'prices': {str(k): v['price'] for k, v in PACKS.items() if k != 3},
                   'gold_rare_weights': [30, 30, 30, 10]},
         'points': {'win': 3, 'draw': 1, 'loss': 0},
         'cpu_seasons': {'hold': [5+i for i in range(10)], 'promote': [12+i for i in range(10)],
@@ -25,7 +25,7 @@ def defaults():
                         'opponents': [list(teams) for teams in CPU_TIERS]},
         'matchmaking': {'search_seconds': 20, 'peer_timeout_seconds': 180},
         'plugins': {'enabled': True, 'disabled': [], 'settings': {}},
-        'custom_cards': {'enabled': True, 'standard_pack_chance_percent': 0.001, 'editions': default_editions()},
+        'custom_cards': {'enabled': True, 'standard_pack_chance_percent': None, 'editions': default_editions()},
         'web_packs': deepcopy(DEFAULT_PRICING)
     }
 
@@ -143,10 +143,10 @@ class Settings:
         from fut_packs import PACKS
         spec = deepcopy(PACKS[pack_id])
         spec['price'] = self._rules['packs']['prices'].get(str(pack_id), spec['price'])
-        if spec['edition'] not in ('standard', 'england110'):
+        if spec['edition'] not in ('standard', 'england110', 'support'):
             from card_versions import catalogue_assets
             try:
-                spec['retired'] = len(catalogue_assets(self, spec['edition'], available=True,
+                spec['retired'] = spec.get('retired', False) or len(catalogue_assets(self, spec['edition'], available=True,
                                                      min_rating=spec.get('min_rating', 0))) < spec['size']
             except KeyError: spec['retired'] = True
         return spec

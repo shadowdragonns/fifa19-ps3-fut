@@ -79,13 +79,17 @@ class Inventory:
                 raise ValueError('Duplicate club card version')
             from fut_condition import validate as validate_condition
             validate_condition(record)
+            from player_statistics import validate as validate_statistics
+            validate_statistics(record)
             ids.add(record['id'])
             if record['pile'] == 'club':
                 club_assets.add(identity)
         if ids and state['nextItemId'] <= max(ids):
             raise ValueError('Invalid local FUT next item ID')
+        from fut_items import records as support_records, validate as validate_support
+        validate_support(state, ids)
         pending = state.get('pendingPack')
-        unassigned = {r['id'] for r in state['items'] if r['pile'] == 'purchased'}
+        unassigned = {r['id'] for r in state['items']+support_records(state) if r['pile'] == 'purchased'}
         if pending is None:
             if unassigned:
                 raise ValueError('Unassigned cards have no local pack')
@@ -106,14 +110,14 @@ class Inventory:
         validate_entries({'entries': state['userHubData']})
         if state.get('squad') is not None:
             from fut_squads import validate
-            validate(state['squad'], state['items'])
+            validate(state['squad'], state['items'], support_records(state))
         from fut_squads import validate
         others = state.get('otherSquads', {})
         if not isinstance(others, dict) or len(others) > 29:
             raise ValueError('Invalid saved squads')
         active_id = (state.get('squad') or {'id': 1})['id']
         for key, squad in others.items():
-            validate(squad, state['items'])
+            validate(squad, state['items'], support_records(state))
             if key != str(squad['id']) or squad['id'] == active_id:
                 raise ValueError('Duplicate squad ID')
         if 'nextSquadId' in state and not integer(state['nextSquadId'], max([active_id]+[int(k) for k in others])+1, 1000000000):
@@ -164,37 +168,63 @@ class Inventory:
     def card(record, settings=None):
         from server_settings import DEFAULT
         settings = settings or DEFAULT
+        if 'definitionId' in record:
+            from fut_items import card
+            return card(record)
         edition = record.get('edition', 'england110')
         standard = edition == 'standard'
         custom = edition not in PLAYER_EDITIONS
         player = (card_versions.variant_player(record['assetId'], record['variant']) if custom
                   else PLAYER_EDITIONS[edition][record['assetId']])
+        if record.get('trainingBoost'):
+            player = deepcopy(player)
+            for stat, boost in zip(player['attributeList'], record['trainingBoost']):
+                stat['value'] = min(card_versions.MAX_ATTRIBUTE, stat['value']+boost)
         tier, rarity = (fut_packs.level(player), fut_packs.rare(player)) if standard else ('gold', 1)
+        from player_statistics import lists as statistics_lists
+        current_stats, lifetime_stats = statistics_lists(record)
         # Display names and portraits come from the game's DB using assetId.
-        return {'id': record['id'], 'resourceId': card_versions.resource_id(record),
+        card = {'id': record['id'], 'resourceId': card_versions.resource_id(record),
                 **{k: deepcopy(v) for k, v in player.items() if k != 'name'},
                 'cardsubtypeid': 1, 'itemType': 'player', 'itemState': 'free',
-                'contract': 7, 'fitness': 99, 'injuryGames': record.get('injuryGames', 0),
+                'contract': record.get('contract',7), 'fitness': record.get('fitness',99), 'injuryGames': record.get('injuryGames', 0),
                 'injuryType': record.get('injuryType', 'none'),
                 'suspension': record.get('suspension', 0), 'rareflag': record['variant']['rareflag'] if custom else fut_packs.rare(player) if standard else 1, 'owners': 1, 'loyaltyBonus': 0,
                 'discardValue': card_versions.discard_value(record, settings) if custom else settings.section('economy')['quick_sell'][tier][rarity], 'timestamp': record['timestamp'],
-                'untradeable': False, 'dream': False, 'training': 0, 'playStyle': 250,
+                'untradeable': False, 'dream': False, 'training': int(bool(record.get('trainingBoost'))), 'playStyle': 250,
                 # Retail notification getter 0x13eefe4 checks statsList[4],
                 # independently of the suspension byte used for eligibility.
                 # This is the current ban, not a lifetime red-card total.
-                'statsList': ([{'index': 4, 'value': record['suspension']}]
-                              if record.get('suspension', 0) else []),
-                'lifetimeStats': []}
+                'statsList': current_stats,
+                'lifetimeStats': lifetime_stats}
+        if record.get('trainingDefinition'):
+            from fut_items import card as support_card
+            card['trainingItem'] = support_card({'id':record['trainingItemId'],
+                'definitionId':record['trainingDefinition'], 'timestamp':record['timestamp']})
+        return card
+
+    def all_items(self, state=None):
+        state = self.state if state is None else state
+        return state['items']+state.get('supportItems',[])
+
+    @staticmethod
+    def identity(record):
+        return record['definitionId'] if 'definitionId' in record else card_versions.resource_id(record)
+
+    @staticmethod
+    def stackable(record):
+        from fut_items import CATALOGUE
+        return 'definitionId' in record and CATALOGUE[record['definitionId']]['itemType'] != 'manager'
 
     def duplicates(self, records):
-        club = {card_versions.resource_id(r): r['id'] for r in self.state['items'] if r['pile'] == 'club'}
+        club = {self.identity(r): r['id'] for r in self.all_items() if r['pile'] == 'club' and not self.stackable(r)}
         return [{'itemId': r['id'], 'itemLoans': 0,
-                 'duplicateItemId': club[card_versions.resource_id(r)], 'duplicateItemLoans': 0}
-                for r in records if card_versions.resource_id(r) in club and r['id'] != club[card_versions.resource_id(r)]]
+                 'duplicateItemId': club[self.identity(r)], 'duplicateItemLoans': 0}
+                for r in records if not self.stackable(r) and self.identity(r) in club and r['id'] != club[self.identity(r)]]
 
     def purchased(self, purchase=False):
         with self.lock:
-            records = [r for r in self.state['items'] if r['pile'] == 'purchased']
+            records = [r for r in self.all_items() if r['pile'] == 'purchased']
             value = {'itemList' if purchase else 'itemData': [self.card(r, self.settings) for r in records],
                      'duplicateItemIdList': self.duplicates(records)}
             if purchase:
@@ -249,16 +279,20 @@ class Inventory:
             if self.state['coins'] < spec['price']:
                 raise Conflict('Not enough local coins')
             state = deepcopy(self.state)
-            selected = fut_packs.draw(spec, CATALOG, self.settings.section('packs')['gold_rare_weights'], settings=self.settings)
+            if spec['edition']=='support':
+                from fut_items import draw
+                selected = [{'definitionId': i} for i in draw(spec)]
+            else:
+                selected = fut_packs.draw(spec, CATALOG, self.settings.section('packs')['gold_rare_weights'], settings=self.settings)
             now = int(time.time())
             item_ids = []
             for player in selected:
-                item = {'id': state['nextItemId'], 'assetId': player['assetId'],
-                        'edition': player.get('_edition', spec['edition']),
-                        'pile': 'purchased', 'timestamp': now}
+                item = {'id': state['nextItemId'], 'pile': 'purchased', 'timestamp': now}
+                if 'definitionId' in player: item['definitionId'] = player['definitionId']
+                else: item.update(assetId=player['assetId'], edition=player.get('_edition', spec['edition']))
                 if '_variant' in player: item['variant'] = deepcopy(player['_variant'])
                 item_ids.append(item['id'])
-                state['items'].append(item)
+                state.setdefault('supportItems' if 'definitionId' in item else 'items', []).append(item)
                 state['nextItemId'] += 1
             state['pendingPack'] = {'packId': pack_id, 'id': state['nextPackId'], 'itemIds': item_ids}
             state['nextPackId'] += 1
@@ -269,14 +303,15 @@ class Inventory:
             self.commit(state)
             self.events.emit('pack.opened', player=self.player(), pack_id=pack_id,
                              purchase_id=state['pendingPack']['id'], price=spec['price'],
-                             cards=[{'item_id': r['id'], 'asset_id': r['assetId'], 'edition': r.get('edition', 'england110'),
-                                     'resource_id': card_versions.resource_id(r)}
-                                    for r in state['items'] if r['id'] in item_ids])
+                             cards=[{'item_id': r['id'], 'asset_id': self.card(r,self.settings)['assetId'],
+                                     'edition': r.get('edition','support' if 'definitionId' in r else 'england110'),
+                                     'resource_id': self.identity(r)}
+                                    for r in self.all_items(state) if r['id'] in item_ids])
             return self.purchased(purchase=True)
 
     @staticmethod
     def finish_pending(state):
-        if not any(r['pile'] == 'purchased' for r in state['items']):
+        if not any(r['pile'] == 'purchased' for r in state['items']+state.get('supportItems',[])):
             state['pendingPack'] = None
 
     def move(self, payload):
@@ -297,17 +332,17 @@ class Inventory:
             raise ValueError('Duplicate item IDs')
         with self.lock:
             state = deepcopy(self.state)
-            by_id = {r['id']: r for r in state['items']}
+            by_id = {r['id']: r for r in self.all_items(state)}
             if any(i not in by_id for i in ids):
                 raise ValueError('Unknown local item')
-            owned = {card_versions.resource_id(r) for r in state['items'] if r['pile'] == 'club'}
+            owned = {self.identity(r) for r in self.all_items(state) if r['pile'] == 'club' and not self.stackable(r)}
             replies = []
             for i in ids:
                 record = by_id[i]
-                success = record['pile'] == 'club' or card_versions.resource_id(record) not in owned
+                success = record['pile'] == 'club' or self.stackable(record) or self.identity(record) not in owned
                 if success:
                     record['pile'] = 'club'
-                    owned.add(card_versions.resource_id(record))
+                    if not self.stackable(record): owned.add(self.identity(record))
                 replies.append({'id': i, 'pile': 'club', 'success': success,
                                 **({} if success else {'reason': 'Destination Full'})})
             self.finish_pending(state)
@@ -325,16 +360,18 @@ class Inventory:
         ids = set(payload['itemId'])
         with self.lock:
             state = deepcopy(self.state)
-            owned = {r['id'] for r in state['items']}
+            owned = {r['id'] for r in self.all_items(state)}
             if not ids <= owned:
                 raise ValueError('Unknown local item')
-            credits = sum(self.card(r, self.settings)['discardValue'] for r in state['items'] if r['id'] in ids)
+            credits = sum(self.card(r, self.settings)['discardValue'] for r in self.all_items(state) if r['id'] in ids)
             state['coins'] += credits
             state['items'] = [r for r in state['items'] if r['id'] not in ids]
+            if 'supportItems' in state: state['supportItems'] = [r for r in state['supportItems'] if r['id'] not in ids]
             for squad in ([state['squad']] if state.get('squad') else []) + list(state.get('otherSquads', {}).values()):
                 for slot in squad['players']:
                     if slot['itemData']['id'] in ids:
                         slot['itemData']['id'] = 0
+                if squad['manager'][0]['id'] in ids: squad['manager'][0]['id'] = 0
                 if squad['captain'] in ids:
                     squad['captain'] = 0
                 for kick in squad['kicktakers']:
@@ -427,11 +464,13 @@ def response(backend, method, path, raw):
     parsed = urlsplit(path)
     route = parsed.path
     item = ITEM_PATH.fullmatch(route)
-    if route not in ROUTES and not item:
+    resource = re.fullmatch(re.escape(PREFIX)+r'/item/resource/([0-9]{1,19})', route)
+    consumables = re.fullmatch(re.escape(PREFIX)+r'/club/consumables/([A-Za-z0-9]{1,32})', route)
+    if route not in ROUTES and not item and not resource and not consumables:
         return None
     # Retail single-item quick sell deletes one card by URL, without a body.
     # DiscardCard (0x2b) uses the separate POST itemId-array route.
-    methods = ROUTES[route] if not item else (('GET', 'PUT', 'DELETE') if item[1] else ('GET', 'PUT'))
+    methods = ('PUT',) if resource else ('GET',) if consumables else ROUTES[route] if not item else (('GET', 'PUT', 'DELETE') if item[1] else ('GET', 'PUT'))
     if method not in methods:
         return json_reply({'error': 'Method not allowed'}, 'FUT.WrongMethod',
                           '405 Method Not Allowed', [('Allow', ', '.join(methods))])
@@ -447,7 +486,16 @@ def response(backend, method, path, raw):
             if any(len(values) != 1 for values in query.values()):
                 raise ValueError('Repeated query parameter')
             payload = json.loads(body) if body else None
-            if route == PREFIX+'/store/purchasegroup/all':
+            if resource:
+                if query: raise ValueError('Unexpected consumable query')
+                from fut_items import apply
+                value = apply(backend,int(resource[1]),payload,by_resource=True)
+            elif consumables:
+                if body: raise ValueError('Unexpected consumable body')
+                from fut_items import search
+                search_type = consumables[1]
+                value = search(store,{**query,'type':['consumables'] if search_type in ('all','any') or search_type.isdigit() else [search_type]})
+            elif route == PREFIX+'/store/purchasegroup/all':
                 if set(query) - {'ppInfo'} or query.get('ppInfo', ['true']) != ['true'] or body:
                     raise ValueError('Invalid pack-list request')
                 store.ensure_saved()
@@ -457,6 +505,9 @@ def response(backend, method, path, raw):
                     raise ValueError('Invalid club query')
                 if query.get('type', ['player']) == ['player']:
                     value = club_search(store, query)
+                elif query.get('type',[''])[0] in {'manager','staff','training','consumable','consumables','playerTraining','GKTraining','contract','fitness','healing'}:
+                    from fut_items import search
+                    value = search(store,query)
                 else:
                     from fut_club_assets import search
                     value = search(store, query)
@@ -469,7 +520,7 @@ def response(backend, method, path, raw):
                 ids = set(map(int, text.split(',')))
                 from fut_club_assets import equipment
                 cosmetics = [c for c in equipment(store) if c['id'] in ids]
-                records = [r for r in store.state['items'] if r['id'] in ids]
+                records = [r for r in store.all_items() if r['id'] in ids]
                 if len(records)+len(cosmetics) != len(ids):
                     raise ValueError('Unknown local item')
                 value = {'itemData': [store.card(r, store.settings) for r in records]+cosmetics,
@@ -494,8 +545,12 @@ def response(backend, method, path, raw):
                         raise ValueError('Single-item quick sell has no body')
                     value = store.discard({'itemId': [int(item[1])]})
                 elif item and item[1]:
-                    from fut_club_assets import activate
-                    value = activate(backend, int(item[1]), payload)
+                    if isinstance(payload,dict) and 'apply' in payload:
+                        from fut_items import apply
+                        value = apply(backend,int(item[1]),payload)
+                    else:
+                        from fut_club_assets import activate
+                        value = activate(backend, int(item[1]), payload)
                 elif item:
                     value = store.move(payload)
                 elif route == DISCARD_PATH:

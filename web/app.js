@@ -3,6 +3,8 @@ const $ = id => document.getElementById(id);
 const number = value => new Intl.NumberFormat('en-GB').format(value);
 const state = {me:null, options:null, quote:null, size:3, edition:'standard', register:false, busy:false, serial:0};
 let debounce;
+const editionLabel = edition => ({standard:'Standard',prime:'Prime / TOTW',toty:'Team of the Year',otw:'Ones to Watch'}[edition] || edition);
+const editionMark = edition => ({standard:'19',prime:'PRIME',toty:'TOTY',otw:'OTW'}[edition] || 'FUT');
 async function api(path, data) {
   const options = {credentials:'same-origin', headers:{}};
   if (data !== undefined) {
@@ -56,6 +58,10 @@ async function loadClub() {
       const option=document.createElement('option'); option.value=pos; option.textContent=pos; $('position').append(option);
     }
   }
+  for (const button of document.querySelectorAll('[data-edition] small')) {
+    const edition=button.parentElement.dataset.edition;
+    if(state.options.editions?.[edition])button.textContent='BASE +'+state.options.editions[edition].boost;
+  }
   history();
 }
 function choice(field, list) {
@@ -80,8 +86,9 @@ function chooseButtons() {
     button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));
   });
   $('pack-count').textContent=state.size+' PLAYER'+(state.size===1?'':'S');
-  $('art-edition').textContent=state.edition==='prime'?'PRIME':'19';
-  document.querySelector('.pack-art').classList.toggle('prime-art',state.edition==='prime');
+  $('art-edition').textContent=editionMark(state.edition);
+  document.querySelector('.pack-art').dataset.edition=state.edition;
+  document.querySelector('.pack-art').classList.toggle('prime-art',state.edition!=='standard');
 }
 function enableOpen() {
   const q=state.quote;
@@ -98,8 +105,8 @@ async function updateQuote() {
     const q=await api('quote',p);
     if (serial!==state.serial||!state.me) return;
     state.quote=q;
-    $('quote-title').textContent=(p.edition==='prime'?'Prime':'Your custom')+' player pack';
-    $('quote-summary').textContent=p.size+' distinct '+(p.edition==='prime'?'Prime ':'')+'player'+(p.size===1?'':'s')+(p.min_rating?' rated '+p.min_rating+'+':'')+'. Built around your selections.';
+    $('quote-title').textContent=(p.edition!=='standard'?editionLabel(p.edition):'Your custom')+' player pack';
+    $('quote-summary').textContent=p.size+' distinct '+(p.edition!=='standard'?editionLabel(p.edition)+' ':'')+'player'+(p.size===1?'':'s')+(p.min_rating?' rated '+p.min_rating+'+':'')+'. Built around your selections.';
     $('matches').textContent=number(q.matching_players)+' matching player'+(q.matching_players===1?'':'s');
     $('price').textContent=number(q.price);
     $('breakdown').replaceChildren(...q.breakdown.map(row=>{
@@ -117,7 +124,7 @@ function scheduleQuote() {clearTimeout(debounce);state.quote=null;state.serial++
 function applyDraft() {
   try {
     const draft=JSON.parse(localStorage.getItem('fut-lab-pack-draft')||'null');
-    if (!draft||![1,3,6,12].includes(draft.size)||!['standard','prime'].includes(draft.edition)) return;
+    if (!draft||![1,3,6,12].includes(draft.size)||!['standard','prime','toty','otw'].includes(draft.edition)) return;
     state.size=draft.size;state.edition=draft.edition;
     if (['any','gold','silver','bronze'].includes(draft.level)) $('level').value=draft.level;
     for (const [id,key,list] of [['club','club','clubs'],['nation','nation','nations'],['league','league','leagues']]) {
@@ -133,22 +140,22 @@ function history() {
   if (!rows.length) {$('history-list').replaceChildren(element('p','No packs opened yet. Your next signing starts here.','empty'));return;}
   $('history-list').replaceChildren(...rows.map(row=>{
     const item=element('div',undefined,'history-row');
-    const prime=row.parameters.edition==='prime';
+    const prime=row.parameters.edition!=='standard';
     const art=element('span',prime?'✦':'19','mini-pack'+(prime?' prime':''));
-    const description=element('div');description.append(element('strong',row.cards.length+' '+(prime?'Prime':'custom')+' players'),element('p',row.cards.map(c=>c.name).join(' · ')));
+    const description=element('div');description.append(element('strong',row.cards.length+' '+(prime?editionLabel(row.parameters.edition):'custom')+' players'),element('p',row.cards.map(c=>c.name).join(' · ')));
     const date=element('time',new Date(row.opened_at*1000).toLocaleDateString('en-GB',{day:'numeric',month:'short'}));
     item.append(art,description,date,element('span','−'+number(row.price)));return item;
   }));
 }
 function playerCard(card) {
-  const item=element('article',undefined,'player-card'+(card.edition==='prime'?' prime':''));
+  const item=element('article',undefined,'player-card'+(card.edition!=='standard'?' prime '+card.edition:''));
   const top=element('div',undefined,'card-top');
   const rating=element('div');rating.append(element('div',String(card.rating),'rating'),element('div',card.preferredPosition,'position'));
-  top.append(rating,element('span',card.edition==='prime'?'PRIME':'FUT 19','card-edition'));
-  const initials=card.name.replace(/^Prime /,'').split(/\s+/).map(s=>s[0]).join('').slice(0,2);
+  top.append(rating,element('span',editionMark(card.edition),'card-edition'));
+  const initials=card.name.replace(/^(Prime|Team of the Year|Ones to Watch) /,'').split(/\s+/).map(s=>s[0]).join('').slice(0,2);
   const club=state.options.clubs.find(row=>row.id===card.teamid);
   const nation=state.options.nations.find(row=>row.id===card.nation);
-  item.append(top,element('div',initials,'portrait'),element('h3',card.name.replace(/^Prime /,'')),element('p',(club?club.name:'')+' · '+(nation?nation.name:''),'card-club'));
+  item.append(top,element('div',initials,'portrait'),element('h3',card.name.replace(/^(Prime|Team of the Year|Ones to Watch) /,'')),element('p',(club?club.name:'')+' · '+(nation?nation.name:''),'card-club'));
   const labels=card.preferredPosition==='GK'?['DIV','HAN','KIC','REF','SPD','POS']:['PAC','SHO','PAS','DRI','DEF','PHY'];
   const stats=element('div',undefined,'card-stats');
   card.attributeList.forEach((stat,i)=>{const value=element('span');value.append(element('strong',String(stat.value)),document.createTextNode(labels[i]));stats.append(value);});

@@ -92,7 +92,7 @@ class WebPackTests(unittest.TestCase):
         for asset in pool:
             base=fut_packs.STANDARD_PLAYERS[asset]
             self.assertEqual((base['teamid'],base['nation'],base['leagueId'],base['preferredPosition']), (45,38,31,'ST'))
-            self.assertGreaterEqual(base['rating']+15,95)
+            self.assertGreaterEqual(base['rating']+10,95)
         with self.assertRaises(web_packs.PackError):web_packs.quote({'price':1},self.backend.settings)
         with self.assertRaises(web_packs.PackError):web_packs.quote({'size':True},self.backend.settings)
 
@@ -110,7 +110,7 @@ class WebPackTests(unittest.TestCase):
         self.assertEqual(self.backend.fut_inventory.state,before)
 
     def test_prime_open_saves_real_coins_cards_stats_and_is_idempotent_after_restart(self):
-        token,q=self.quote({'size':3,'edition':'prime','min_rating':95,'nation':14,'league':13})
+        token,q=self.quote({'size':3,'edition':'prime','min_rating':90,'nation':14,'league':13})
         before=self.backend.fut_inventory.state['coins'];events=[]
         self.backend.events.subscribe('web.pack.opened',events.append)
         with ThreadPoolExecutor(max_workers=5) as executor:
@@ -122,9 +122,9 @@ class WebPackTests(unittest.TestCase):
         self.assertEqual(len(self.backend.fut_inventory.state['items']),3)
         for card in result['cards']:
             base=fut_packs.STANDARD_PLAYERS[card['assetId']]
-            self.assertGreaterEqual(card['rating'],95)
-            self.assertEqual(card['rating'],base['rating']+15)
-            self.assertEqual([r['value'] for r in card['attributeList']],[r['value']+15 for r in base['attributeList']])
+            self.assertGreaterEqual(card['rating'],90)
+            self.assertEqual(card['rating'],base['rating']+10)
+            self.assertEqual([r['value'] for r in card['attributeList']],[r['value']+10 for r in base['attributeList']])
             self.assertEqual(card['resourceId']>>24,1)
         restored=Backend(self.backend.path,multiuser=True,settings=self.backend.settings)
         auth=WebAccounts(self.auth.path)
@@ -134,7 +134,7 @@ class WebPackTests(unittest.TestCase):
 
     def test_duplicate_versions_refund_normally_and_do_not_replace_existing_cards(self):
         token,q=self.quote({'size':1,'level':'gold'})
-        with patch.object(fut_packs.random.SystemRandom,'sample',return_value=[20801]),patch.object(fut_packs.random.SystemRandom,'randrange',return_value=1):
+        with patch.object(fut_packs.random.SystemRandom,'sample',return_value=[20801]),patch.object(fut_packs.random.SystemRandom,'randrange',return_value=9999):
             first=web_packs.open_pack(self.backend,self.auth,token,duplicate_consent=True)
             token,q=self.quote({'size':1,'level':'gold'})
             second=web_packs.open_pack(self.backend,self.auth,token,duplicate_consent=True)
@@ -211,6 +211,17 @@ class WebPackTests(unittest.TestCase):
         self.auth.clock=lambda:time.time()+601
         with self.assertRaises(AuthError):web_packs.open_pack(self.backend,self.auth,token,duplicate_consent=True)
         self.assertEqual(self.backend.fut_inventory.state,state)
+
+    def test_toty_and_otw_web_versions_above_115_keep_distinct_ids_and_durable_receipts(self):
+        for edition,rating,version in (('prime',104,1),('toty',114,2),('otw',119,3)):
+            token,q=self.quote({'size':1,'edition':edition,'club':45,'nation':38,'position':'ST','min_rating':rating})
+            with patch.object(fut_packs.random.SystemRandom,'sample',return_value=[20801]):
+                result=web_packs.open_pack(self.backend,self.auth,token,duplicate_consent=True)
+            card=result['cards'][0]
+            self.assertEqual((card['edition'],card['rating'],card['resourceId']>>24),(edition,rating,version))
+            restored=Backend(self.backend.path,multiuser=True,settings=self.backend.settings)
+            self.assertEqual(web_packs.open_pack(restored,self.auth,token,duplicate_consent=True),result)
+        self.assertEqual(len({r['variant']['version'] for r in self.backend.fut_inventory.state['items']}),3)
 
 
 if __name__=='__main__':unittest.main()

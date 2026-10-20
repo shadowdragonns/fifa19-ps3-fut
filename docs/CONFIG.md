@@ -66,8 +66,10 @@ active matches keep their captured squads. See [CUSTOM_CARDS.md](CUSTOM_CARDS.md
 | `plugins.disabled` | `[]` | Plugin filenames without `.py` whose hooks are disabled |
 | `plugins.settings` | `{}` | Current per-plugin JSON objects read through `api.settings` |
 | `custom_cards.enabled` | true | Enable custom card draws and packs |
-| `custom_cards.standard_pack_chance_percent` | 0.001 | Decimal percentage per eligible gold player; default 1 in 100,000 |
-| `custom_cards.editions` | All-player Prime +15 | Version IDs, catalogue coverage, stat boosts, player overrides and custom quick-sell prices; stat edits also refresh owned cards |
+| `custom_cards.standard_pack_chance_percent` | null | Use per-edition odds; a numeric value explicitly selects legacy combined-percentage mode |
+| `custom_cards.editions` | Prime/TOTW +10, TOTY +20, OTW +25 | Version IDs, catalogue coverage, stat boosts, player overrides and custom quick-sell prices; stat edits also refresh owned cards |
+
+Each edition has `one_in` (400 / 2000 / 10000 by default). See [CUSTOM_CARDS.md](CUSTOM_CARDS.md) for the exact roll and native numeric bounds. Manager/supplies pack prices use keys 190/191 in `packs.prices`. See [ITEMS.md](ITEMS.md) for fitness, training and player totals.
 
 Division arrays run from **displayed Division 10 to Division 1**. The wire
 division numbers run in the opposite direction: wire 1 is displayed Division

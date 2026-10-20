@@ -130,17 +130,34 @@ class Queries:
                                   card_versions.resource_id(record), True,
                                   card_versions.discard_value(record, self.root.settings),
                                   variant['label'], variant['version'])
+        if record.get('trainingBoost'):
+            from fut_inventory import Inventory
+            card['attributes'] = Inventory.card(record,self.root.settings)['attributeList']
+        from player_statistics import empty as empty_statistics
         return {**card, 'item_id': record['id'], 'pile': record['pile'], 'created_at': record['timestamp'],
+                'statistics': deepcopy(record.get('statistics',empty_statistics())),
                 'condition': {'injury_type': record.get('injuryType', 'none'), 'injury_games': record.get('injuryGames', 0),
-                              'suspension': record.get('suspension', 0)}}
+                              'suspension': record.get('suspension', 0), 'contract': record.get('contract',7),
+                              'fitness': record.get('fitness',99), 'training': bool(record.get('trainingBoost'))}}
+
+    @snapshot
+    def get_support_items(self, persona_id, *, item_type=None, pile=None, start=0, count=100):
+        from fut_items import records, card, TYPES
+        _page(start,count)
+        if item_type is not None and item_type not in TYPES: raise ValueError('Unknown support item type')
+        if pile not in (None,'club','purchased'): raise ValueError('Unknown support pile')
+        owner = self._owner(persona_id)
+        items = [{**card(row),'pile':row['pile']} for row in records(owner.fut_inventory.state)
+                 if pile is None or row['pile']==pile]
+        return [row for row in items if item_type is None or row['itemType']==item_type][start:start+count]
 
     def _filters(self, filters):
         allowed = {'min_rating', 'max_rating', 'name', 'position', 'nation_id', 'team_id', 'league_id', 'rare'}
         if set(filters)-allowed: raise ValueError('Unknown card filter')
         for k in ('min_rating', 'max_rating', 'nation_id', 'team_id', 'league_id'):
-            if k in filters and (type(filters[k]) is not int or not 0 <= filters[k] <= (115 if 'rating' in k else 2**31-1)):
+            if k in filters and (type(filters[k]) is not int or not 0 <= filters[k] <= (255 if 'rating' in k else 2**31-1)):
                 raise ValueError('Invalid card filter: '+k)
-        if filters.get('min_rating', 0) > filters.get('max_rating', 115): raise ValueError('Invalid rating range')
+        if filters.get('min_rating', 0) > filters.get('max_rating', 255): raise ValueError('Invalid rating range')
         if 'rare' in filters and type(filters['rare']) is not bool: raise ValueError('rare must be bool')
         for k in ('name', 'position'):
             if k in filters and (not isinstance(filters[k], str) or not 1 <= len(filters[k]) <= 80):
@@ -148,7 +165,7 @@ class Queries:
         return filters
 
     def _selected(self, card, filters):
-        return (filters.get('min_rating', 0) <= card['rating'] <= filters.get('max_rating', 115)
+        return (filters.get('min_rating', 0) <= card['rating'] <= filters.get('max_rating', 255)
                 and all(card[k] == v for k,v in filters.items() if k in ('position', 'nation_id', 'team_id', 'league_id', 'rare'))
                 and ('name' not in filters or filters['name'].casefold() in card['name'].casefold()))
 
@@ -204,6 +221,7 @@ class Queries:
         records = {r['id']:r for r in owner.fut_inventory.state['items']}
         return {'squad_id': value['id'], 'name': value['squadName'], 'formation': value['formation'],
                 'active': saved(owner)['id'] == value['id'], 'captain_item_id': value['captain'],
+                'manager_item_id': value['manager'][0]['id'],
                 'players': [{'index':slot['index'], 'item_id':slot['itemData']['id'], 'kit_number':slot['kitNumber'],
                              'role':'starting' if slot['index'] < 11 else 'bench' if slot['index'] < 18 else 'reserve',
                              'card':self._card(records[slot['itemData']['id']]) if slot['itemData']['id'] else None}

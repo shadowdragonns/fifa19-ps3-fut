@@ -94,7 +94,7 @@ def validate_report(payload):
 
 def award(coins):
     # Empty breakdown collections are valid native vector paths. Local
-    # rewards scale with CPU division; contract/fitness depletion stays disabled.
+    # rewards scale with CPU division. Owned conditions are persisted separately.
     return {'allCoins': coins, 'matchCoins': coins, 'seasonCoins': 0,
             'tournamentCoins': 0, 'participationAward': 0, 'boostConis': 0,
             'boostCountLeft': 0, 'gameModeAward': {'coins': 0},
@@ -147,10 +147,13 @@ def save_result(backend, current, payload):
         result = award(coins)
         summary = {k: deepcopy(v) for k, v in payload.items() if k not in ('matchReportId', 'matchData')}
         record = {'id': current['id'], 'requestHash': digest, 'finished': int(time.time()),
+                  'playedItems': sorted(current['played_items']),
                   'seasonId': current['request'].get('seasonId', 0),
                   'divisionId': current['request'].get('divisionId', 0),
                   'summary': summary, 'award': result, 'rewardVersion': 4, 'rewardPolicy': policy}
         state = deepcopy(store.state)
+        from player_statistics import apply as apply_statistics
+        apply_statistics(state,current,payload)
         from fut_condition import apply as apply_condition
         apply_condition(state, current, payload)
         state['coins'] += coins
@@ -168,7 +171,7 @@ def validate_history(history):
         raise ValueError('Invalid local match history')
     seen = set()
     for row in history:
-        if (not isinstance(row, dict) or set(row) not in ({'id', 'requestHash', 'finished', 'seasonId', 'divisionId', 'summary', 'award'},
+        if (not isinstance(row, dict) or set(row)-{'playedItems'} not in ({'id', 'requestHash', 'finished', 'seasonId', 'divisionId', 'summary', 'award'},
                                      {'id', 'requestHash', 'finished', 'seasonId', 'divisionId', 'summary', 'award', 'rewardVersion'},
                                      {'id', 'requestHash', 'finished', 'seasonId', 'divisionId', 'summary', 'award', 'rewardVersion', 'rewardPolicy'})
                 or not isinstance(row['id'], str) or not re.fullmatch(r'[0-9a-f]{32}', row['id'])
@@ -178,6 +181,12 @@ def validate_history(history):
                 or not isinstance(row['summary'], dict)):
             raise ValueError('Invalid saved match record')
         validate_report({**row['summary'], 'matchReportId': 0, 'matchData': ''})
+        if 'playedItems' in row:
+            played = row['playedItems']
+            if (not isinstance(played,list) or not 11 <= len(played) <= 23
+                    or any(not integer(i,1) for i in played) or len(set(played))!=len(played)
+                    or not set(played)<={r['id'] for r in row['summary']['items']}):
+                raise ValueError('Invalid saved played-card IDs')
         if 'rewardVersion' in row and (type(row['rewardVersion']) is not int or row['rewardVersion'] not in (2, 3, 4)):
             raise ValueError('Invalid saved reward version')
         if ('rewardPolicy' in row) != (row.get('rewardVersion') == 4):

@@ -114,6 +114,9 @@ class WebApp:
                     result = {key:[{'id':int(k),'name':v} for k,v in sorted(values.items(),key=lambda row:row[1].casefold())]
                               for key,values in self.labels.items()}
                     result['positions'] = sorted(web_packs.POSITIONS)
+                    result['editions'] = {name: {'label': spec['label'], 'boost': spec['rating_boost']}
+                        for name, spec in owner.settings.section('custom_cards')['editions'].items()
+                        if name in ('prime', 'toty', 'otw')}
                 elif method == 'POST' and route == '/club/api/quote':
                     self.auth.limit('quotes:'+str(session['persona']), count=120, seconds=60)
                     with owner.lock:

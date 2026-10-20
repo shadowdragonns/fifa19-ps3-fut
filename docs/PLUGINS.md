@@ -173,6 +173,7 @@ These methods are for trusted server plugins, not public HTTP endpoints.
 | `api.get_clubs(start=0, count=100)` | Club summaries, including offline clubs |
 | `api.get_club(persona_id)` | Name, coins, equipment, counts, active squad, season progress and statistics |
 | `api.get_cards(persona_id, pile=None, edition=None, start=0, count=100, **filters)` | Owned player cards; `pile` is `club`, `purchased` or null for both |
+| `api.get_support_items(persona_id, item_type=None, pile=None, start=0, count=100)` | Owned managers and consumables, separate from player cards |
 | `api.get_card(persona_id, item_id)` | An owned card; item IDs are scoped to the specified club |
 | `api.get_equipment(persona_id, item_type=None, active_only=False, start=0, count=100)` | Kit, badge, ball and stadium choices with active states |
 | `api.get_squads(persona_id)` | All saved squads with slots and card snapshots |
@@ -194,10 +195,10 @@ IDs are positive integers; the match receipt ID is a string. Queries are
 available during `register(api)` as well as callbacks. An empty new multiuser
 server lists zero players until the first registration.
 
-Card filters: `min_rating`, `max_rating` (0–115), `name` (case-insensitive
+Card filters: `min_rating`, `max_rating` (0–255), `name` (case-insensitive
 substring), `position`, `nation_id`, `team_id`, `league_id`, `rare` (boolean).
 Editions include `standard`, legacy `england110` and configured custom editions
-such as `prime`. Owned snapshots remain queryable when an edition is disabled.
+such as `prime`, `toty` and `otw`. Owned snapshots remain queryable when an edition is disabled.
 Rows also include `resource_id`, `version` and `edition_label`; catalogue queries
 show current definitions. Owned-card queries show the saved stats, automatically
 refreshed when custom-card definitions reload or the server starts; issued item
@@ -205,8 +206,12 @@ and resource IDs stay stable.
 Owned-card rows include
 `item_id`, `asset_id`, `name`, `rating`, `position`, nation/team/league IDs,
 `rare`, `edition`, native indexed `attributes`, `quick_sell_value`, `pile`,
-`created_at`, and `condition` with `injury_type`, `injury_games`, `suspension`.
+`created_at`, `statistics` (gamesPlayed/goals/assists/yellowCards/redCards), and
+`condition` with `injury_type`, `injury_games`, `suspension`, `fitness`, `contract` and `training`.
 Cards and equipment are separate query collections.
+
+Squads also include `manager_item_id`. `consumable.applied` fires after a saved
+consumption with `player`, consumed `item_id`, `definition_id` and `target_ids`.
 
 Squad slots include `index`, `item_id`, `kit_number`, `role` and `card`.
 An empty slot has item ID zero and null `card`; roles are `starting`, `bench`

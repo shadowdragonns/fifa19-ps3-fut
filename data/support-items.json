@@ -1,0 +1,4525 @@
+{
+  "source_db_sha256": "1c7f0ecdccb343ee337e1b6ca7ca2fd0d80af969a8d2a0af8317a9363b53a333",
+  "managers": [
+    {
+      "assetId": 1000001,
+      "resourceId": 1000001,
+      "name": "Hein Vanhaezebrouck",
+      "rating": 75,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000005,
+      "resourceId": 1000005,
+      "name": "Tommy Wright",
+      "rating": 65,
+      "nation": 35,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000009,
+      "resourceId": 1000009,
+      "name": "Manuel Pellegrini",
+      "rating": 80,
+      "nation": 55,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000011,
+      "resourceId": 1000011,
+      "name": "Pedro Caixinha",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000012,
+      "resourceId": 1000012,
+      "name": "Ignacio Ambriz",
+      "rating": 70,
+      "nation": 83,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000018,
+      "resourceId": 1000018,
+      "name": "Piotr Stokowiec",
+      "rating": 70,
+      "nation": 37,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000023,
+      "resourceId": 1000023,
+      "name": "Michał Probierz",
+      "rating": 65,
+      "nation": 37,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000030,
+      "resourceId": 1000030,
+      "name": "Mike Mulvey",
+      "rating": 65,
+      "nation": 195,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000032,
+      "resourceId": 1000032,
+      "name": "Ernie Merrick",
+      "rating": 65,
+      "nation": 42,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000035,
+      "resourceId": 1000035,
+      "name": "Alberto Gamero",
+      "rating": 75,
+      "nation": 56,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000041,
+      "resourceId": 1000041,
+      "name": "Tony Popovic",
+      "rating": 65,
+      "nation": 195,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000044,
+      "resourceId": 1000044,
+      "name": "Roy Hodgson",
+      "rating": 80,
+      "nation": 14,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000045,
+      "resourceId": 1000045,
+      "name": "Marcel Koller",
+      "rating": 75,
+      "nation": 47,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000057,
+      "resourceId": 1000057,
+      "name": "Francky Dury",
+      "rating": 75,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000066,
+      "resourceId": 1000066,
+      "name": "Kasper Hjulmand",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000067,
+      "resourceId": 1000067,
+      "name": "Mauricio Pochettino",
+      "rating": 80,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000068,
+      "resourceId": 1000068,
+      "name": "Mark Hughes",
+      "rating": 80,
+      "nation": 50,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000072,
+      "resourceId": 1000072,
+      "name": "José Saturnino Cardozo",
+      "rating": 75,
+      "nation": 58,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000074,
+      "resourceId": 1000074,
+      "name": "Rui Vitória",
+      "rating": 80,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000076,
+      "resourceId": 1000076,
+      "name": "S Conceição",
+      "rating": 80,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000087,
+      "resourceId": 1000087,
+      "name": "Tuca Ferretti",
+      "rating": 80,
+      "nation": 54,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000090,
+      "resourceId": 1000090,
+      "name": "Peter Maes",
+      "rating": 70,
+      "nation": 7,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000097,
+      "resourceId": 1000097,
+      "name": "Phillip Cocu",
+      "rating": 80,
+      "nation": 34,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000109,
+      "resourceId": 1000109,
+      "name": "Rikard Norling",
+      "rating": 70,
+      "nation": 46,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000110,
+      "resourceId": 1000110,
+      "name": "Jens Gustafsson",
+      "rating": 70,
+      "nation": 46,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000113,
+      "resourceId": 1000113,
+      "name": "Fatih Terim",
+      "rating": 80,
+      "nation": 48,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000114,
+      "resourceId": 1000114,
+      "name": "Ole Gunnar Solskjær",
+      "rating": 70,
+      "nation": 36,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000115,
+      "resourceId": 1000115,
+      "name": "Liam Buckley",
+      "rating": 65,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000117,
+      "resourceId": 1000117,
+      "name": "Andreas Alm",
+      "rating": 70,
+      "nation": 46,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000118,
+      "resourceId": 1000118,
+      "name": "René Weiler",
+      "rating": 65,
+      "nation": 47,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000121,
+      "resourceId": 1000121,
+      "name": "José Mourinho",
+      "rating": 80,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000124,
+      "resourceId": 1000124,
+      "name": "Felice Mazzu",
+      "rating": 75,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000128,
+      "resourceId": 1000128,
+      "name": "Nuno",
+      "rating": 80,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000129,
+      "resourceId": 1000129,
+      "name": "Derek McInnes",
+      "rating": 70,
+      "nation": 42,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000131,
+      "resourceId": 1000131,
+      "name": "Neil Lennon",
+      "rating": 65,
+      "nation": 35,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000135,
+      "resourceId": 1000135,
+      "name": "Stephen Kenny",
+      "rating": 65,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000146,
+      "resourceId": 1000146,
+      "name": "Kjetil-André Rekdal",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000147,
+      "resourceId": 1000147,
+      "name": "Ronny Deila",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000148,
+      "resourceId": 1000148,
+      "name": "Brendan Rodgers",
+      "rating": 75,
+      "nation": 35,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000154,
+      "resourceId": 1000154,
+      "name": "Nenad Bjelica",
+      "rating": 75,
+      "nation": 10,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000156,
+      "resourceId": 1000156,
+      "name": "Abdullah Avci",
+      "rating": 80,
+      "nation": 48,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000158,
+      "resourceId": 1000158,
+      "name": "Miguel Herrera",
+      "rating": 75,
+      "nation": 83,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000163,
+      "resourceId": 1000163,
+      "name": "Stefan Billborn",
+      "rating": 70,
+      "nation": 46,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000167,
+      "resourceId": 1000167,
+      "name": "Dag-Eilev Fagermo",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000174,
+      "resourceId": 1000174,
+      "name": "Sean Dyche",
+      "rating": 80,
+      "nation": 14,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000193,
+      "resourceId": 1000193,
+      "name": "Guillermo Barros Schelotto",
+      "rating": 80,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000194,
+      "resourceId": 1000194,
+      "name": "Ricardo Zielinski",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000196,
+      "resourceId": 1000196,
+      "name": "Kevin Muscat",
+      "rating": 65,
+      "nation": 195,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000199,
+      "resourceId": 1000199,
+      "name": "Besnik Hasi",
+      "rating": 65,
+      "nation": 1,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000202,
+      "resourceId": 1000202,
+      "name": "Yves Vanderhaeghe",
+      "rating": 75,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000206,
+      "resourceId": 1000206,
+      "name": "Michel Preud'homme",
+      "rating": 75,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000211,
+      "resourceId": 1000211,
+      "name": "Julio César Falcioni",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000218,
+      "resourceId": 1000218,
+      "name": "Gustavo Costas",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000230,
+      "resourceId": 1000230,
+      "name": "Ståle Solbakken",
+      "rating": 75,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000233,
+      "resourceId": 1000233,
+      "name": "Henning Berg",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000247,
+      "resourceId": 1000247,
+      "name": "Massimiliano Allegri",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000248,
+      "resourceId": 1000248,
+      "name": "Stefano Pioli",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000250,
+      "resourceId": 1000250,
+      "name": "Gerald Baumgartner",
+      "rating": 65,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000256,
+      "resourceId": 1000256,
+      "name": "Şenol Güneş",
+      "rating": 80,
+      "nation": 48,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000257,
+      "resourceId": 1000257,
+      "name": "David Nielsen",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000259,
+      "resourceId": 1000259,
+      "name": "Pavel Vrba",
+      "rating": 75,
+      "nation": 12,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000261,
+      "resourceId": 1000261,
+      "name": "Bülent Korkmaz",
+      "rating": 70,
+      "nation": 48,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000263,
+      "resourceId": 1000263,
+      "name": "Luis Fernando Tena",
+      "rating": 75,
+      "nation": 83,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000264,
+      "resourceId": 1000264,
+      "name": "Antonio Mohamed",
+      "rating": 80,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000270,
+      "resourceId": 1000270,
+      "name": "Rıza Çalımbay",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000273,
+      "resourceId": 1000273,
+      "name": "Viktor Gancharenko",
+      "rating": 75,
+      "nation": 6,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000274,
+      "resourceId": 1000274,
+      "name": "Yuriy Semin",
+      "rating": 80,
+      "nation": 40,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000276,
+      "resourceId": 1000276,
+      "name": "Enrique Meza",
+      "rating": 70,
+      "nation": 83,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000285,
+      "resourceId": 1000285,
+      "name": "Dietmar Kühbauer",
+      "rating": 65,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000286,
+      "resourceId": 1000286,
+      "name": "Ertuğrul Sağlam",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000307,
+      "resourceId": 1000307,
+      "name": "Mesut Bakkal",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000311,
+      "resourceId": 1000311,
+      "name": "Tadeusz Pawłowski",
+      "rating": 65,
+      "nation": 37,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000320,
+      "resourceId": 1000320,
+      "name": "Marco Silva",
+      "rating": 80,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000321,
+      "resourceId": 1000321,
+      "name": "Jorge Jesus",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000324,
+      "resourceId": 1000324,
+      "name": "Ismail Kartal",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000353,
+      "resourceId": 1000353,
+      "name": "Eddie Howe",
+      "rating": 80,
+      "nation": 14,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000354,
+      "resourceId": 1000354,
+      "name": "Chris Hughton",
+      "rating": 80,
+      "nation": 25,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000360,
+      "resourceId": 1000360,
+      "name": "Uwe Rösler",
+      "rating": 75,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000364,
+      "resourceId": 1000364,
+      "name": "Steve Clarke",
+      "rating": 70,
+      "nation": 42,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000367,
+      "resourceId": 1000367,
+      "name": "Slaviša Jokanović",
+      "rating": 80,
+      "nation": 51,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000380,
+      "resourceId": 1000380,
+      "name": "Claude Puel",
+      "rating": 80,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000414,
+      "resourceId": 1000414,
+      "name": "Jürgen Klopp",
+      "rating": 80,
+      "nation": 21,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000417,
+      "resourceId": 1000417,
+      "name": "Pep Guardiola",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000420,
+      "resourceId": 1000420,
+      "name": "Michael Frontzeck",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000436,
+      "resourceId": 1000436,
+      "name": "Alois Schwartz",
+      "rating": 70,
+      "nation": 21,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000445,
+      "resourceId": 1000445,
+      "name": "Rolando Maran",
+      "rating": 75,
+      "nation": 27,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000448,
+      "resourceId": 1000448,
+      "name": "Maurizio Sarri",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000450,
+      "resourceId": 1000450,
+      "name": "Rafa Benítez",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000452,
+      "resourceId": 1000452,
+      "name": "Gian Piero Gasperini",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000500,
+      "resourceId": 1000500,
+      "name": "Geir Bakke",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000505,
+      "resourceId": 1000505,
+      "name": "Martin Canning",
+      "rating": 65,
+      "nation": 42,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000506,
+      "resourceId": 1000506,
+      "name": "Ernesto Valverde",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000507,
+      "resourceId": 1000507,
+      "name": "Diego Simeone",
+      "rating": 80,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000511,
+      "resourceId": 1000511,
+      "name": "Sergio González",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000517,
+      "resourceId": 1000517,
+      "name": "Javi Gracia",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000520,
+      "resourceId": 1000520,
+      "name": "Unai Emery",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000523,
+      "resourceId": 1000523,
+      "name": "Eduardo Berizzo",
+      "rating": 80,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000524,
+      "resourceId": 1000524,
+      "name": "Marcelino",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000528,
+      "resourceId": 1000528,
+      "name": "José Bordalás",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000530,
+      "resourceId": 1000530,
+      "name": "Abelardo",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000532,
+      "resourceId": 1000532,
+      "name": "Asier Garitano",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000534,
+      "resourceId": 1000534,
+      "name": "Anquela",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000538,
+      "resourceId": 1000538,
+      "name": "Rubi",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000543,
+      "resourceId": 1000543,
+      "name": "Pablo Machín",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000546,
+      "resourceId": 1000546,
+      "name": "Quique Setién",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000548,
+      "resourceId": 1000548,
+      "name": "Joel Cedergren",
+      "rating": 65,
+      "nation": 46,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000550,
+      "resourceId": 1000550,
+      "name": "Nanne Bergstrand",
+      "rating": 65,
+      "nation": 46,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000551,
+      "resourceId": 1000551,
+      "name": "Jörgen Lennartsson",
+      "rating": 65,
+      "nation": 46,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000599,
+      "resourceId": 1000599,
+      "name": "Keith Long",
+      "rating": 65,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000600,
+      "resourceId": 1000600,
+      "name": "John Caulfield",
+      "rating": 65,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000608,
+      "resourceId": 1000608,
+      "name": "Waldemar Fornalik",
+      "rating": 65,
+      "nation": 37,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000661,
+      "resourceId": 1000661,
+      "name": "Ramón Díaz",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000681,
+      "resourceId": 1000681,
+      "name": "Markus Babbel",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000686,
+      "resourceId": 1000686,
+      "name": "Jorge Simão",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000689,
+      "resourceId": 1000689,
+      "name": "José Mota",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000690,
+      "resourceId": 1000690,
+      "name": "Ivo Vieira",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000693,
+      "resourceId": 1000693,
+      "name": "Julen Lopetegui",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000694,
+      "resourceId": 1000694,
+      "name": "Pedro Martins",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000697,
+      "resourceId": 1000697,
+      "name": "Pedro Emanuel",
+      "rating": 70,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000702,
+      "resourceId": 1000702,
+      "name": "Pablo Guede",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000709,
+      "resourceId": 1000709,
+      "name": "Francisco Bozán",
+      "rating": 70,
+      "nation": 55,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000727,
+      "resourceId": 1000727,
+      "name": "Roberto Hernández",
+      "rating": 75,
+      "nation": 83,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000728,
+      "resourceId": 1000728,
+      "name": "Guillermo Vázquez",
+      "rating": 70,
+      "nation": 83,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000731,
+      "resourceId": 1000731,
+      "name": "Diego Alonso",
+      "rating": 75,
+      "nation": 60,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000737,
+      "resourceId": 1000737,
+      "name": "Giorgos Donis",
+      "rating": 70,
+      "nation": 22,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000743,
+      "resourceId": 1000743,
+      "name": "José Gomes",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000753,
+      "resourceId": 1000753,
+      "name": "Pedro Troglio",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000754,
+      "resourceId": 1000754,
+      "name": "Diego Cocca",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000755,
+      "resourceId": 1000755,
+      "name": "Edgardo Bauza",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000756,
+      "resourceId": 1000756,
+      "name": "Miguel Ángel Russo",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000758,
+      "resourceId": 1000758,
+      "name": "Jorge Almirón",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000762,
+      "resourceId": 1000762,
+      "name": "Diego Osella",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000765,
+      "resourceId": 1000765,
+      "name": "Eduardo Coudet",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000772,
+      "resourceId": 1000772,
+      "name": "Gustavo Alfaro",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000794,
+      "resourceId": 1000794,
+      "name": "John Aloisi",
+      "rating": 65,
+      "nation": 195,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000801,
+      "resourceId": 1000801,
+      "name": "Gerardo Pelusso",
+      "rating": 75,
+      "nation": 60,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000808,
+      "resourceId": 1000808,
+      "name": "Gino Lettieri",
+      "rating": 65,
+      "nation": 27,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000811,
+      "resourceId": 1000811,
+      "name": "Yannick Ferrera",
+      "rating": 65,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000815,
+      "resourceId": 1000815,
+      "name": "Bjørn Petter Ingebretsen",
+      "rating": 70,
+      "nation": 36,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000817,
+      "resourceId": 1000817,
+      "name": "Thorsten Fink",
+      "rating": 70,
+      "nation": 21,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000832,
+      "resourceId": 1000832,
+      "name": "Javier Torrente",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000857,
+      "resourceId": 1000857,
+      "name": "Lito Vidigal",
+      "rating": 75,
+      "nation": 98,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000861,
+      "resourceId": 1000861,
+      "name": "Mauricio Pellegrino",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000869,
+      "resourceId": 1000869,
+      "name": "Lucas Bernardi",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000873,
+      "resourceId": 1000873,
+      "name": "Marco Giampaolo",
+      "rating": 75,
+      "nation": 27,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000878,
+      "resourceId": 1000878,
+      "name": "Frank Vercauteren",
+      "rating": 65,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000880,
+      "resourceId": 1000880,
+      "name": "Morten Wieghorst",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000881,
+      "resourceId": 1000881,
+      "name": "Peter Zeidler",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000898,
+      "resourceId": 1000898,
+      "name": "Marcin Brosz",
+      "rating": 65,
+      "nation": 37,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000899,
+      "resourceId": 1000899,
+      "name": "Alexander Zorniger",
+      "rating": 75,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000902,
+      "resourceId": 1000902,
+      "name": "Vicente Moreno",
+      "rating": 70,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000913,
+      "resourceId": 1000913,
+      "name": "Muñiz",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000914,
+      "resourceId": 1000914,
+      "name": "Sandoval",
+      "rating": 70,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000920,
+      "resourceId": 1000920,
+      "name": "Jess Thorup",
+      "rating": 75,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000927,
+      "resourceId": 1000927,
+      "name": "Jagoba Arrasate",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000928,
+      "resourceId": 1000928,
+      "name": "László Bölöni",
+      "rating": 75,
+      "nation": 39,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000929,
+      "resourceId": 1000929,
+      "name": "Jakob Michelsen",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000934,
+      "resourceId": 1000934,
+      "name": "Rubén Baraja",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000940,
+      "resourceId": 1000940,
+      "name": "Jorge Luis Bernal",
+      "rating": 70,
+      "nation": 56,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000944,
+      "resourceId": 1000944,
+      "name": "Safet Sušić",
+      "rating": 75,
+      "nation": 8,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000951,
+      "resourceId": 1000951,
+      "name": "Eduardo Domínguez",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000954,
+      "resourceId": 1000954,
+      "name": "Pako Ayestarán",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000955,
+      "resourceId": 1000955,
+      "name": "Ernst Baumeister",
+      "rating": 65,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000957,
+      "resourceId": 1000957,
+      "name": "Mendilibar",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000961,
+      "resourceId": 1000961,
+      "name": "Ariel Holan",
+      "rating": 80,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000963,
+      "resourceId": 1000963,
+      "name": "Fathi Al Jabal",
+      "rating": 65,
+      "nation": 145,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000982,
+      "resourceId": 1000982,
+      "name": "Jaime Vera",
+      "rating": 65,
+      "nation": 55,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1000988,
+      "resourceId": 1000988,
+      "name": "Beñat San José",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001000,
+      "resourceId": 1001000,
+      "name": "Luis Fernando Suárez",
+      "rating": 65,
+      "nation": 56,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001003,
+      "resourceId": 1001003,
+      "name": "Miguel Riffo",
+      "rating": 70,
+      "nation": 55,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001039,
+      "resourceId": 1001039,
+      "name": "Kenny Shiels",
+      "rating": 65,
+      "nation": 35,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001042,
+      "resourceId": 1001042,
+      "name": "David Wagner",
+      "rating": 80,
+      "nation": 95,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001045,
+      "resourceId": 1001045,
+      "name": "Eusebio",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001046,
+      "resourceId": 1001046,
+      "name": "Davide Ballardini",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001052,
+      "resourceId": 1001052,
+      "name": "Aasmund Bjørkan",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001053,
+      "resourceId": 1001053,
+      "name": "Lars Arne Nilsen",
+      "rating": 70,
+      "nation": 36,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001055,
+      "resourceId": 1001055,
+      "name": "Samet Aybaba",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001078,
+      "resourceId": 1001078,
+      "name": "Thomas Letsch",
+      "rating": 70,
+      "nation": 21,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001100,
+      "resourceId": 1001100,
+      "name": "Marco Kurz",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001104,
+      "resourceId": 1001104,
+      "name": "Sebastián Beccacece",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001119,
+      "resourceId": 1001119,
+      "name": "Allan Kuhn",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001121,
+      "resourceId": 1001121,
+      "name": "Miguel Ponce",
+      "rating": 65,
+      "nation": 55,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001126,
+      "resourceId": 1001126,
+      "name": "İbrahim Üzülmez",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001135,
+      "resourceId": 1001135,
+      "name": "José Peseiro",
+      "rating": 80,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001137,
+      "resourceId": 1001137,
+      "name": "Glen De Boeck",
+      "rating": 70,
+      "nation": 7,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001160,
+      "resourceId": 1001160,
+      "name": "Marius Şumudică",
+      "rating": 70,
+      "nation": 39,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001162,
+      "resourceId": 1001162,
+      "name": "Daniel Isăilă",
+      "rating": 65,
+      "nation": 39,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001168,
+      "resourceId": 1001168,
+      "name": "Neil Warnock",
+      "rating": 75,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001180,
+      "resourceId": 1001180,
+      "name": "José Manuel Rodríguez",
+      "rating": 65,
+      "nation": 56,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001184,
+      "resourceId": 1001184,
+      "name": "Jimmy Thelin",
+      "rating": 70,
+      "nation": 46,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001188,
+      "resourceId": 1001188,
+      "name": "Leonardo Ramos",
+      "rating": 65,
+      "nation": 60,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001247,
+      "resourceId": 1001247,
+      "name": "Simone Inzaghi",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001260,
+      "resourceId": 1001260,
+      "name": "Diego Corredor",
+      "rating": 65,
+      "nation": 56,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001264,
+      "resourceId": 1001264,
+      "name": "Daniel Bierofka",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001267,
+      "resourceId": 1001267,
+      "name": "Mircea Rednic",
+      "rating": 70,
+      "nation": 39,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001292,
+      "resourceId": 1001292,
+      "name": "Martín Palermo",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001297,
+      "resourceId": 1001297,
+      "name": "Hubert Bodhert",
+      "rating": 70,
+      "nation": 56,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001299,
+      "resourceId": 1001299,
+      "name": "Julio Velázquez",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001304,
+      "resourceId": 1001304,
+      "name": "Răzvan Lucescu",
+      "rating": 75,
+      "nation": 39,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001309,
+      "resourceId": 1001309,
+      "name": "Natxo González",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001312,
+      "resourceId": 1001312,
+      "name": "Alan Stubbs",
+      "rating": 65,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001320,
+      "resourceId": 1001320,
+      "name": "Ivan Leko",
+      "rating": 75,
+      "nation": 10,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001324,
+      "resourceId": 1001324,
+      "name": "Frank Kudelka",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001326,
+      "resourceId": 1001326,
+      "name": "Bo Henriksen",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001327,
+      "resourceId": 1001327,
+      "name": "Pavel Dotchev",
+      "rating": 65,
+      "nation": 9,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001331,
+      "resourceId": 1001331,
+      "name": "Hernán Cristante",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001341,
+      "resourceId": 1001341,
+      "name": "Francisco Palencia",
+      "rating": 70,
+      "nation": 83,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001344,
+      "resourceId": 1001344,
+      "name": "Kosta Runjaic",
+      "rating": 70,
+      "nation": 21,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001350,
+      "resourceId": 1001350,
+      "name": "Rüdiger Rehm",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001356,
+      "resourceId": 1001356,
+      "name": "Cristian Bucchi",
+      "rating": 75,
+      "nation": 27,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001360,
+      "resourceId": 1001360,
+      "name": "Mika Lehkosuo",
+      "rating": 65,
+      "nation": 17,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001369,
+      "resourceId": 1001369,
+      "name": "Álvaro Cervera",
+      "rating": 75,
+      "nation": 112,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001379,
+      "resourceId": 1001379,
+      "name": "Gennaro Gattuso",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001391,
+      "resourceId": 1001391,
+      "name": "Stephen Bradley",
+      "rating": 65,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001395,
+      "resourceId": 1001395,
+      "name": "Leonardo Semplici",
+      "rating": 75,
+      "nation": 27,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001403,
+      "resourceId": 1001403,
+      "name": "Pepa",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001413,
+      "resourceId": 1001413,
+      "name": "Diego Martínez",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001416,
+      "resourceId": 1001416,
+      "name": "Uwe Koschinat",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001420,
+      "resourceId": 1001420,
+      "name": "Francisco Arce",
+      "rating": 65,
+      "nation": 58,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001427,
+      "resourceId": 1001427,
+      "name": "Stephen Robinson",
+      "rating": 65,
+      "nation": 35,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001432,
+      "resourceId": 1001432,
+      "name": "Johny Haythwaite",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001433,
+      "resourceId": 1001433,
+      "name": "Clive Whitemarsh",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001434,
+      "resourceId": 1001434,
+      "name": "Owain Holdstock",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001435,
+      "resourceId": 1001435,
+      "name": "Callum Powlson",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001436,
+      "resourceId": 1001436,
+      "name": "Declan Snodin",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001437,
+      "resourceId": 1001437,
+      "name": "Gerry Landsbury",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001438,
+      "resourceId": 1001438,
+      "name": "Olly Woodgrove",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001439,
+      "resourceId": 1001439,
+      "name": "Vernon Lambell",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001440,
+      "resourceId": 1001440,
+      "name": "Dwayne Clitheroe",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001441,
+      "resourceId": 1001441,
+      "name": "Maxwell Ridenton",
+      "rating": 55,
+      "nation": 198,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001442,
+      "resourceId": 1001442,
+      "name": "Darragh Magennis",
+      "rating": 55,
+      "nation": 35,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001443,
+      "resourceId": 1001443,
+      "name": "Pádraig Maguire-Stevens",
+      "rating": 55,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001444,
+      "resourceId": 1001444,
+      "name": "Eunan Devitt",
+      "rating": 55,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001445,
+      "resourceId": 1001445,
+      "name": "Drake Rayhart",
+      "rating": 55,
+      "nation": 95,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001446,
+      "resourceId": 1001446,
+      "name": "Ralf Hennigan",
+      "rating": 55,
+      "nation": 95,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001447,
+      "resourceId": 1001447,
+      "name": "Calum Calaway",
+      "rating": 55,
+      "nation": 95,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001448,
+      "resourceId": 1001448,
+      "name": "Geraint Rhydderch",
+      "rating": 55,
+      "nation": 50,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001449,
+      "resourceId": 1001449,
+      "name": "Cayman Okazaki",
+      "rating": 55,
+      "nation": 163,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001450,
+      "resourceId": 1001450,
+      "name": "Kosuke Fujiharu",
+      "rating": 55,
+      "nation": 163,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001451,
+      "resourceId": 1001451,
+      "name": "Kazushi Daini",
+      "rating": 55,
+      "nation": 163,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001452,
+      "resourceId": 1001452,
+      "name": "Kengo Inoki",
+      "rating": 55,
+      "nation": 163,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001453,
+      "resourceId": 1001453,
+      "name": "Ankan Itami",
+      "rating": 55,
+      "nation": 163,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001454,
+      "resourceId": 1001454,
+      "name": "Hayashi Matsushina",
+      "rating": 55,
+      "nation": 163,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001455,
+      "resourceId": 1001455,
+      "name": "Rasmus Byqvist",
+      "rating": 55,
+      "nation": 46,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001456,
+      "resourceId": 1001456,
+      "name": "Chuck Deanman",
+      "rating": 55,
+      "nation": 70,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001457,
+      "resourceId": 1001457,
+      "name": "Travis Metheringham",
+      "rating": 55,
+      "nation": 95,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001458,
+      "resourceId": 1001458,
+      "name": "Rochester Copse",
+      "rating": 55,
+      "nation": 95,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001459,
+      "resourceId": 1001459,
+      "name": "Seamus Thimbleby",
+      "rating": 55,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001460,
+      "resourceId": 1001460,
+      "name": "Ritchie Sarum",
+      "rating": 55,
+      "nation": 25,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001461,
+      "resourceId": 1001461,
+      "name": "Marcus Keynsham",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001462,
+      "resourceId": 1001462,
+      "name": "Martyn Worplesden",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001463,
+      "resourceId": 1001463,
+      "name": "Desmond Kettlethorpe",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001464,
+      "resourceId": 1001464,
+      "name": "Iain Blankney",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001465,
+      "resourceId": 1001465,
+      "name": "Denis Hykeham",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001466,
+      "resourceId": 1001466,
+      "name": "Dermot Selley",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001467,
+      "resourceId": 1001467,
+      "name": "Duncan Rheadie",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001468,
+      "resourceId": 1001468,
+      "name": "Garry Greythroat",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001469,
+      "resourceId": 1001469,
+      "name": "Percy Linnecor",
+      "rating": 55,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001470,
+      "resourceId": 1001470,
+      "name": "Heribert Feiermann",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001471,
+      "resourceId": 1001471,
+      "name": "Hans-Dieter Küppler",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001472,
+      "resourceId": 1001472,
+      "name": "Ulrich Kleinebrinker",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001473,
+      "resourceId": 1001473,
+      "name": "Bernhard Wichlitzky",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001474,
+      "resourceId": 1001474,
+      "name": "Sebastian Blechmüller",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001475,
+      "resourceId": 1001475,
+      "name": "Franz Dittges",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001476,
+      "resourceId": 1001476,
+      "name": "Timo Köpfler",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001477,
+      "resourceId": 1001477,
+      "name": "Martin Kranzmeister",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001478,
+      "resourceId": 1001478,
+      "name": "Michael Hanemund",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001479,
+      "resourceId": 1001479,
+      "name": "Arnd Pfulinger",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001480,
+      "resourceId": 1001480,
+      "name": "Jacsson Marlos",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001481,
+      "resourceId": 1001481,
+      "name": "Lucao Eskerdinha",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001482,
+      "resourceId": 1001482,
+      "name": "Marcus Leandrão",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001483,
+      "resourceId": 1001483,
+      "name": "Danilinho Fabian",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001484,
+      "resourceId": 1001484,
+      "name": "Mateus Danilinho",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001485,
+      "resourceId": 1001485,
+      "name": "Welbinho Ricardo",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001486,
+      "resourceId": 1001486,
+      "name": "Davon Nascimento",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001487,
+      "resourceId": 1001487,
+      "name": "Ander Kaique",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001488,
+      "resourceId": 1001488,
+      "name": "Andrey Denão",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001489,
+      "resourceId": 1001489,
+      "name": "Breno Gutti",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001490,
+      "resourceId": 1001490,
+      "name": "Romarzinho Alan",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001491,
+      "resourceId": 1001491,
+      "name": "Valdemir Liminha",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001492,
+      "resourceId": 1001492,
+      "name": "Klever Lipe",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001493,
+      "resourceId": 1001493,
+      "name": "Lázaro Godão",
+      "rating": 55,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001494,
+      "resourceId": 1001494,
+      "name": "Joselu Barros",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001495,
+      "resourceId": 1001495,
+      "name": "Antonio Ardabal",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001496,
+      "resourceId": 1001496,
+      "name": "Miguel Galdán",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001497,
+      "resourceId": 1001497,
+      "name": "Julián Sandaro",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001498,
+      "resourceId": 1001498,
+      "name": "Joaquín Narcero",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001499,
+      "resourceId": 1001499,
+      "name": "Vicente Restero",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001500,
+      "resourceId": 1001500,
+      "name": "Paco Sebarra",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001501,
+      "resourceId": 1001501,
+      "name": "Sergio Cerrión",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001502,
+      "resourceId": 1001502,
+      "name": "Nando Candaval",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001504,
+      "resourceId": 1001504,
+      "name": "Ricci Taffarel",
+      "rating": 55,
+      "nation": 54,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001505,
+      "resourceId": 1001505,
+      "name": "Emilio Mirellas",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001506,
+      "resourceId": 1001506,
+      "name": "Sebas Fargal",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001507,
+      "resourceId": 1001507,
+      "name": "Rafa Gastiano",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001508,
+      "resourceId": 1001508,
+      "name": "Edu Gandeano",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001509,
+      "resourceId": 1001509,
+      "name": "Andrés Dantero",
+      "rating": 55,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001510,
+      "resourceId": 1001510,
+      "name": "Siegbert Heidelmann",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001511,
+      "resourceId": 1001511,
+      "name": "Lukas Mauerblum",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001512,
+      "resourceId": 1001512,
+      "name": "Stefan Schnotzky",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001513,
+      "resourceId": 1001513,
+      "name": "Friedhelm Gutmannsdorf",
+      "rating": 55,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001514,
+      "resourceId": 1001514,
+      "name": "Adrien Ballier",
+      "rating": 55,
+      "nation": 18,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001515,
+      "resourceId": 1001515,
+      "name": "Colin Poulizac",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001516,
+      "resourceId": 1001516,
+      "name": "Hervé Bouloud",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001517,
+      "resourceId": 1001517,
+      "name": "Jérémy Andilly",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001518,
+      "resourceId": 1001518,
+      "name": "Loïc Bardonnet",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001519,
+      "resourceId": 1001519,
+      "name": "Maxence Delafon",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001520,
+      "resourceId": 1001520,
+      "name": "Morgan Daulny",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001521,
+      "resourceId": 1001521,
+      "name": "Quentin Moriau",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001522,
+      "resourceId": 1001522,
+      "name": "Romuald Peyras",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001523,
+      "resourceId": 1001523,
+      "name": "Timothée Urgel",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001524,
+      "resourceId": 1001524,
+      "name": "Valentin Bigault",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001525,
+      "resourceId": 1001525,
+      "name": "Victor Bourva",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001526,
+      "resourceId": 1001526,
+      "name": "Yves Ravaisson",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001527,
+      "resourceId": 1001527,
+      "name": "Raphaël Egasse",
+      "rating": 60,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001528,
+      "resourceId": 1001528,
+      "name": "Patrice Moustiers",
+      "rating": 60,
+      "nation": 47,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001529,
+      "resourceId": 1001529,
+      "name": "Kostyantyn Seminenko",
+      "rating": 60,
+      "nation": 49,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001530,
+      "resourceId": 1001530,
+      "name": "Lacina Douhou",
+      "rating": 60,
+      "nation": 108,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001531,
+      "resourceId": 1001531,
+      "name": "Mal Chin Keng",
+      "rating": 60,
+      "nation": 167,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001532,
+      "resourceId": 1001532,
+      "name": "Sang Ook Pan",
+      "rating": 60,
+      "nation": 167,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001533,
+      "resourceId": 1001533,
+      "name": "Soon Bok Nahm",
+      "rating": 60,
+      "nation": 167,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001534,
+      "resourceId": 1001534,
+      "name": "Mamby Konare",
+      "rating": 60,
+      "nation": 126,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001535,
+      "resourceId": 1001535,
+      "name": "Zafiris Xenakis",
+      "rating": 60,
+      "nation": 22,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001536,
+      "resourceId": 1001536,
+      "name": "Pape Barro-Diene",
+      "rating": 60,
+      "nation": 136,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001537,
+      "resourceId": 1001537,
+      "name": "Dhaahir Jabour",
+      "rating": 60,
+      "nation": 183,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001538,
+      "resourceId": 1001538,
+      "name": "Mundhir  Satter",
+      "rating": 60,
+      "nation": 183,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001539,
+      "resourceId": 1001539,
+      "name": "Irfaan Soliman",
+      "rating": 60,
+      "nation": 183,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001540,
+      "resourceId": 1001540,
+      "name": "Nu'maan Bangura",
+      "rating": 60,
+      "nation": 183,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001541,
+      "resourceId": 1001541,
+      "name": "Jaroslav Puškárik",
+      "rating": 60,
+      "nation": 43,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001542,
+      "resourceId": 1001542,
+      "name": "Giordano Caito",
+      "rating": 60,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001543,
+      "resourceId": 1001543,
+      "name": "Siegmund Schneuzli",
+      "rating": 60,
+      "nation": 47,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001544,
+      "resourceId": 1001544,
+      "name": "Lautaro Garcero",
+      "rating": 60,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001545,
+      "resourceId": 1001545,
+      "name": "Santino Ortigozo",
+      "rating": 60,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001546,
+      "resourceId": 1001546,
+      "name": "Benicio Perolsa",
+      "rating": 60,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001547,
+      "resourceId": 1001547,
+      "name": "Ezequiel Castilloza",
+      "rating": 60,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001548,
+      "resourceId": 1001548,
+      "name": "Daniel Maidanez",
+      "rating": 60,
+      "nation": 58,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001549,
+      "resourceId": 1001549,
+      "name": "Dayro Menendez",
+      "rating": 60,
+      "nation": 60,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001550,
+      "resourceId": 1001550,
+      "name": "Hans Trottberger",
+      "rating": 60,
+      "nation": 4,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001551,
+      "resourceId": 1001551,
+      "name": "Helmut Schnützli",
+      "rating": 60,
+      "nation": 47,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001552,
+      "resourceId": 1001552,
+      "name": "Robert Leitmannsberg",
+      "rating": 60,
+      "nation": 47,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001557,
+      "resourceId": 1001557,
+      "name": "Massimo Carrera",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001575,
+      "resourceId": 1001575,
+      "name": "Daniel Ramos",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001585,
+      "resourceId": 1001585,
+      "name": "Omar De Felippe",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001593,
+      "resourceId": 1001593,
+      "name": "Fábio Carille",
+      "rating": 70,
+      "nation": 54,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001594,
+      "resourceId": 1001594,
+      "name": "Kemal Özdeş",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001598,
+      "resourceId": 1001598,
+      "name": "Eirik Horneland",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001611,
+      "resourceId": 1001611,
+      "name": "Warren Joyce",
+      "rating": 65,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001623,
+      "resourceId": 1001623,
+      "name": "Christian Michelsen",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001627,
+      "resourceId": 1001627,
+      "name": "Luís Castro",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001630,
+      "resourceId": 1001630,
+      "name": "Juan Pablo Pumpido",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001648,
+      "resourceId": 1001648,
+      "name": "Marinos Ouzounidis",
+      "rating": 75,
+      "nation": 22,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001651,
+      "resourceId": 1001651,
+      "name": "Werner Grabherr",
+      "rating": 65,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001656,
+      "resourceId": 1001656,
+      "name": "Ian Burchnall",
+      "rating": 65,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001673,
+      "resourceId": 1001673,
+      "name": "Nuno Manta",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001689,
+      "resourceId": 1001689,
+      "name": "Claus Nørgaard",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001699,
+      "resourceId": 1001699,
+      "name": "Kim Bergstrand",
+      "rating": 65,
+      "nation": 46,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001713,
+      "resourceId": 1001713,
+      "name": "Özcan Melkemichel",
+      "rating": 70,
+      "nation": 46,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001724,
+      "resourceId": 1001724,
+      "name": "Míchel",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001737,
+      "resourceId": 1001737,
+      "name": "Ramis",
+      "rating": 70,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001739,
+      "resourceId": 1001739,
+      "name": "Octavio Zambrano",
+      "rating": 70,
+      "nation": 57,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001749,
+      "resourceId": 1001749,
+      "name": "Julio Comesaña",
+      "rating": 75,
+      "nation": 60,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001765,
+      "resourceId": 1001765,
+      "name": "Goran Djuricin",
+      "rating": 75,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001767,
+      "resourceId": 1001767,
+      "name": "Gerard Lyttle",
+      "rating": 65,
+      "nation": 35,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001790,
+      "resourceId": 1001790,
+      "name": "Joe Enochs",
+      "rating": 65,
+      "nation": 95,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001795,
+      "resourceId": 1001795,
+      "name": "Philippe Clement",
+      "rating": 75,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001805,
+      "resourceId": 1001805,
+      "name": "Stefan Krämer",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001807,
+      "resourceId": 1001807,
+      "name": "Claus Schromm",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001824,
+      "resourceId": 1001824,
+      "name": "Ireneusz Mamrot",
+      "rating": 70,
+      "nation": 37,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001828,
+      "resourceId": 1001828,
+      "name": "Leandro Benítez",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001830,
+      "resourceId": 1001830,
+      "name": "Aleksandar Stanojević",
+      "rating": 65,
+      "nation": 51,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001832,
+      "resourceId": 1001832,
+      "name": "John Lammers",
+      "rating": 65,
+      "nation": 34,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001835,
+      "resourceId": 1001835,
+      "name": "Fabio Grosso",
+      "rating": 75,
+      "nation": 27,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001841,
+      "resourceId": 1001841,
+      "name": "Torsten Ziegner",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001842,
+      "resourceId": 1001842,
+      "name": "López Garai",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001847,
+      "resourceId": 1001847,
+      "name": "Tamer Tuna",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001851,
+      "resourceId": 1001851,
+      "name": "Manolo Jiménez",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001856,
+      "resourceId": 1001856,
+      "name": "Giovanni Stroppa",
+      "rating": 70,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001861,
+      "resourceId": 1001861,
+      "name": "Marc Schneider",
+      "rating": 65,
+      "nation": 47,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001863,
+      "resourceId": 1001863,
+      "name": "Mark Zimmermann",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001865,
+      "resourceId": 1001865,
+      "name": "Oliver Glasner",
+      "rating": 65,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001868,
+      "resourceId": 1001868,
+      "name": "Thomas Thomasberg",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001869,
+      "resourceId": 1001869,
+      "name": "Sascha Hildmann",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001880,
+      "resourceId": 1001880,
+      "name": "Abel",
+      "rating": 80,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001881,
+      "resourceId": 1001881,
+      "name": "Simo Valakari",
+      "rating": 65,
+      "nation": 17,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001889,
+      "resourceId": 1001889,
+      "name": "Néstor Craviotto",
+      "rating": 65,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001890,
+      "resourceId": 1001890,
+      "name": "Marco Rose",
+      "rating": 75,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001891,
+      "resourceId": 1001891,
+      "name": "Christian Neidhart",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001893,
+      "resourceId": 1001893,
+      "name": "Neil McCann",
+      "rating": 65,
+      "nation": 42,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001894,
+      "resourceId": 1001894,
+      "name": "Milutin Sredojević",
+      "rating": 70,
+      "nation": 51,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001896,
+      "resourceId": 1001896,
+      "name": "Alfredo Berti",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001897,
+      "resourceId": 1001897,
+      "name": "Rubén Bedoya",
+      "rating": 65,
+      "nation": 56,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001909,
+      "resourceId": 1001909,
+      "name": "Gustavo Díaz",
+      "rating": 75,
+      "nation": 60,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001911,
+      "resourceId": 1001911,
+      "name": "Craig Levein",
+      "rating": 70,
+      "nation": 42,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001917,
+      "resourceId": 1001917,
+      "name": "Axel Kjäll",
+      "rating": 65,
+      "nation": 46,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001920,
+      "resourceId": 1001920,
+      "name": "Javier Calleja",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001928,
+      "resourceId": 1001928,
+      "name": "Erol Bulut",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001933,
+      "resourceId": 1001933,
+      "name": "David Patiño",
+      "rating": 75,
+      "nation": 83,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001936,
+      "resourceId": 1001936,
+      "name": "Daniel Thioune",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001939,
+      "resourceId": 1001939,
+      "name": "Michael Schiele",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001940,
+      "resourceId": 1001940,
+      "name": "Juan Pablo Vojvoda",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001945,
+      "resourceId": 1001945,
+      "name": "Daniel Carreño",
+      "rating": 75,
+      "nation": 60,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001958,
+      "resourceId": 1001958,
+      "name": "Cristóbal",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001961,
+      "resourceId": 1001961,
+      "name": "Juan Cruz Real",
+      "rating": 70,
+      "nation": 52,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001965,
+      "resourceId": 1001965,
+      "name": "Claude Makélélé",
+      "rating": 70,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001982,
+      "resourceId": 1001982,
+      "name": "Poya Asbaghi",
+      "rating": 65,
+      "nation": 161,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001986,
+      "resourceId": 1001986,
+      "name": "Marco Antwerpen",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1001999,
+      "resourceId": 1001999,
+      "name": "Aurelio Andreazzoli",
+      "rating": 75,
+      "nation": 27,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002009,
+      "resourceId": 1002009,
+      "name": "Victor Rivero",
+      "rating": 70,
+      "nation": 55,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002012,
+      "resourceId": 1002012,
+      "name": "Ezequiel Carboni",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002013,
+      "resourceId": 1002013,
+      "name": "Luis Pimenta",
+      "rating": 65,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002015,
+      "resourceId": 1002015,
+      "name": "Diego Dabove",
+      "rating": 65,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002017,
+      "resourceId": 1002017,
+      "name": "Svein Maalen",
+      "rating": 65,
+      "nation": 36,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002021,
+      "resourceId": 1002021,
+      "name": "Patrick Winqvist",
+      "rating": 65,
+      "nation": 46,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002023,
+      "resourceId": 1002023,
+      "name": "Silas",
+      "rating": 70,
+      "nation": 38,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002034,
+      "resourceId": 1002034,
+      "name": "Heiko Vogel",
+      "rating": 70,
+      "nation": 21,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002039,
+      "resourceId": 1002039,
+      "name": "Etxeberria",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002049,
+      "resourceId": 1002049,
+      "name": "Frank Defays",
+      "rating": 65,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002052,
+      "resourceId": 1002052,
+      "name": "Gerardo Seoane",
+      "rating": 75,
+      "nation": 47,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002054,
+      "resourceId": 1002054,
+      "name": "Ludovic Magnin",
+      "rating": 70,
+      "nation": 47,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002064,
+      "resourceId": 1002064,
+      "name": "Paco López",
+      "rating": 80,
+      "nation": 45,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002075,
+      "resourceId": 1002075,
+      "name": "Claudio Biaggio",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002097,
+      "resourceId": 1002097,
+      "name": "Gerardo Espinoza",
+      "rating": 75,
+      "nation": 83,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002106,
+      "resourceId": 1002106,
+      "name": "Gert Verheyen",
+      "rating": 75,
+      "nation": 7,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002109,
+      "resourceId": 1002109,
+      "name": "Lorenzo D'Anna",
+      "rating": 80,
+      "nation": 27,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002126,
+      "resourceId": 1002126,
+      "name": "Karl Daxbacher",
+      "rating": 65,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002127,
+      "resourceId": 1002127,
+      "name": "Cláudio Braga",
+      "rating": 75,
+      "nation": 38,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002137,
+      "resourceId": 1002137,
+      "name": "Steven Gerrard",
+      "rating": 75,
+      "nation": 14,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002140,
+      "resourceId": 1002140,
+      "name": "Leo Franco",
+      "rating": 75,
+      "nation": 52,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002143,
+      "resourceId": 1002143,
+      "name": "Jens Berthel Askou",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002144,
+      "resourceId": 1002144,
+      "name": "Mark Rudan",
+      "rating": 65,
+      "nation": 195,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002148,
+      "resourceId": 1002148,
+      "name": "Steve Corica",
+      "rating": 65,
+      "nation": 195,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002149,
+      "resourceId": 1002149,
+      "name": "Bayram Bektaş",
+      "rating": 75,
+      "nation": 48,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002153,
+      "resourceId": 1002153,
+      "name": "Adolfo Sormani",
+      "rating": 65,
+      "nation": 27,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002164,
+      "resourceId": 1002164,
+      "name": "Laurent Guyot",
+      "rating": 70,
+      "nation": 18,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002168,
+      "resourceId": 1002168,
+      "name": "Imanol Idiakez",
+      "rating": 75,
+      "nation": 45,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002169,
+      "resourceId": 1002169,
+      "name": "Claus-Dieter Wollitz",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002181,
+      "resourceId": 1002181,
+      "name": "Marc Brys",
+      "rating": 70,
+      "nation": 7,
+      "rareflag": 1,
+      "negotiation": 2,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002185,
+      "resourceId": 1002185,
+      "name": "Markus Schopp",
+      "rating": 65,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002186,
+      "resourceId": 1002186,
+      "name": "Henrik Pedersen",
+      "rating": 65,
+      "nation": 13,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002187,
+      "resourceId": 1002187,
+      "name": "Matthias Maucksch",
+      "rating": 65,
+      "nation": 21,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002197,
+      "resourceId": 1002197,
+      "name": "Alyaksandr Khatskevich",
+      "rating": 80,
+      "nation": 6,
+      "rareflag": 1,
+      "negotiation": 3,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002198,
+      "resourceId": 1002198,
+      "name": "Dariusz Dźwigała",
+      "rating": 65,
+      "nation": 37,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002199,
+      "resourceId": 1002199,
+      "name": "Michel Decastel",
+      "rating": 65,
+      "nation": 47,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002208,
+      "resourceId": 1002208,
+      "name": "Christian Ilzer",
+      "rating": 65,
+      "nation": 4,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002213,
+      "resourceId": 1002213,
+      "name": "Rini Coolen",
+      "rating": 75,
+      "nation": 34,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002215,
+      "resourceId": 1002215,
+      "name": "Yuo Haojian",
+      "rating": 60,
+      "nation": 155,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002219,
+      "resourceId": 1002219,
+      "name": "Guillermo Sanguinetti",
+      "rating": 75,
+      "nation": 60,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002223,
+      "resourceId": 1002223,
+      "name": "Argirios Giannikis",
+      "rating": 65,
+      "nation": 22,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002225,
+      "resourceId": 1002225,
+      "name": "Jindřich Trpišovský",
+      "rating": 75,
+      "nation": 12,
+      "rareflag": 0,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002227,
+      "resourceId": 1002227,
+      "name": "Maciej Stolarczyk",
+      "rating": 65,
+      "nation": 37,
+      "rareflag": 0,
+      "negotiation": 0,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002230,
+      "resourceId": 1002230,
+      "name": "Westhuizen Geert",
+      "rating": 60,
+      "nation": 34,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    },
+    {
+      "assetId": 1002231,
+      "resourceId": 1002231,
+      "name": "Osmochescu Sergiu",
+      "rating": 60,
+      "nation": 39,
+      "rareflag": 1,
+      "negotiation": 1,
+      "managerTalk": 0
+    }
+  ]
+}

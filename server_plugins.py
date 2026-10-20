@@ -100,6 +100,7 @@ class PluginAPI:
     def get_clubs(self, **kwargs): return self._queries.get_clubs(**kwargs)
     def get_club(self, persona_id): return self._queries.get_club(persona_id)
     def get_cards(self, persona_id, **kwargs): return self._queries.get_cards(persona_id, **kwargs)
+    def get_support_items(self, persona_id, **kwargs): return self._queries.get_support_items(persona_id, **kwargs)
     def get_card(self, persona_id, item_id): return self._queries.get_card(persona_id, item_id)
     def get_equipment(self, persona_id, **kwargs): return self._queries.get_equipment(persona_id, **kwargs)
     def get_squads(self, persona_id): return self._queries.get_squads(persona_id)
