@@ -75,7 +75,9 @@ def consumable_list(store, selector, query):
     start,count = int(query.get('start',['0'])[0]),int(query.get('count',['100'])[0])
     if not integer(start,0,100000) or not integer(count,1,200):
         raise ValueError('Invalid consumable list page')
-    aliases = {'all':'consumables','any':'consumables',
+    # Retail LoadConsumables uses "development" for the complete owned
+    # supplies list before the apply screen filters compatible targets.
+    aliases = {'development':'consumables','all':'consumables','any':'consumables',
                'contract':'consumablesContract','training':'consumablesTraining',
                'playerTraining':'consumablesTrainingPlayer','GKTraining':'consumablesTrainingGk',
                'fitness':'consumablesFitness','healing':'consumablesHealing'}

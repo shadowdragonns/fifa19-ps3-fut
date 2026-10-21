@@ -39,7 +39,9 @@ the resource-ID variant and consumable search routes are also handled.
 The native staff/consumable menus read `GET /club/stats/staff` and
 `GET /club/stats/consumables` below `/ut/game/fifa19`. Consumable counts include
 club items only, including every copy in a stack. `GET /club/consumables/<type>`
-returns `itemData` stack rows with `item`, `count` and `untradeableCount`;
+returns `itemData` stack rows with `item`, `count` and `untradeableCount`.
+Retail's apply screen requests `/club/consumables/development` for all owned
+supplies, then filters compatible items for the selected player or manager;
 the ordinary club search continues to return individual cards. Staff bonus
 responses report zero additional contract/morale multipliers; supplies grant
 the fixed amounts above.
