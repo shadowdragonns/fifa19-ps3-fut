@@ -10,6 +10,7 @@ import sys
 import tempfile
 import threading
 import unittest
+from unittest.mock import patch
 
 import fut_content
 import fut_inventory
@@ -62,6 +63,9 @@ class LiveConfigTests(unittest.TestCase):
         self.root.events.subscribe('server.config_changed', events.append)
         self.assertTrue(self.apply({'economy': {'starting_coins': 99000, 'win_coins': 2500,
                                               'quick_sell': {'gold': [333, 777]}},
+                                   # This assertion covers ordinary gold quick-sell
+                                   # rules; special editions have their own prices.
+                                   'custom_cards': {'standard_pack_chance_percent': 0},
                                    'packs': {'prices': {'6': 100}, 'gold_rare_weights': [1, 1, 1, 97]},
                                    'points': {'win': 5}, 'cpu_seasons': {'promote': [20]*10},
                                    'matchmaking': {'search_seconds': 2, 'peer_timeout_seconds': 90}}))
@@ -87,6 +91,23 @@ class LiveConfigTests(unittest.TestCase):
         self.assertEqual(len(events), 1)
         self.assertEqual(events[0]['generation'], 1)
         self.assertNotIn('synthetic-key', json.dumps(events))
+
+    def test_special_gold_draw_uses_edition_discard_value_after_live_reload(self):
+        owner = self.root.for_user(10)
+        rules = {'economy': {'quick_sell': {'gold': [333, 777]}},
+                 'packs': {'prices': {'6': 100}},
+                 'custom_cards': {'editions': {'toty': {'discard_value': 12345}}}}
+        self.assertTrue(self.apply(rules))
+        # Tickets 25..29 on the 10,000-ticket wheel select TOTY. Exercise
+        # the same draw that made the ordinary-gold test fail intermittently.
+        with patch('fut_packs.random.SystemRandom.randrange', return_value=25):
+            purchase = owner.fut_inventory.open_pack(BUY)
+        self.assertEqual({row['discardValue'] for row in purchase['itemList']}, {12345})
+        self.assertEqual({row['edition'] for row in owner.fut_inventory.state['items']}, {'toty'})
+        self.assertEqual(owner.fut_inventory.state['coins'], 19900)
+        before = deepcopy(owner.fut_inventory.state)
+        self.assertEqual(owner.fut_inventory.open_pack(BUY), purchase)
+        self.assertEqual(owner.fut_inventory.state, before)
 
     def test_partial_invalid_missing_duplicate_and_oversized_files_keep_last_valid_rules(self):
         self.apply({'packs': {'prices': {'6': 123}}})
