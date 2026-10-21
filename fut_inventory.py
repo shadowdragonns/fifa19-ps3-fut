@@ -465,12 +465,13 @@ def response(backend, method, path, raw):
     route = parsed.path
     item = ITEM_PATH.fullmatch(route)
     resource = re.fullmatch(re.escape(PREFIX)+r'/item/resource/([0-9]{1,19})', route)
-    consumables = re.fullmatch(re.escape(PREFIX)+r'/club/consumables/([A-Za-z0-9]{1,32})', route)
-    if route not in ROUTES and not item and not resource and not consumables:
+    consumables = re.fullmatch(re.escape(PREFIX)+r'/club/consumables/([A-Za-z0-9]{1,48})', route)
+    support_stats = re.fullmatch(re.escape(PREFIX)+r'/club/stats/(staff|consumables)', route)
+    if route not in ROUTES and not item and not resource and not consumables and not support_stats:
         return None
     # Retail single-item quick sell deletes one card by URL, without a body.
     # DiscardCard (0x2b) uses the separate POST itemId-array route.
-    methods = ('PUT',) if resource else ('GET',) if consumables else ROUTES[route] if not item else (('GET', 'PUT', 'DELETE') if item[1] else ('GET', 'PUT'))
+    methods = ('PUT',) if resource else ('GET',) if consumables or support_stats else ROUTES[route] if not item else (('GET', 'PUT', 'DELETE') if item[1] else ('GET', 'PUT'))
     if method not in methods:
         return json_reply({'error': 'Method not allowed'}, 'FUT.WrongMethod',
                           '405 Method Not Allowed', [('Allow', ', '.join(methods))])
@@ -490,11 +491,14 @@ def response(backend, method, path, raw):
                 if query: raise ValueError('Unexpected consumable query')
                 from fut_items import apply
                 value = apply(backend,int(resource[1]),payload,by_resource=True)
+            elif support_stats:
+                if query or body: raise ValueError('Unexpected staff/consumable stats parameters')
+                from fut_items import club_statistics
+                value = club_statistics(store,support_stats[1])
             elif consumables:
                 if body: raise ValueError('Unexpected consumable body')
-                from fut_items import search
-                search_type = consumables[1]
-                value = search(store,{**query,'type':['consumables'] if search_type in ('all','any') or search_type.isdigit() else [search_type]})
+                from fut_items import consumable_list
+                value = consumable_list(store,consumables[1],query)
             elif route == PREFIX+'/store/purchasegroup/all':
                 if set(query) - {'ppInfo'} or query.get('ppInfo', ['true']) != ['true'] or body:
                     raise ValueError('Invalid pack-list request')

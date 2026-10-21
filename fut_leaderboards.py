@@ -44,8 +44,10 @@ def localization():
     # Omitting target makes its strcmp dereference NULL during FUT entry.
     labels = dict(LABELS)
     labels.update({key+'_DESC': text+' across clubs on this server.' for key, text in LABELS.items()})
+    from fut_items import ITEM_LABELS
+    labels = {'LOC_LB_'+key:text for key,text in labels.items()} | ITEM_LABELS
     return ('<?xml version="1.0" encoding="UTF-8"?><message_set target="fut-locstrings">'+''.join(
-        '<locstring id="LOC_LB_'+key+'">'+escape(text)+'</locstring>' for key, text in labels.items())+
+        '<locstring id="'+key+'">'+escape(text)+'</locstring>' for key, text in labels.items())+
         '</message_set>').encode()
 
 

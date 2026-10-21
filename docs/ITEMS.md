@@ -13,6 +13,9 @@ and quick-sell cleanup support an owned manager slot. Item subtype 4 reaches
 the native manager constructor and local DB name lookup. Nationality and
 contract metadata are supplied. Manager chemistry calculations/benefits and
 faces need live-game verification; no new chemistry bonus is invented.
+Managers with no assigned league display **No league** (or **None** on a
+collapsed card). The public FUT text response supplies the missing league-zero
+labels instead of letting FIFA show internal localization keys.
 
 | Supplies item | Server effect |
 |---|---|
@@ -32,6 +35,21 @@ matches. Applying is one atomic inventory commit: failed saves cannot consume
 the card or change the target. Native ApplyCard requests use
 `PUT /ut/game/fifa19/item/<consumed-id>` with `{"apply":[{"id":<target-id>}]}`;
 the resource-ID variant and consumable search routes are also handled.
+
+The native staff/consumable menus read `GET /club/stats/staff` and
+`GET /club/stats/consumables` below `/ut/game/fifa19`. Consumable counts include
+club items only, including every copy in a stack. `GET /club/consumables/<type>`
+returns `itemData` stack rows with `item`, `count` and `untradeableCount`;
+the ordinary club search continues to return individual cards. Staff bonus
+responses report zero additional contract/morale multipliers; supplies grant
+the fixed amounts above.
+
+Saved support definition IDs remain stable. Card responses use installed PS3
+art resources 5000000/5000001 (training), 5000007/5000008 (contracts), 5000009
+(healing), and 5000010/5000011 (fitness). Contracts populate the separate
+`bronze`, `silver` and `gold` amounts used by native card display/eligibility.
+The resource apply route accepts the installed resource and the previous
+6000000-series definition alias, so existing owned supplies need no migration.
 
 After a completed match, played cards lose one contract, save reported fitness
 and remove their temporary training. The selected manager loses one contract.

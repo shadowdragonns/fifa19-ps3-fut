@@ -5,12 +5,14 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+import xml.etree.ElementTree as ET
 from unittest.mock import patch
 
 import card_versions
 import fut_condition
 import fut_inventory
 import fut_items
+import fut_leaderboards
 import fut_matches
 import fut_online
 import fut_packs
@@ -292,6 +294,71 @@ class SupportItemTests(unittest.TestCase):
         status,result=request('PUT',path,{'apply':[{'id':target}]})
         self.assertEqual(status,'200 OK');self.assertEqual(result['itemData'][0]['training'],1)
         self.assertNotIn(source,{r['id'] for r in fut_items.records(self.store.state)})
+
+    def test_club_consumable_menus_stack_saved_cards_and_apply_by_installed_resource(self):
+        def request(method,path,payload=None,sid='test-fut'):
+            raw=(f'{method} {path} HTTP/1.1\r\nX-UT-SID: {sid}\r\n\r\n').encode()
+            if payload is not None: raw+=json.dumps(payload).encode()
+            response=fut_inventory.response(self.backend,method,path,raw)
+            self.assertIsNotNone(response)
+            return response[0],json.loads(response[1])
+        base='/ut/game/fifa19/club'
+        first=self.store.open_pack(purchase(191))
+        self.assertTrue(all(row['typeValue']==0 for row in request('GET',base+'/stats/consumables')[1]['stat']))
+        self.store.move({'itemData':[{'id':row['id'],'pile':'club'} for row in first['itemList']]})
+        self.buy(191)
+        manager=self.buy(190)['itemList'][0]
+        before=deepcopy(self.store.state)
+        status,stats=request('GET',base+'/stats/consumables')
+        self.assertEqual(status,'200 OK')
+        counts={row['type']:row['typeValue'] for row in stats['stat']}
+        self.assertEqual((counts['consumables'],counts['consumablesContractPlayer'],counts['consumablesTrainingPlayer']),(14,2,2))
+        self.assertEqual(counts['consumablesTrainingManagerLeagueModifier'],0)
+        status,groups=request('GET',base+'/consumables/all')
+        self.assertEqual(status,'200 OK');self.assertEqual(len(groups['itemData']),7)
+        self.assertTrue(all(row['count']==2 and row['untradeableCount']==0 for row in groups['itemData']))
+        self.assertTrue(all(row['discardValue']==row['item']['discardValue']==50 for row in groups['itemData']))
+        self.assertNotIn(manager['id'],{row['item']['id'] for row in groups['itemData']})
+        contracts=request('GET',base+'/consumables/consumablesContractPlayer')[1]['itemData']
+        self.assertEqual(contracts,request('GET',base+'/consumables/66')[1]['itemData'])
+        self.assertEqual(len(contracts),1)
+        card=contracts[0]['item']
+        self.assertEqual((card['resourceId'],card['assetId']),(5000007,5000007))
+        self.assertEqual([card[k] for k in ('bronze','silver','gold')],[28]*3)
+        self.assertEqual(request('GET',base+'/stats/staff')[0],'200 OK')
+        for path in (base+'/stats/staff',base+'/stats/consumables',base+'/consumables/all'):
+            self.assertEqual(request('GET',path,sid='invalid')[0],'401 Unauthorized')
+            self.assertEqual(request('PUT',path)[0],'405 Method Not Allowed')
+        self.assertEqual(request('GET',base+'/consumables/manager')[0],'400 Bad Request')
+        self.assertEqual(request('GET',base+'/stats/staff?unexpected=1')[0],'400 Bad Request')
+        self.assertEqual(self.store.state,before)
+        target=self.target()['id']
+        status,updated=request('PUT','/ut/game/fifa19/item/resource/5000007',{'apply':[{'id':target}]})
+        self.assertEqual(status,'200 OK');self.assertEqual(updated['itemData'][0]['contract'],35)
+        self.assertEqual(request('GET',base+'/consumables/66')[1]['itemData'][0]['count'],1)
+        self.assertEqual(Backend(self.backend.path,settings=self.backend.settings).fut_inventory.state,self.store.state)
+        # Unowned definitions and targets cannot consume the remaining stack.
+        self.assertEqual(request('PUT','/ut/game/fifa19/item/resource/5000007',{'apply':[{'id':manager['id']}]})[0],'400 Bad Request')
+        self.assertEqual(request('GET',base+'/consumables/66')[1]['itemData'][0]['count'],1)
+
+    def test_existing_support_definitions_use_installed_art_without_rewriting_saves(self):
+        resources={57:5000000,67:5000001,201:5000007,202:5000008,218:5000009,219:5000010,220:5000011}
+        for subtype,resource in resources.items():
+            row={'id':1,'definitionId':6000000+subtype,'pile':'club','timestamp':1}
+            before=deepcopy(row)
+            card=fut_items.card(row)
+            self.assertEqual((card['resourceId'],card['assetId']),(resource,resource))
+            self.assertEqual(card['cardsubtypeid'],subtype)
+            self.assertEqual(row,before)
+        self.buy(191)
+        target=self.target()['id']
+        # Older clients still referring to the old definition resource work.
+        fut_items.apply(self.backend,6000201,{'apply':[{'id':target}]},by_resource=True)
+        self.assertEqual(next(row for row in self.store.state['items'] if row['id']==target)['contract'],35)
+        labels={row.attrib['id']:row.text for row in ET.fromstring(fut_leaderboards.localization())}
+        self.assertEqual(labels['LeagueName_Abbr15_0'],'No league')
+        self.assertEqual(labels['LAbbr_0'],'None')
+        self.assertIn('LOC_LB_rank',labels)
 
     def test_squad_fitness_accepts_a_mix_of_full_and_tired_players_without_wasting_a_full_squad_card(self):
         self.buy(191)

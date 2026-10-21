@@ -1,4 +1,5 @@
 """Owned managers and consumables using the PS3 squad and ApplyCard contracts."""
+from collections import Counter
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -8,23 +9,90 @@ MANAGERS = json.loads((Path(__file__).parent/'data/support-items.json').read_tex
 CATALOGUE = {row['resourceId']: dict(row, itemType='manager', cardsubtypeid=4,
                                   discardValue=250 if row['rareflag'] else 100)
              for row in MANAGERS}
-for subtype, kind, name, amount, target in (
-        (57, 'playerTraining', 'All attributes player training', 10, 'outfield'),
-        (67, 'GKTraining', 'All attributes goalkeeper training', 10, 'keeper'),
-        (201, 'contract', 'Player contracts', 28, 'player'),
-        (202, 'contract', 'Manager contracts', 28, 'manager'),
-        (219, 'fitness', 'Player fitness', 60, 'player'),
-        (220, 'fitness', 'Squad fitness', 30, 'squad'),
-        (218, 'healing', 'All injuries healing', 5, 'player')):
+for subtype, resource, kind, name, amount, target in (
+        (57, 5000000, 'playerTraining', 'All attributes player training', 10, 'outfield'),
+        (67, 5000001, 'GKTraining', 'All attributes goalkeeper training', 10, 'keeper'),
+        (201, 5000007, 'contract', 'Player contracts', 28, 'player'),
+        (202, 5000008, 'contract', 'Manager contracts', 28, 'manager'),
+        (219, 5000010, 'fitness', 'Player fitness', 60, 'player'),
+        (220, 5000011, 'fitness', 'Squad fitness', 30, 'squad'),
+        (218, 5000009, 'healing', 'All injuries healing', 5, 'player')):
+    # Retain saved definition IDs, but send the installed PS3 art resource.
+    # The native consumable constructor derives assetId from resourceId.
     asset = 6000000+subtype
-    CATALOGUE[asset] = dict(assetId=asset, resourceId=asset, cardsubtypeid=subtype,
+    CATALOGUE[asset] = dict(assetId=resource, resourceId=resource, cardsubtypeid=subtype,
         itemType=kind, name=name, rating=80, rareflag=1, amount=amount,
         target=target, discardValue=50)
 CONSUMABLES = [key for key, row in CATALOGUE.items() if row['itemType'] != 'manager']
 TYPES = {row['itemType'] for row in CATALOGUE.values()}
+CONSUMABLE_TYPES = {
+    'consumables': set(CONSUMABLES),
+    'consumablesContract': {6000201,6000202},
+    'consumablesContractPlayer': {6000201}, 'consumablesContractManager': {6000202},
+    'consumablesTraining': {6000057,6000067},
+    'consumablesTrainingPlayer': {6000057}, 'consumablesTrainingGk': {6000067},
+    'consumablesFitness': {6000219,6000220},
+    'consumablesFitnessPlayer': {6000219}, 'consumablesFitnessTeam': {6000220},
+    'consumablesHealing': {6000218},
+    'consumablesFormationManager': set(), 'consumablesTrainingManagerLeagueModifier': set(),
+    'consumablesTrainingPlayerPlayStyle': set(), 'consumablesTrainingGkPlayStyle': set(),
+    'consumablesPosition': set(), 'consumablesTrainingManager': set(),
+}
+CONSUMABLE_CATEGORY_IDS = {
+    'consumables':60, 'consumablesContractPlayer':66, 'consumablesContractManager':71,
+    'consumablesFitnessPlayer':68, 'consumablesFitnessTeam':74,
+    'consumablesFormationManager':72, 'consumablesTrainingManagerLeagueModifier':77,
+    'consumablesHealing':65, 'consumablesTrainingPlayerPlayStyle':75,
+    'consumablesTrainingGkPlayStyle':76, 'consumablesPosition':69,
+    'consumablesTrainingPlayer':67, 'consumablesTrainingManager':73,
+    'consumablesTrainingGk':70,
+}
+ITEM_LABELS = {'LeagueName_0':'No league', 'LeagueName_Abbr15_0':'No league',
+               'LAbbr_0':'None'}
 
 
 def records(state): return state.get('supportItems', [])
+
+
+def club_statistics(store, kind):
+    """Native LoadClubStats stat array and LoadStaffBonus bonus array."""
+    counts = Counter(row['definitionId'] for row in records(store.state) if row['pile']=='club')
+    if kind == 'staff':
+        # Supplies currently grant their fixed amount; do not advertise an
+        # additional staff multiplier that the save transaction does not use.
+        return {'bonus': [{'type':'contract','value':0},
+                          {'type':'managerTalk','value':0}]}
+    return {'stat': [{'contextId':0,'contextValue':0,'type':name,
+                      'typeValue':sum(counts[key] for key in CONSUMABLE_TYPES[name])}
+                     for name in CONSUMABLE_CATEGORY_IDS]}
+
+
+def consumable_list(store, selector, query):
+    """Retail LoadConsumables needs stacks, not ordinary itemData cards."""
+    from fut_inventory import integer
+    if set(query)-{'start','count'} or any(len(v)!=1 for v in query.values()):
+        raise ValueError('Invalid consumable list query')
+    start,count = int(query.get('start',['0'])[0]),int(query.get('count',['100'])[0])
+    if not integer(start,0,100000) or not integer(count,1,200):
+        raise ValueError('Invalid consumable list page')
+    aliases = {'all':'consumables','any':'consumables',
+               'contract':'consumablesContract','training':'consumablesTraining',
+               'playerTraining':'consumablesTrainingPlayer','GKTraining':'consumablesTrainingGk',
+               'fitness':'consumablesFitness','healing':'consumablesHealing'}
+    # UI enum IDs returned by retail 0x16e0474.
+    aliases.update({str(ident):name for name,ident in CONSUMABLE_CATEGORY_IDS.items()})
+    definitions = CONSUMABLE_TYPES.get(aliases.get(selector,selector))
+    if definitions is None: raise ValueError('Unknown consumable category')
+    groups = {}
+    for row in records(store.state):
+        if row['pile']!='club' or row['definitionId'] not in definitions: continue
+        group = groups.get(row['definitionId'])
+        if group is None:
+            item = card(row)
+            group = groups[row['definitionId']] = {'item':item,'count':0,
+                'untradeableCount':0,'discardValue':item['discardValue']}
+        group['count'] += 1
+    return {'itemData': [groups[key] for key in sorted(groups)][start:start+count]}
 
 
 def validate(state, player_ids):
@@ -54,6 +122,10 @@ def card(record):
                 owners=1, untradeable=False, itemQuantity=1)
     if spec['itemType'] == 'manager':
         spec.update(contract=record.get('contract',7), leagueId=record.get('leagueId',0))
+    elif spec['itemType'] == 'contract':
+        # Native contracts display/eligibility reads these three fields,
+        # separately from the generic amount used by training and fitness.
+        spec.update(bronze=spec['amount'],silver=spec['amount'],gold=spec['amount'])
     return spec
 
 
@@ -120,7 +192,8 @@ def apply(backend, source_id, payload, by_resource=False):
                 raise Conflict('Apply consumables between matches')
         state = deepcopy(store.state)
         source = next((row for row in records(state) if row['pile']=='club' and
-                       (row['definitionId'] if by_resource else row['id'])==source_id),None)
+                       (source_id in (row['definitionId'],CATALOGUE[row['definitionId']]['resourceId'])
+                        if by_resource else row['id']==source_id)),None)
         if source is None: raise ValueError('Consumable is not owned by this club')
         spec = CATALOGUE[source['definitionId']]
         if spec['itemType']=='manager': raise ValueError('Managers cannot be consumed')
