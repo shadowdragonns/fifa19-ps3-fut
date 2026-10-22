@@ -403,7 +403,8 @@ class SupportItemTests(unittest.TestCase):
             card=group['item'];subtype=card['cardsubtypeid']
             result=request('POST',f"/ut/game/fifa19/item/resource/{card['resourceId']}",
                            {'apply':[{'id':i} for i in targets[subtype]]})
-            self.assertEqual({row['id'] for row in result['itemData']},set(targets[subtype]))
+            self.assertEqual({row['id'] for row in result['itemData']},set(targets[subtype]) | {card['id']})
+            self.assertEqual(result['itemData'][-1],card)
         self.assertEqual(request('GET',path)['itemData'],[])
         messi_row=next(row for row in self.store.state['items'] if row['id']==messi)
         self.assertEqual((messi_row['contract'],messi_row['fitness'],messi_row['injuryGames']),(29,80,0))
@@ -415,6 +416,35 @@ class SupportItemTests(unittest.TestCase):
         stats=request('GET','/ut/game/fifa19/club/stats/consumables')
         self.assertTrue(all(row['typeValue']==0 for row in stats['stat']))
         self.assertEqual(Backend(self.backend.path,settings=self.backend.settings).fut_inventory.state,self.store.state)
+
+    def test_repeated_contracts_return_consumed_source_for_callback_but_never_restore_it_to_inventory(self):
+        self.buy(191);self.buy(191)
+        state=deepcopy(self.store.state)
+        _,variant=card_versions.catalogue_player(self.backend.settings,'otw',158023)
+        messi=state['nextItemId'];state['nextItemId']+=1
+        state['items'].append({'id':messi,'assetId':158023,'edition':'otw','variant':variant,
+                              'pile':'club','timestamp':1,'contract':1})
+        self.store.commit(state)
+        before_coins=self.store.state['coins'];consumed=[]
+        for index,target_id in enumerate((self.target()['id'],messi)):
+            groups=fut_items.consumable_list(self.store,'contracts',{})['itemData']
+            group=next(g for g in groups if g['item']['cardsubtypeid']==201)
+            source=group['item'];self.assertEqual(group['count'],2-index)
+            result=fut_items.apply(self.backend,source['resourceId'],{'apply':[{'id':target_id}]},by_resource=True)
+            self.assertEqual(result['itemData'][-1],source)
+            target=result['itemData'][0];self.assertEqual(target['id'],target_id)
+            if target_id==messi:
+                self.assertEqual((target['resourceId'],target['rating'],target['contract']),
+                                 ((3<<24)|158023,119,29))
+            consumed.append(source['id'])
+            self.assertTrue(set(consumed).isdisjoint(row['id'] for row in self.store.state['supportItems']))
+            self.assertTrue(set(consumed).isdisjoint(row['id'] for row in fut_items.search(self.store,{'type':['any']})['itemData']))
+            saved=Backend(self.backend.path,settings=self.backend.settings).fut_inventory
+            self.assertEqual(saved.state,self.store.state)
+            with self.assertRaises(ValueError):
+                fut_items.apply(self.backend,source['id'],{'apply':[{'id':target_id}]})
+        self.assertNotIn(201,{g['item']['cardsubtypeid'] for g in fut_items.consumable_list(self.store,'contracts',{})['itemData']})
+        self.assertEqual(self.store.state['coins'],before_coins)
 
     def test_squad_fitness_accepts_a_mix_of_full_and_tired_players_without_wasting_a_full_squad_card(self):
         self.buy(191)

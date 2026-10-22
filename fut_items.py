@@ -238,8 +238,17 @@ def apply(backend, source_id, payload, by_resource=False):
                 if not target.get('injuryGames'): raise Conflict('This player is not injured')
                 target['injuryGames'] = max(0,target['injuryGames']-spec['amount'])
                 if not target['injuryGames']: target['injuryType'] = 'none'
+        # ApplyCard/ApplyCardByRes invalidate the native consumable caches
+        # before making the request. Their frontend success callback still
+        # looks up the selected supply by its owned ID to read its subtype.
+        # Return its definition as well as the updated targets so that lookup
+        # works even when this was the last copy in the stack. This snapshot
+        # is only for the response; the consumed item stays out of the save
+        # and subsequent club/stack searches.
+        applied_card = card(source)
+        updated_cards = [card(candidates[i]) if i in managers else store.card(candidates[i],store.settings) for i in ids]
         state['supportItems'].remove(source)
         store.commit(state)
         backend.events.emit('consumable.applied', player=store.player(), item_id=source['id'],
                             definition_id=source['definitionId'], target_ids=ids)
-        return {'itemData': [card(candidates[i]) if i in managers else store.card(candidates[i],store.settings) for i in ids]}
+        return {'itemData': updated_cards + [applied_card]}

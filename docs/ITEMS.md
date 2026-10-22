@@ -38,6 +38,13 @@ the resource-ID variant and consumable search routes are also handled. Retail
 stack applications use `POST /ut/game/fifa19/item/resource/<resource-id>` with
 the same body; the earlier PUT compatibility form remains supported.
 
+Successful apply responses include both the updated targets and a definition
+snapshot of the consumed supply in `itemData`. FIFA's success callback looks
+up that supply's subtype after invalidating its menu caches; omitting it can
+crash the frontend after the server has already saved the application. The
+snapshot does not restore an owned item: saves and subsequent club/stack
+searches exclude the consumed copy, including the last copy of a stack.
+
 The native staff/consumable menus read `GET /club/stats/staff` and
 `GET /club/stats/consumables` below `/ut/game/fifa19`. Consumable counts include
 club items only, including every copy in a stack. `GET /club/consumables/<type>`
