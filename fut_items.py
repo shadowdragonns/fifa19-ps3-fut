@@ -23,6 +23,9 @@ for subtype, resource, kind, name, amount, target in (
     CATALOGUE[asset] = dict(assetId=resource, resourceId=resource, cardsubtypeid=subtype,
         itemType=kind, name=name, rating=80, rareflag=1, amount=amount,
         target=target, discardValue=50)
+class WrongTrainingTarget(ValueError):pass
+
+
 CONSUMABLES = [key for key, row in CATALOGUE.items() if row['itemType'] != 'manager']
 TYPES = {row['itemType'] for row in CATALOGUE.values()}
 CONSUMABLE_TYPES = {
@@ -78,7 +81,7 @@ def consumable_list(store, selector, query):
     # Retail LoadConsumables uses "development" for the complete owned
     # supplies list before the apply screen filters compatible targets.
     aliases = {'development':'consumables','all':'consumables','any':'consumables',
-               'contract':'consumablesContract','training':'consumablesTraining',
+               'positioning':'consumablesPosition','contracts':'consumablesContract','contract':'consumablesContract','training':'consumablesTraining',
                'playerTraining':'consumablesTrainingPlayer','GKTraining':'consumablesTrainingGk',
                'fitness':'consumablesFitness','healing':'consumablesHealing'}
     # UI enum IDs returned by retail 0x16e0474.
@@ -193,6 +196,7 @@ def apply(backend, source_id, payload, by_resource=False):
                     and not getattr(session,name).get('cancelled') for name in ('local_fut_match','online_fut_match')):
                 raise Conflict('Apply consumables between matches')
         state = deepcopy(store.state)
+        from fut_condition import fitness as current_fitness
         source = next((row for row in records(state) if row['pile']=='club' and
                        (source_id in (row['definitionId'],CATALOGUE[row['definitionId']]['resourceId'])
                         if by_resource else row['id']==source_id)),None)
@@ -209,14 +213,15 @@ def apply(backend, source_id, payload, by_resource=False):
             squad = state.get('squad')
             selected = {slot['itemData']['id'] for slot in squad['players']} if squad else set()
             if not set(ids)<=selected: raise ValueError('Squad consumable targets must be in the active squad')
-            if not any(candidates[i].get('fitness',99)<99 for i in ids):
+            if not any(current_fitness(candidates[i],store.settings)<99 for i in ids):
                 raise Conflict('Squad fitness is already full')
         for item_id in ids:
             target = candidates[item_id]
             if spec['itemType'] in ('playerTraining','GKTraining'):
                 current = store.card(target,store.settings)
                 if (current['preferredPosition']=='GK') != (spec['target']=='keeper'):
-                    raise ValueError('Choose the appropriate outfield/goalkeeper training card')
+                    raise WrongTrainingTarget('Use goalkeeper training for a goalkeeper.' if spec['target']=='outfield'
+                                              else 'This is a goalkeeper training card. Use outfield training for this player.')
                 if target.get('trainingBoost'): raise Conflict('This player already has training applied')
                 target['trainingBoost'] = [spec['amount']]*6
                 target['trainingDefinition'] = source['definitionId']
@@ -225,8 +230,10 @@ def apply(backend, source_id, payload, by_resource=False):
                 if target.get('contract',7)>=99: raise Conflict('Contracts are already full')
                 target['contract'] = min(99,target.get('contract',7)+spec['amount'])
             elif spec['itemType']=='fitness':
-                if spec['target']!='squad' and target.get('fitness',99)>=99: raise Conflict('Fitness is already full')
-                target['fitness'] = min(99,target.get('fitness',99)+spec['amount'])
+                if spec['target']!='squad' and current_fitness(target,store.settings)>=99: raise Conflict('Fitness is already full')
+                target['fitness'] = min(99,current_fitness(target,store.settings)+spec['amount'])
+                import time
+                target['fitnessUpdatedAt'] = int(time.time())
             elif spec['itemType']=='healing':
                 if not target.get('injuryGames'): raise Conflict('This player is not injured')
                 target['injuryGames'] = max(0,target['injuryGames']-spec['amount'])

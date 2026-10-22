@@ -4,6 +4,7 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import tempfile
+import time
 import unittest
 import xml.etree.ElementTree as ET
 from unittest.mock import patch
@@ -367,10 +368,10 @@ class SupportItemTests(unittest.TestCase):
         _,variant=card_versions.catalogue_player(self.backend.settings,'otw',158023)
         messi=state['nextItemId'];state['nextItemId']+=1
         state['items'].append({'id':messi,'assetId':158023,'edition':'otw','variant':variant,
-                              'pile':'club','timestamp':1,'contract':1,'fitness':20,
+                              'pile':'club','timestamp':1,'contract':1,'fitness':20,'fitnessUpdatedAt':int(time.time()),
                               'injuryGames':2,'injuryType':'leg'})
         keeper=self.target(True)['id']
-        next(row for row in state['items'] if row['id']==keeper)['fitness']=50
+        next(row for row in state['items'] if row['id']==keeper).update(fitness=50,fitnessUpdatedAt=int(time.time()))
         self.store.commit(state)
         original=self.store.card(next(row for row in state['items'] if row['id']==messi))
         path='/ut/game/fifa19/club/consumables/development'
@@ -382,11 +383,20 @@ class SupportItemTests(unittest.TestCase):
             self.assertEqual(response[0],'200 OK')
             return json.loads(response[1])
         before=deepcopy(self.store.state)
+        contracts=request('GET','/ut/game/fifa19/club/consumables/contracts')['itemData']
+        self.assertEqual({r['item']['cardsubtypeid'] for r in contracts},{201,202})
+        self.assertEqual(request('GET','/ut/game/fifa19/club/consumables/positioning'),{'itemData':[]})
         groups=request('GET',path)['itemData']
         self.assertEqual(self.store.state,before)
         self.assertEqual(len(groups),7)
         self.assertNotIn(manager['id'],{row['item']['id'] for row in groups})
         self.assertTrue(all(row['count']==1 for row in groups))
+        wrong='/ut/game/fifa19/item/resource/5000001'
+        raw=(f'POST {wrong} HTTP/1.1\r\nX-UT-SID: test-fut\r\n\r\n').encode()+json.dumps({'apply':[{'id':messi}]}).encode()
+        rejected=fut_inventory.response(self.backend,'POST',wrong,raw)
+        self.assertEqual(rejected[0],'400 Bad Request')
+        self.assertEqual(rejected[-1],'FUT.TrainingWrongTarget')
+        self.assertEqual(self.store.state,before)
         targets={57:[messi],67:[keeper],201:[messi],202:[manager['id']],
                  218:[messi],219:[messi],220:[keeper]}
         for group in groups:

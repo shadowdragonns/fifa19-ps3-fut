@@ -25,3 +25,7 @@ Tournament definitions/opponent arrays have been checked against the retail
 PS3 parsers. Menu navigation, bracket scheduling, extra time/penalties and the
 full four-match flow still require in-game verification. Online tournaments
 are outside this implementation.
+
+Retail's empty auxiliary progress field (`progressDataVersion: 2`,
+`progressData: "AAAAAA=="`) is accepted as an empty sized envelope. Repeated
+initial bracket saves are allowed without advancing wins or awarding coins.

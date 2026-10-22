@@ -152,3 +152,13 @@ An example partial configuration (all omitted rules keep defaults):
 
 The `web_packs` section controls live pack-builder prices. See [WEB.md](WEB.md)
 for pricing formulas, authentication, the web interface and operator commands.
+
+## Fitness recovery
+
+`fitness.enabled` defaults to `true`; `fitness.seconds_per_point` defaults to
+`300` (+1 every five real minutes). It accepts 1–86400 seconds and reloads live.
+Recovery includes offline time and stops at 99. The current interval applies to
+elapsed time since the card's saved fitness timestamp. Injuries and suspensions
+remain match-based. Existing tired cards initialize their clock from their last
+recorded completed appearance, or first authenticated access if no receipt is
+available. Inventory reads do not require a background recovery job.

@@ -15,6 +15,7 @@ from urllib.parse import parse_qs, urlsplit
 from pow_services import json_reply
 import fut_packs
 import card_versions
+import fut_items
 
 PREFIX = '/ut/game/fifa19'
 DISCARD_PATH = '/ut/delete/game/fifa19/item'
@@ -81,6 +82,8 @@ class Inventory:
             validate_condition(record)
             from player_statistics import validate as validate_statistics
             validate_statistics(record)
+            from admin_cards import validate_overrides
+            validate_overrides(record.get('overrides',{}))
             ids.add(record['id'])
             if record['pile'] == 'club':
                 club_assets.add(identity)
@@ -133,6 +136,8 @@ class Inventory:
             validate_saved_progress(state['offlineSeason'])
         from fut_seasons import validate_season_history
         validate_season_history(state)
+        from admin_cards import validate_audit
+        validate_audit(state)
         from fut_tournaments import validate_state
         validate_state(state)
         from fut_online import validate_season_state
@@ -178,18 +183,22 @@ class Inventory:
         custom = edition not in PLAYER_EDITIONS
         player = (card_versions.variant_player(record['assetId'], record['variant']) if custom
                   else PLAYER_EDITIONS[edition][record['assetId']])
+        if record.get('overrides'):
+            from admin_cards import apply_overrides
+            player=apply_overrides(player,record['overrides'])
         if record.get('trainingBoost'):
             player = deepcopy(player)
             for stat, boost in zip(player['attributeList'], record['trainingBoost']):
                 stat['value'] = min(card_versions.MAX_ATTRIBUTE, stat['value']+boost)
         tier, rarity = (fut_packs.level(player), fut_packs.rare(player)) if standard else ('gold', 1)
+        from fut_condition import fitness
         from player_statistics import lists as statistics_lists
         current_stats, lifetime_stats = statistics_lists(record)
         # Display names and portraits come from the game's DB using assetId.
         card = {'id': record['id'], 'resourceId': card_versions.resource_id(record),
                 **{k: deepcopy(v) for k, v in player.items() if k != 'name'},
                 'cardsubtypeid': 1, 'itemType': 'player', 'itemState': 'free',
-                'contract': record.get('contract',7), 'fitness': record.get('fitness',99), 'injuryGames': record.get('injuryGames', 0),
+                'contract': record.get('contract',7), 'fitness': fitness(record,settings), 'injuryGames': record.get('injuryGames', 0),
                 'injuryType': record.get('injuryType', 'none'),
                 'suspension': record.get('suspension', 0), 'rareflag': record['variant']['rareflag'] if custom else fut_packs.rare(player) if standard else 1, 'owners': 1, 'loyaltyBonus': 0,
                 'discardValue': card_versions.discard_value(record, settings) if custom else settings.section('economy')['quick_sell'][tier][rarity], 'timestamp': record['timestamp'],
@@ -575,6 +584,8 @@ def response(backend, method, path, raw):
                     value = {'selection': {'category': '', 'view': '', 'period': ''},
                              'options': [], 'permutations': [], 'scrollDelay': 0}
             return json_reply(value, 'FUT.LocalInventory')
+        except fut_items.WrongTrainingTarget as error:
+            return json_reply({'error':str(error)},'FUT.TrainingWrongTarget','400 Bad Request')
         except Conflict as error:
             return json_reply({'error': str(error)}, 'FUT.LocalPackConflict', '409 Conflict')
         except (ValueError, TypeError, UnicodeError):

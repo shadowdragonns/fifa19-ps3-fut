@@ -110,6 +110,19 @@ class TournamentTests(unittest.TestCase):
         fut_results.finish(self.root,self.a.session,report)
         self.assertEqual(cups.saved(self.owner.fut_inventory.state,1001)['wins'],1)
 
+    def test_retail_empty_auxiliary_progress_and_repeated_initial_saves_are_accepted(self):
+        payload={'round':1,'dataVersion':2,'tournamentData':bracket(),
+                 'progressDataVersion':2,'progressData':'AAAAAA=='}
+        for updated in (payload,{**payload,'tournamentData':bracket(1)}):
+            self.assertEqual(self.call('PUT',cups.USER+'/1001',updated)[0],'200 OK')
+            self.assertEqual(cups.saved(self.owner.fut_inventory.state,1001)['wins'],0)
+        restored=Backend(self.path,multiuser=True).for_user(101)
+        self.assertEqual(cups.progress(restored,1001)['tournamentData'],bracket(1))
+        invalid={**payload,'progressData':'AAAAAAEA'}
+        before=deepcopy(self.owner.fut_inventory.state)
+        self.assertEqual(self.call('PUT',cups.USER+'/1001',invalid)[0],'400 Bad Request')
+        self.assertEqual(self.owner.fut_inventory.state,before)
+
     def test_loss_quit_and_new_attempt_do_not_change_other_cups_or_duplicate_awards(self):
         report=self.match(reason='LOSS');result=fut_results.finish(self.root,self.a.session,report)
         row=cups.saved(self.owner.fut_inventory.state,1001)

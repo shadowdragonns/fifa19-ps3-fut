@@ -1,4 +1,6 @@
-"""Saved injuries and red-card bans; recovery requires a completed match resting."""
+"""Wall-clock fitness recovery, saved injuries and match-based red-card bans."""
+import time
+from copy import deepcopy
 from fut_inventory import integer
 
 
@@ -10,6 +12,8 @@ def validate(record):
         raise ValueError('Invalid saved player condition')
     if (not integer(record.get('contract',7),0,99) or not integer(record.get('fitness',99),0,99)):
         raise ValueError('Invalid player contracts/fitness')
+    if 'fitnessUpdatedAt' in record and not integer(record['fitnessUpdatedAt']):
+        raise ValueError('Invalid fitness recovery timestamp')
     training = {'trainingBoost','trainingDefinition','trainingItemId'} & set(record)
     if training:
         from fut_items import CATALOGUE
@@ -22,11 +26,41 @@ def validate(record):
             raise ValueError('Invalid temporary player training')
 
 
+def fitness(record, settings=None, now=None):
+    from server_settings import DEFAULT
+    rules=(settings or DEFAULT).section('fitness')
+    value=record.get('fitness',99)
+    anchor=record.get('fitnessUpdatedAt')
+    if value>=99 or anchor is None or not rules['enabled']:return value
+    now=int(time.time()) if now is None else now
+    return min(99,value+max(0,int(now)-anchor)//rules['seconds_per_point'])
+
+
+def initialize_recovery(store):
+    """Seed old tired cards from their last owned appearance, once per card.
+
+    Reads compute elapsed recovery without ticking or rewriting every five
+    minutes. Match reports, supplies and admin condition edits reset the anchor.
+    """
+    with store.lock:
+        missing=[r for r in store.state['items'] if r.get('fitness',99)<99 and 'fitnessUpdatedAt' not in r]
+        if not missing:return
+        now=int(time.time());last={}
+        for receipt in store.state.get('matchHistory',[]):
+            if receipt['summary']['endReason'] not in ('WIN','DRAW','LOSS'):continue
+            for item_id in receipt.get('playedItems',[]):last[item_id]=max(last.get(item_id,0),receipt['finished'])
+        state=deepcopy(store.state)
+        for record in state['items']:
+            if record.get('fitness',99)<99 and 'fitnessUpdatedAt' not in record:
+                record['fitnessUpdatedAt']=min(now,last.get(record['id'],now))
+        store.commit(state)
+
+
 def available(card):
     return not card.get('injuryGames', 0) and not card.get('suspension', 0)
 
 
-def apply(state, current, payload):
+def apply(state, current, payload, settings=None):
     played = set(current['played_items'])
     complete = payload['endReason'] in {'WIN', 'DRAW', 'LOSS'}
     reported = {row['id']: row for row in payload['items']}
@@ -34,7 +68,6 @@ def apply(state, current, payload):
         if record['pile'] != 'club':
             continue
         if complete and record['id'] not in played:
-            if 'fitness' in record: record['fitness'] = min(99,record['fitness']+15)
             if record.get('injuryGames', 0):
                 record['injuryGames'] -= 1
                 if not record['injuryGames']:
@@ -46,7 +79,8 @@ def apply(state, current, payload):
         report = reported[record['id']]
         if complete:
             record['contract'] = max(0,record.get('contract',7)-1)
-            record['fitness'] = report.get('fitness',record.get('fitness',99))
+            record['fitness'] = report.get('fitness',fitness(record,settings))
+            record['fitnessUpdatedAt'] = int(time.time())
             for field in ('trainingBoost','trainingDefinition','trainingItemId'): record.pop(field,None)
         kind = report.get('injuryType', 'none').lower()
         games = report.get('injuryGames', 1 if kind != 'none' else 0)

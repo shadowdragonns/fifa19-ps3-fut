@@ -151,11 +151,14 @@ def decode_envelope(encoded, minimum=1, maximum=65536):
         raise ValueError('Invalid season data')
     try:
         envelope = base64.b64decode(encoded, validate=True)
-        if len(envelope) < 5:
+        if len(envelope) < (4 if minimum==0 else 5):
             raise ValueError('Missing season envelope')
         length = struct.unpack('>I', envelope[:4])[0]
         if not minimum <= length <= maximum:
             raise ValueError('Invalid season data length')
+        if length==0:
+            if envelope!=bytes(4):raise ValueError('Invalid empty progress envelope')
+            return b''
         if len(encoded)//4*3-4 > length:
             data = envelope[4:]
         else:

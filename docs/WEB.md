@@ -111,3 +111,32 @@ separate event from native `pack.opened`, whose pack IDs refer to fixed offers.
 
 Back up the whole stopped state directory, including `web-accounts.sqlite3`.
 Auth database and game inventories must stay private and outside releases.
+
+## Administrator card editor
+
+An operator grants access to an existing website account from the server:
+
+```bash
+python3 web_accounts.py --state-dir /path/to/state admin --username YOUR_WEB_USERNAME
+# Remove access immediately, including for existing browser sessions:
+python3 web_accounts.py --state-dir /path/to/state admin --username YOUR_WEB_USERNAME --revoke
+```
+
+Refresh the website after a grant. **Card editor** appears in the navigation.
+Select a club, then a saved squad or all owned players; search by name, edition
+or owned card ID. Select a card and edit OVR, six attributes, position, fitness,
+contracts, injury or suspension. Save applies one atomic inventory update.
+
+Edits affect that owned card in every squad using its ID. They do not replace
+its asset, edition or other copies and survive edition-rule reloads. Temporary
+training is added separately. **Remove stat overrides** restores edition stats
+without resetting condition. Fitness edits reset the real-time recovery clock.
+Native fields allow OVR 1–255 and attributes 0–4294967295; these storage limits
+do not guarantee every value renders or plays sensibly in FIFA.
+
+Exit matches and matchmaking before editing a club. Reopen the squad or re-enter
+FUT to refresh cached cards. A stale editor cannot overwrite a newer card; reload
+it first. Ordinary website accounts cannot use admin endpoints. Grants are
+operator-only, and authenticated admin writes retain origin and CSRF checks.
+The latest 500 edits are recorded privately in that club's inventory; credentials
+are never included. Back up the stopped state before bulk manual experiments.

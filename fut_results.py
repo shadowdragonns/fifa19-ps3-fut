@@ -164,7 +164,7 @@ def save_result(backend, current, payload):
         from player_statistics import apply as apply_statistics
         apply_statistics(state,current,payload)
         from fut_condition import apply as apply_condition
-        apply_condition(state, current, payload)
+        apply_condition(state, current, payload, backend.settings)
         state['coins'] += coins
         state.setdefault('matchHistory', []).append(record)
         store.commit(state)

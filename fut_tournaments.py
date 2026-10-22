@@ -102,7 +102,7 @@ def upload(backend, session, identifier, payload):
     if 'progressData' in payload:
         if type(payload['progressDataVersion']) is not int or payload['progressDataVersion']!=2:
             raise ValueError('Invalid auxiliary cup version')
-        decode_envelope(payload['progressData'],maximum=65536)
+        decode_envelope(payload['progressData'],minimum=0,maximum=65536)
     row=saved(backend.fut_inventory.state,identifier)
     value={key:deepcopy(payload[key]) for key in payload}
     value['dataVersion']='2'
@@ -112,8 +112,6 @@ def upload(backend, session, identifier, payload):
     if current and current.get('playing') and not current.get('finished'):
         raise ValueError('Finish the current match before updating its bracket')
     marker=row['matchIds'][-1] if row['matchIds'] else 'initial'
-    if row.get('uploadedMatchId')==marker:
-        raise ValueError('This bracket update was already committed')
     if not row['matchIds'] and payload['round'] not in (0,1):raise ValueError('No completed cup match')
     # Opaque native bracket bytes are never trusted to advance a round or pay
     # coins. Only a committed owned match can change wins/status/championships.
@@ -155,7 +153,7 @@ def validate_state(state):
         if ('progressDataVersion' in row)!=('progressData' in row):raise ValueError('Invalid cup auxiliary data')
         if 'progressData' in row:
             if row['progressDataVersion']!='2':raise ValueError('Invalid cup auxiliary version')
-            decode_envelope(row['progressData'])
+            decode_envelope(row['progressData'],minimum=0)
         if 'uploadedMatchId' in row and row['uploadedMatchId'] not in ['initial']+row['matchIds']:
             raise ValueError('Unknown cup upload receipt')
         expected_wins=0

@@ -14,7 +14,9 @@ Every player has Prime/TOTW (+10), TOTY (+20) and Ones to Watch (+25) versions.
 Gold-player odds are respectively 1 in 400, 1 in 2,000 and 1 in 10,000; edition
 packs are available on the web. Rules reload live and refresh already-owned
 cards. Managers and club supplies have their own in-game packs; fitness,
-contracts, temporary training and player match totals persist.
+contracts, temporary training and player match totals persist. Fitness recovers
+by one point every five real minutes, including offline time. Website admins
+can edit individual owned cards and their condition from the card editor.
 FUT Lab adds a club-linked website for building custom packs with live prices
 and opening them into the same saved FUT inventory.
 Single-player divisions progress from weak clubs on Amateur in Division 10

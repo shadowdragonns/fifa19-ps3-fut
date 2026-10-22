@@ -23,6 +23,7 @@ def defaults():
         'cpu_seasons': {'hold': [5+i for i in range(10)], 'promote': [12+i for i in range(10)],
                         'difficulties': [DIFFICULTY_NAMES[level] for level in CPU_DIFFICULTIES],
                         'opponents': [list(teams) for teams in CPU_TIERS]},
+        'fitness': {'enabled':True,'seconds_per_point':300},
         'matchmaking': {'search_seconds': 20, 'peer_timeout_seconds': 180},
         'plugins': {'enabled': True, 'disabled': [], 'settings': {}},
         'custom_cards': {'enabled': True, 'standard_pack_chance_percent': None, 'editions': default_editions()},
@@ -90,6 +91,8 @@ class Settings:
             if not isinstance(teams, list) or len(teams) != 10:
                 raise ValueError('Each CPU division needs ten opponent team IDs')
             for team in teams: _integer(team, 1, 2**31-1, 'opponent team ID')
+        if type(rules['fitness']['enabled']) is not bool:raise ValueError('fitness.enabled must be a boolean')
+        _integer(rules['fitness']['seconds_per_point'],1,86400,'fitness.seconds_per_point')
         _integer(rules['matchmaking']['search_seconds'], 1, 60, 'matchmaking.search_seconds')
         _integer(rules['matchmaking']['peer_timeout_seconds'], 30, 3600, 'matchmaking.peer_timeout_seconds')
         plugins = rules['plugins']

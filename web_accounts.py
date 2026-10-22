@@ -36,6 +36,9 @@ class WebAccounts:
                  expires INTEGER NOT NULL);
               CREATE TABLE IF NOT EXISTS limits(key TEXT PRIMARY KEY, starts INTEGER NOT NULL, count INTEGER NOT NULL);
             ''')
+            columns={r[1] for r in db.execute('PRAGMA table_info(users)')}
+            if 'is_admin' not in columns:
+                db.execute('ALTER TABLE users ADD COLUMN is_admin INTEGER NOT NULL DEFAULT 0 CHECK(is_admin IN (0,1))')
         self.path.chmod(0o600)
 
     @contextmanager
@@ -72,7 +75,7 @@ class WebAccounts:
             row = db.execute('SELECT persona FROM invites WHERE token_hash=? AND expires>?',
                              (digest(invite.strip()), int(self.clock()))).fetchone()
             if row is None: raise AuthError('Invalid or expired club invite.')
-            try: db.execute('INSERT INTO users VALUES(?,?,?,?)', (username.lower(), row['persona'], salt, hashed))
+            try: db.execute('INSERT INTO users(username,persona,salt,password_hash) VALUES(?,?,?,?)', (username.lower(), row['persona'], salt, hashed))
             except sqlite3.IntegrityError: raise AuthError('Username or club already linked.') from None
             db.execute('DELETE FROM invites WHERE token_hash=?', (digest(invite.strip()),))
         return self.login(username, password)
@@ -94,9 +97,15 @@ class WebAccounts:
     def session(self, token):
         if not isinstance(token, str) or len(token) > 100: return None
         with self.db() as db:
-            row = db.execute('SELECT users.username,users.persona FROM sessions JOIN users USING(username) '
+            row = db.execute('SELECT users.username,users.persona,users.is_admin FROM sessions JOIN users USING(username) '
                              'WHERE token_hash=? AND expires>?', (digest(token), int(self.clock()))).fetchone()
         return dict(row) if row else None
+
+    def set_admin(self, username, enabled=True):
+        if not isinstance(username,str) or type(enabled) is not bool:raise ValueError('Invalid administrator')
+        with self.db() as db:
+            if db.execute('UPDATE users SET is_admin=? WHERE username=?',(int(enabled),username.lower())).rowcount!=1:
+                raise AuthError('Website user does not exist.')
 
     def logout(self, token):
         with self.db() as db: db.execute('DELETE FROM sessions WHERE token_hash=?', (digest(token),))
@@ -139,8 +148,15 @@ def main():
     invite.add_argument('--persona', type=int, required=True)
     invite.add_argument('--reset', action='store_true', help='Revoke the existing website login first; does not alter the FUT club')
     invite.add_argument('--minutes', type=int, default=60)
+    admin=sub.add_parser('admin',help='Grant or revoke website card-editor access')
+    admin.add_argument('--username',required=True)
+    admin.add_argument('--revoke',action='store_true')
     args = parser.parse_args()
     root = args.state_dir.resolve()
+    if args.command=='admin':
+        WebAccounts(root/'web-accounts.sqlite3').set_admin(args.username,not args.revoke)
+        print('Admin access '+('revoked for ' if args.revoke else 'granted to ')+args.username)
+        return
     profiles = [root/'profile.json', *sorted((root/'users').glob('*/profile.json'))]
     clubs = {}
     for path in profiles:

@@ -134,7 +134,10 @@ def session_for(backend, headers):
         if backend.root.recovery:backend.root.recovery.purge()
         session = next((s for s in backend.sessions.values() if s.postauth and s.fut_key
                         and secrets.compare_digest(s.fut_key.encode(), sid.encode())), None)
-        if session and backend.root.recovery:backend.root.recovery.touch(session)
+        if session:
+            if backend.root.recovery:backend.root.recovery.touch(session)
+            from fut_condition import initialize_recovery
+            initialize_recovery(backend.for_session(session).fut_inventory)
         return session
 
 

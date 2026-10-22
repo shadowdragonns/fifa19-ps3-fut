@@ -288,5 +288,9 @@
     "otw_surcharge": 100000,
     "rating_step_surcharge": 500,
     "rare_surcharge": 750
+  },
+  "fitness": {
+    "enabled": true,
+    "seconds_per_point": 300
   }
 }

@@ -10,6 +10,7 @@ from urllib.parse import urlsplit
 
 from web_accounts import WebAccounts, AuthError
 import web_packs
+import admin_cards
 
 HERE = Path(__file__).resolve().parent
 COOKIE = 'fut_web_session'
@@ -109,7 +110,19 @@ class WebApp:
                         result = {'username':session['username'], 'club_name':owner.profile['fut_club']['name'],
                                   'persona':session['persona'], 'coins':state['coins'],
                                   'card_count':sum(row['pile']=='club' for row in state['items']),
-                                  'csrf':self.csrf(token), 'history':[row['result'] for row in history]}
+                                  'csrf':self.csrf(token), 'is_admin':bool(session['is_admin']), 'history':[row['result'] for row in history]}
+                elif route.startswith('/club/api/admin/'):
+                    if not session['is_admin']:raise HTTPError(403,'Administrator access required.')
+                    if method=='GET' and route=='/club/api/admin/clubs':
+                        from plugin_queries import Queries
+                        result={'clubs':[{'persona':r['persona_id'],'name':r['club_name'],'player':r['name']}
+                            for r in Queries(self.root).get_players()]}
+                    elif method=='POST' and route in ('/club/api/admin/inventory','/club/api/admin/edit'):
+                        if type(data.get('persona')) is not int:raise HTTPError(400,'Select a club.')
+                        target=self.owner(data['persona'])
+                        result=(admin_cards.inventory(target,data) if route.endswith('inventory')
+                                else admin_cards.edit(target,data,session['username']))
+                    else:raise HTTPError(404,'Admin page not found.')
                 elif method == 'GET' and route == '/club/api/options':
                     result = {key:[{'id':int(k),'name':v} for k,v in sorted(values.items(),key=lambda row:row[1].casefold())]
                               for key,values in self.labels.items()}
@@ -135,11 +148,13 @@ class WebApp:
                     result = {'ok':True}
                 else: raise HTTPError(404, 'Page not found.')
             return '200 OK', json.dumps(result,ensure_ascii=False).encode(), 'application/json; charset=utf-8', headers
+        except admin_cards.EditError as error:
+            status,message=error.status,str(error)
         except HTTPError as error:
             status, message = error.status, error.message
         except (AuthError,web_packs.PackError,ValueError,UnicodeError,CookieError) as error:
             status, message = 400, str(error) or 'Invalid request.'
         except (OSError,sqlite3.Error):
-            status, message = 503, 'Club storage is temporarily unavailable. Please retry the same pack.'
-        labels = {400:'Bad Request',401:'Unauthorized',403:'Forbidden',404:'Not Found',405:'Method Not Allowed',503:'Service Unavailable'}
+            status, message = 503, 'Club storage is temporarily unavailable. Please retry.'
+        labels = {400:'Bad Request',401:'Unauthorized',403:'Forbidden',404:'Not Found',405:'Method Not Allowed',409:'Conflict',503:'Service Unavailable'}
         return f'{status} {labels[status]}', json.dumps({'error':message}).encode(), 'application/json', headers

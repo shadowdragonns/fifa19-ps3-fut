@@ -57,8 +57,13 @@ The resource apply route accepts the installed resource and the previous
 
 After a completed match, played cards lose one contract, save reported fitness
 and remove their temporary training. The selected manager loses one contract.
-Unused players retain training and regain up to 15 saved fitness per completed
-match resting. Injuries and bans continue to recover while resting. Zero
+Fitness recovers by **one point every five real minutes**, including time
+offline, up to 99. The live `fitness.enabled` and `fitness.seconds_per_point`
+settings control this. Recovery is calculated from a saved timestamp when cards
+are read; no five-minute timer needs to keep running. A match report or fitness
+consumable resets the timestamp. Resting for another completed match no longer
+gives a flat fitness bonus. Injuries and bans still recover through matches
+resting; time alone does not remove them. Unused players retain training. Zero
 contracts are reported to FIFA; native match-menu eligibility needs testing.
 
 ## Appearances, goals, assists and discipline
@@ -85,3 +90,8 @@ The backend and relevant native field/ApplyCard writers have automated checks.
 The live FIFA manager/search/apply menus and the match engine's training effect
 still need user testing. Capture a failed menu action before changing item
 IDs or types; missing engine assets cannot be supplied by the server alone.
+
+Goalkeeper training (resource 5000001, goalkeeper artwork) applies to keepers.
+Outfield training (5000000, footballers artwork) applies to outfield players.
+Using the wrong type rejects the request without consuming either card.
+The native contracts list uses the plural `/club/consumables/contracts` route.

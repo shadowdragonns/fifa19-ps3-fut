@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const number = value => new Intl.NumberFormat('en-GB').format(value);
 const state = {me:null, options:null, quote:null, size:3, edition:'standard', register:false, busy:false, serial:0};
 let debounce;
-const editionLabel = edition => ({standard:'Standard',prime:'Prime / TOTW',toty:'Team of the Year',otw:'Ones to Watch'}[edition] || edition);
+const editionLabel = edition => ({england110:'England 110',standard:'Standard',prime:'Prime / TOTW',toty:'Team of the Year',otw:'Ones to Watch'}[edition] || edition);
 const editionMark = edition => ({standard:'19',prime:'PRIME',toty:'TOTY',otw:'OTW'}[edition] || 'FUT');
 async function api(path, data) {
   const options = {credentials:'same-origin', headers:{}};
@@ -40,6 +40,7 @@ function balance() {
 }
 function signedOut() {
   state.me=null; state.quote=null; state.serial++;
+  adminAccess();
   $('auth-panel').hidden=false; $('filters').disabled=true; $('reset').disabled=true; $('logout').hidden=true;
   $('open-pack').disabled=true; $('refresh-quote').disabled=true; $('price').textContent='—'; $('breakdown').replaceChildren();
   $('quote-summary').textContent='Sign in to start building.'; $('matches').textContent='Your club, your possibilities';
@@ -48,6 +49,7 @@ function signedOut() {
 }
 async function loadClub() {
   state.me = await api('me'); balance();
+  adminAccess();
   $('auth-panel').hidden=true; $('filters').disabled=false; $('reset').disabled=false; $('logout').hidden=false;
   if (!state.options) {
     state.options=await api('options');
@@ -207,4 +209,99 @@ async function refreshBalance() {
   try{state.me=await api('me');balance();history();enableOpen();}catch(_){}
 }
 document.addEventListener('visibilitychange',refreshBalance);setInterval(refreshBalance,15000);
+const admin = {ready:false,clubs:[],cards:[],current:null,page:0,total:0,serial:0,busy:false};
+let adminDebounce;
+function adminAccess() {
+  const allowed=Boolean(state.me?.is_admin);
+  $('admin-link').hidden=!allowed;$('admin-editor').hidden=!allowed;
+  if(!allowed){admin.ready=false;admin.current=null;admin.serial++;$('admin-fields').disabled=true;$('admin-cards').replaceChildren();return;}
+  if(!admin.ready){admin.ready=true;loadAdminClubs().catch(error=>{$('admin-status').textContent=error.message;admin.ready=false;});}
+}
+async function loadAdminClubs() {
+  const result=await api('admin/clubs');
+  if(!state.me?.is_admin)return;
+  admin.clubs=result.clubs;
+  $('admin-club').replaceChildren(...result.clubs.map(row=>{
+    const opt=element('option',row.name+' · '+row.player);opt.value=String(row.persona);return opt;
+  }));
+  if(result.clubs.some(row=>row.persona===state.me.persona))$('admin-club').value=String(state.me.persona);
+  admin.page=0;await loadAdminCards(true);
+}
+async function loadAdminCards(resetSquads=false) {
+  if(admin.busy||!state.me?.is_admin||!$('admin-club').value)return;
+  const serial=++admin.serial;
+  admin.current=null;$('admin-fields').disabled=true;$('admin-status').textContent='Loading owned cards…';
+  const data={persona:Number($('admin-club').value),squad_id:resetSquads?null:($('admin-squad').value?Number($('admin-squad').value):null),search:$('admin-search').value,page:admin.page};
+  try {
+    const result=await api('admin/inventory',data);
+    if(serial!==admin.serial||!state.me?.is_admin)return;
+    admin.cards=result.cards;admin.total=result.total;
+    const selected=resetSquads?'':$('admin-squad').value;
+    $('admin-squad').replaceChildren(element('option','All owned players'));
+    $('admin-squad').firstChild.value='';
+    for(const row of result.squads){const opt=element('option',row.name+(row.active?' (active)':''));opt.value=String(row.id);$('admin-squad').append(opt);}
+    $('admin-squad').value=selected;
+    $('admin-position').replaceChildren(...result.positions.map(p=>{const opt=element('option',p);opt.value=p;return opt;}));
+    $('admin-cards').replaceChildren(...result.cards.map(row=>{const opt=element('option',row.rating+' · '+row.name+' · '+editionLabel(row.edition)+' · #'+row.id);opt.value=String(row.id);return opt;}));
+    $('admin-count').textContent=number(result.total)+' cards · page '+(admin.page+1);
+    $('admin-prev').disabled=admin.page===0;$('admin-next').disabled=(admin.page+1)*100>=result.total;
+    $('admin-status').textContent=result.cards.length?'Select a card to edit.':'No owned players match this selection.';
+    if(result.cards.length)selectAdminCard(result.cards[0]);
+  }catch(error){if(serial===admin.serial)$('admin-status').textContent=error.message;}
+}
+function adminAttributeLabels() {
+  const labels=$('admin-position').value==='GK'?['DIV','HAN','KIC','REF','SPD','POS']:['PAC','SHO','PAS','DRI','DEF','PHY'];
+  document.querySelectorAll('#admin-attributes label span').forEach((label,i)=>{label.textContent=labels[i];});
+}
+function selectAdminCard(row) {
+  admin.current=row;$('admin-cards').value=String(row.id);$('admin-fields').disabled=false;
+  $('admin-player').textContent=row.name+' · '+editionLabel(row.edition);
+  $('admin-card-info').textContent='Card #'+row.id+(Object.keys(row.overrides).length?' · stat overrides saved':' · edition stats')+(row.training?' · temporary training active':'');
+  $('admin-rating').value=row.rating;$('admin-position').value=row.position;
+  $('admin-attributes').replaceChildren(...row.attributes.map((value,i)=>{const label=element('label');label.append(element('span'));const input=element('input');input.id='admin-attr-'+i;input.type='number';input.min='0';input.max='4294967295';input.required=true;input.value=value;label.append(input);return label;}));
+  for(const key of ['fitness','contract','suspension','injuryGames','injuryType'])$('admin-'+key).value=row[key];
+  adminAttributeLabels();
+}
+async function saveAdminCard(reset=false) {
+  if(admin.busy||!admin.current)return;
+  clearTimeout(adminDebounce);
+  admin.busy=true;
+  for(const id of ['admin-club','admin-squad','admin-search','admin-cards','admin-refresh','admin-prev','admin-next'])$(id).disabled=true;
+  $('admin-fields').disabled=true;$('admin-status').textContent='Saving card…';
+  const row=admin.current;
+  const condition=reset?{}:Object.fromEntries(['fitness','contract','suspension','injuryGames','injuryType'].map(key=>[key,key==='injuryType'?$('admin-'+key).value:Number($('admin-'+key).value)]).filter(([key,value])=>value!==row[key]));
+  const overrides=reset?{}:{...row.overrides};
+  if(!reset){
+    const rating=Number($('admin-rating').value),position=$('admin-position').value;
+    const attributes=Array.from({length:6},(_,i)=>Number($('admin-attr-'+i).value));
+    if(rating!==row.rating)overrides.rating=rating;
+    if(position!==row.position)overrides.position=position;
+    if(attributes.some((value,i)=>value!==row.attributes[i]))overrides.attributes=attributes;
+  }
+  try {
+    const result=await api('admin/edit',{persona:Number($('admin-club').value),item_id:row.id,revision:row.revision,overrides,condition});
+    if(!state.me?.is_admin)return;
+    admin.cards=admin.cards.map(card=>card.id===result.card.id?result.card:card);selectAdminCard(result.card);
+    const option=Array.from($('admin-cards').options).find(opt=>Number(opt.value)===row.id);
+    if(option)option.textContent=result.card.rating+' · '+result.card.name+' · '+editionLabel(result.card.edition)+' · #'+row.id;
+    $('admin-status').textContent=result.changed?'Saved. Reopen your squad in FIFA to refresh this card.':'No changes to save.';
+  }catch(error){$('admin-status').textContent=error.message;}
+  finally{admin.busy=false;$('admin-fields').disabled=!admin.current||!state.me?.is_admin;
+    for(const id of ['admin-club','admin-squad','admin-search','admin-cards','admin-refresh'])$(id).disabled=false;
+    $('admin-prev').disabled=admin.page===0;$('admin-next').disabled=(admin.page+1)*100>=admin.total;}
+}
+$('admin-form').addEventListener('submit',event=>{event.preventDefault();saveAdminCard();});
+$('admin-reset').addEventListener('click',()=>saveAdminCard(true));
+$('admin-position').addEventListener('change',adminAttributeLabels);
+$('admin-club').addEventListener('change',()=>{admin.page=0;loadAdminCards(true);});
+$('admin-squad').addEventListener('change',()=>{admin.page=0;loadAdminCards();});
+$('admin-search').addEventListener('input',()=>{clearTimeout(adminDebounce);adminDebounce=setTimeout(()=>{admin.page=0;loadAdminCards();},300);});
+$('admin-cards').addEventListener('change',()=>{const row=admin.cards.find(card=>card.id===Number($('admin-cards').value));if(row)selectAdminCard(row);});
+$('admin-prev').addEventListener('click',()=>{if(admin.page>0){admin.page--;loadAdminCards();}});
+$('admin-next').addEventListener('click',()=>{if((admin.page+1)*100<admin.total){admin.page++;loadAdminCards();}});
+$('admin-refresh').addEventListener('click',()=>loadAdminCards());
+
 (async()=>{chooseButtons();try{await loadClub();applyDraft();await updateQuote();}catch(error){signedOut();if(error.message!=='Sign in to your club.')notice(error.message);}})();
+
+function updateNavigation(){document.querySelectorAll('.sidebar .nav-link').forEach(link=>link.classList.toggle('active',link.getAttribute('href')===(location.hash||'#studio')));}
+window.addEventListener('hashchange',updateNavigation);updateNavigation();
