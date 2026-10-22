@@ -69,6 +69,10 @@ def create(backend, session, payload):
         if payload.get('divisionId', 1) not in accepted_divisions(backend):
             raise ValueError('Unknown active CPU division')
         payload = {**payload, 'divisionId': active_division(backend)}
+    if payload.get('tournamentId'):
+        from fut_tournaments import cup_id
+        cup_id(payload['tournamentId'])
+        if payload.get('seasonId'):raise ValueError('A cup match cannot also be a season match')
     squad = complete_squad(backend, session, payload['squadId'])
     current = getattr(session, 'local_fut_match', None)
     if current and current.get('finished'):
@@ -78,6 +82,9 @@ def create(backend, session, payload):
     if current is None:
         current = {'id': uuid.uuid4().hex, 'request': dict(payload), 'start': int(time.time()), 'ready': False,
                    'squad': squad}
+        if payload.get('tournamentId'):
+            from fut_tournaments import reserve
+            current['tournament'] = reserve(backend,payload['tournamentId'])
         if payload.get('seasonId') == 1:
             current['season_cycle'] = len(backend.fut_inventory.state.get('offlineSeasonHistory', []))
         session.local_fut_match = current

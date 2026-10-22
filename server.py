@@ -143,7 +143,15 @@ def main(argv=None):
             print(json.dumps({'bind': bind, 'advertise': endpoints.host, 'tcp_ports': PORTS,
                 'udp_ports': [8099], 'state_dir': str(args.state_dir), 'valid': True}))
             return
+        from session_recovery import Recovery
+        backend.recovery=Recovery(backend,args.state_dir/'connection-recovery.json')
+        recovery_error=None
+        try:recovered=backend.recovery.restore()
+        except (ValueError,OSError,KeyError,TypeError) as error:
+            recovered=0;recovery_error=type(error).__name__
         capture = Capture(logs, backend)
+        if recovery_error:capture.save('sessions.recovery_failed',error_type=recovery_error)
+        if recovered:capture.save('sessions.recovered',sessions=recovered)
         from web_app import WebApp
         capture.web = WebApp(backend)
         capture.public_ca = public_ca
@@ -171,7 +179,10 @@ def main(argv=None):
                 watcher.stop()
                 plugins.stop()
                 plugins.emit('server.stopping')
-                backend.close_sessions()
+                try:backend.recovery.snapshot()
+                except OSError as error:
+                    capture.save('sessions.recovery_failed',error_type=type(error).__name__)
+                finally:backend.close_sessions()
         plugins.emit('server.stopped')
 
 

@@ -21,6 +21,7 @@ import fut_inventory
 import fut_squads
 import fut_matches
 import fut_seasons
+import fut_tournaments
 import fut_online
 import fut_content
 import fut_leaderboards
@@ -289,6 +290,9 @@ class Handler(socketserver.BaseRequestHandler):
                     capture.save('http-handler', path=public_path, handler=handler)
                 elif (online_reply := fut_online.response(capture.backend, method, path, raw)) is not None:
                     status, body, mime, extra_headers, handler = online_reply
+                    capture.save('http-handler', path=public_path, handler=handler)
+                elif (cup_reply := fut_tournaments.response(capture.backend, method, path, raw)) is not None:
+                    status, body, mime, extra_headers, handler = cup_reply
                     capture.save('http-handler', path=public_path, handler=handler)
                 elif (season_reply := fut_seasons.response(capture.backend, method, path, raw)) is not None:
                     status, body, mime, extra_headers, handler = season_reply

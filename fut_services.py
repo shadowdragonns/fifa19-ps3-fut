@@ -88,7 +88,7 @@ def user_info(backend, session=None):
             'won': sum(r['endReason'] in ('WIN', 'DNF_WIN') for r in reports),
             'draw': sum(r['endReason'] in ('DRAW', 'DNF_DRAW') for r in reports),
             'loss': sum(r['endReason'] in ('LOSS', 'DNF_LOSS', 'DNF', 'QUIT') for r in reports),
-            'trophies': 0, 'purchased': False, 'actives': active_assets(backend)}
+            'trophies': sum(row['championships'] for row in inventory.state.get('offlineTournaments',{}).values()), 'purchased': False, 'actives': active_assets(backend)}
 
 
 def user_mass_info(backend, session):
@@ -131,8 +131,11 @@ def request_headers(head):
 def session_for(backend, headers):
     sid = headers.get('x-ut-sid', '')
     with backend.lock:
-        return next((s for s in backend.sessions.values() if s.postauth and s.fut_key
-                     and secrets.compare_digest(s.fut_key.encode(), sid.encode())), None)
+        if backend.root.recovery:backend.root.recovery.purge()
+        session = next((s for s in backend.sessions.values() if s.postauth and s.fut_key
+                        and secrets.compare_digest(s.fut_key.encode(), sid.encode())), None)
+        if session and backend.root.recovery:backend.root.recovery.touch(session)
+        return session
 
 
 def account_info(backend, session):
@@ -168,6 +171,7 @@ def authenticate(backend, payload):
         # The executable's persona accessor returns zero when the local PSN
         # persona object is unavailable (0x169d990). Account + a FUT-purpose
         # code still bind that alias to exactly one authenticated local player.
+        if backend.root.recovery:backend.root.recovery.purge()
         active = [s for s in backend.sessions.values() if s.postauth
                   and s.account == payload['nuc']
                   and payload['nucleusPersonaId'] in (0, s.persona)]
@@ -274,11 +278,13 @@ def response(backend, method, path, raw):
             from fut_matches import reset
             reset(session)
             from server_plugins import left_fut
+            if backend.root.recovery:backend.root.recovery.forget(session.key)
             left_fut(backend.for_session(session), session)
             return json_reply({}, 'FUT.Logout')
     if body or parsed.query:
         return json_reply({'error': 'Invalid request'}, 'FUT.InvalidEntryRequest', '400 Bad Request')
     with backend.lock:
+        if backend.root.recovery:backend.root.recovery.purge()
         active = [s for s in backend.sessions.values() if s.postauth and s.web_token]
         if route == ACCOUNT:
             active = [s for s in active

@@ -9,7 +9,7 @@ HERE = Path(__file__).resolve().parent
 SERVER_MODULES = ('server', 'initialize_tls', 'tls_identity', 'kits', 'accounts', 'probe', 'endpoints', 'sessions', 'tdf',
     'blaze', 'identity', 'tls_bridge', 'qos', 'hospitality', 'fut_services', 'fut_inventory',
     'fut_squads', 'fut_club_assets', 'fut_condition', 'fut_leaderboards', 'fut_matches', 'fut_results',
-    'fut_seasons', 'fut_online', 'matchmaking', 'peer_games', 'fut_content', 'fut_packs',
+    'fut_seasons', 'fut_tournaments', 'session_recovery', 'fut_online', 'matchmaking', 'peer_games', 'fut_content', 'fut_packs',
     'pow_services', 'pran', 'localization', 'game_reporting', 'server_settings', 'server_plugins', 'plugin_queries', 'card_versions', 'rebalance_primes',
     'web_accounts', 'web_packs', 'web_app', 'card_rebalance', 'fut_items', 'player_statistics')
 CLIENT_MODULES = ('launch', 'launcher_gui', 'server_trust', 'game_input', 'endpoints', 'certificate_patch', 'tls_identity',
@@ -28,7 +28,7 @@ def build(output):
         files = {name+'.py': (HERE/(name+'.py')).read_bytes() for name in modules}
         files['README.md'] = (HERE/'README.md').read_bytes()
         files['LICENSE'] = (HERE/'LICENSE').read_bytes()
-        for name in ('SERVER.md', 'CLIENT.md', 'CONFIG.md', 'PLUGINS.md', 'DEVELOPMENT.md', 'CUSTOM_CARDS.md', 'WEB.md', 'ITEMS.md'):
+        for name in ('SERVER.md', 'CLIENT.md', 'CONFIG.md', 'PLUGINS.md', 'DEVELOPMENT.md', 'CUSTOM_CARDS.md', 'WEB.md', 'ITEMS.md', 'TOURNAMENTS.md'):
             files['docs/'+name] = (HERE/'docs'/name).read_bytes()
         if kind == 'server':
             for name in ('index.html','app.css','app.js'): files['web/'+name] = (HERE/'web'/name).read_bytes()

@@ -154,6 +154,13 @@ def save_result(backend, current, payload):
                   'divisionId': current['request'].get('divisionId', 0),
                   'summary': summary, 'award': result, 'rewardVersion': 4, 'rewardPolicy': policy}
         state = deepcopy(store.state)
+        from fut_tournaments import apply_result
+        tournament = apply_result(state,current,payload)
+        if tournament is not None:
+            record['tournament'] = tournament
+            result['tournamentCoins'] = tournament['prize']
+            result['allCoins'] += tournament['prize']
+            coins += tournament['prize']
         from player_statistics import apply as apply_statistics
         apply_statistics(state,current,payload)
         from fut_condition import apply as apply_condition
@@ -173,7 +180,7 @@ def validate_history(history):
         raise ValueError('Invalid local match history')
     seen = set()
     for row in history:
-        if (not isinstance(row, dict) or set(row)-{'playedItems'} not in ({'id', 'requestHash', 'finished', 'seasonId', 'divisionId', 'summary', 'award'},
+        if (not isinstance(row, dict) or set(row)-{'playedItems','tournament'} not in ({'id', 'requestHash', 'finished', 'seasonId', 'divisionId', 'summary', 'award'},
                                      {'id', 'requestHash', 'finished', 'seasonId', 'divisionId', 'summary', 'award', 'rewardVersion'},
                                      {'id', 'requestHash', 'finished', 'seasonId', 'divisionId', 'summary', 'award', 'rewardVersion', 'rewardPolicy'})
                 or not isinstance(row['id'], str) or not re.fullmatch(r'[0-9a-f]{32}', row['id'])
@@ -196,6 +203,18 @@ def validate_history(history):
         expected = (policy_reward(row['rewardPolicy'], row['summary']['endReason']) if row.get('rewardVersion') == 4
                     else result_reward(row['seasonId'], row['divisionId'],
                                        row['summary']['endReason'], row.get('rewardVersion')))
-        if row['award'] != award(expected):
+        expected_award = award(expected)
+        if 'tournament' in row:
+            from fut_tournaments import CUPS
+            cup = row['tournament']
+            if (not isinstance(cup,dict) or set(cup)!={'id','cycle','round','prize'}
+                    or type(cup['id']) is not int or cup['id'] not in CUPS
+                    or not integer(cup['cycle']) or not integer(cup['round'],1,4)
+                    or not integer(cup['prize']) or row['seasonId']!=0
+                    or cup['prize']!=(CUPS[cup['id']]['prize'] if cup['round']==4 and row['summary']['endReason']=='WIN' else 0)):
+                raise ValueError('Invalid saved cup reward')
+            expected_award['tournamentCoins'] = cup['prize']
+            expected_award['allCoins'] += cup['prize']
+        if row['award'] != expected_award:
             raise ValueError('Invalid saved match award')
         seen.add(row['id'])

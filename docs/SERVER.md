@@ -99,8 +99,22 @@ journalctl --user -u fifa19-fut.service -n 80 --no-pager
 ```
 
 Restart between matches after a server code or TLS/address update.
-JSON config and standalone Python plugin source edits reload live. Login and
-matchmaking state are in memory, so clients must reconnect afterward.
+JSON config and standalone Python plugin source edits reload live. Graceful
+shutdown saves private, expiring login recovery state. Existing FUT session
+IDs and cached client callback routes can reconnect to the same owned club;
+a fresh Blaze login can reclaim its recovered session. In FIFA, dismiss the
+connection error, choose Connect to EA Servers if offered, then enter FUT again.
+The recovery window is 15 minutes of inactivity; authenticated use renews it.
+Logout/disconnect revokes recovery. Online pairings are cancelled by a restart;
+search again after reconnecting. This does not preserve live peer matches.
+An abrupt kill cannot create a shutdown snapshot. Keep the same server address
+and TLS identity for an already-running client.
+
+`state/connection-recovery.json` contains session credentials and is written
+atomically with owner-only permissions on POSIX. Keep it private alongside TLS
+keys and saves. It is excluded from public bundles and rejected by the audit.
+Saved CPU reservations and bracket progress can survive a graceful restart;
+in-game reconnect behaviour still needs live client testing.
 Long-running user services may need your system's user-session persistence
 settings. The server can also run directly in a terminal.
 

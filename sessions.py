@@ -38,6 +38,7 @@ class Backend:
         self.sessions = {}
         self.presence_last_seen = {}
         self.client_routes = {}
+        self.recovery = None
         from matchmaking import MatchmakingQueue
         self.matchmaking = MatchmakingQueue(settings=self.settings)
         self.root = self
@@ -110,6 +111,7 @@ class Backend:
 
     def extend_web_session(self, peer=None, client_route=None):
         with self.lock:
+            if self.root.recovery:self.root.recovery.purge()
             if client_route is not None:
                 connection = self.root.client_routes.get(client_route)
                 session = connection.session if connection else None
@@ -121,6 +123,7 @@ class Backend:
             if len(active) != 1:
                 return None
             session = active[0]
+            if self.root.recovery:self.root.recovery.touch(session)
             if not session.web_key:
                 session.web_key = secrets.token_hex(16)
                 session.web_token = secrets.token_hex(16)
@@ -145,6 +148,7 @@ class Session:
     np_blob: bytes = b''
     presence_online: bool = False
     presence_fut: bool = False
+    recovery_until: float = 0
 
 
 class Connection:
@@ -164,6 +168,8 @@ class Connection:
                 self.root.client_routes.pop(self.client_route, None)
                 self.client_route = ''
             if self.session:
+                if self.root.recovery and self.root.sessions.get(self.session.key) is self.session:
+                    self.root.recovery.forget(self.session.key)
                 self.root.matchmaking.remove(self.session)
                 self.backend.sessions.pop(self.session.key, None)
                 from server_plugins import went_offline
@@ -347,11 +353,19 @@ class Connection:
                 raise ValueError('Local authorization code invalid, expired or already used')
             self.close(keep_client_route=self.session is None, reason='relogin')
             with self.backend.lock:
-                if self.root.multiuser and any(s.external == external for s in self.root.sessions.values()):
+                if self.root.recovery:self.root.recovery.purge()
+                previous=next((s for s in self.root.sessions.values() if s.external==external),None)
+                if self.root.multiuser and previous and not previous.recovery_until:
                     raise ValueError('This player already has an active game connection')
                 self.backend = self.root.for_user(external)
                 p = self.backend.profile
-                self.session = Session(p['persona'], p['account'], np_name or p['name'],
+                if previous and previous.recovery_until:
+                    self.session=previous
+                    self.session.recovery_until=0
+                    self.session.peer=self.peer
+                    self.session.np_blob=blob
+                    self.session.name=np_name or previous.name
+                else:self.session = Session(p['persona'], p['account'], np_name or p['name'],
                                        secrets.token_hex(16), external, int(time.time()),
                                        owner=self.backend, peer=self.peer, np_blob=blob)
                 self.backend.sessions[self.session.key] = self.session

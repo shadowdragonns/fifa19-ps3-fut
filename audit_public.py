@@ -10,7 +10,7 @@ import zipfile
 HERE = Path(__file__).resolve().parent
 PRIVATE_DIRS = {'state', 'state-backups', 'logs', 'runtime', 'rpcs3-runtime', 'tls',
                 'plugin-data', 'PS3_GAME', 'PS3_UPDATE', 'research', '.github-auth'}
-PRIVATE_NAMES = {'rpcn.yml', 'hosts.yml', 'server-config.json', 'launcher-defaults.json', '.env', 'PS3_DISC.SFB', 'BLES02258_patch.yml', 'rpcs3-discovery.yml'}
+PRIVATE_NAMES = {'connection-recovery.json', 'rpcn.yml', 'hosts.yml', 'server-config.json', 'launcher-defaults.json', '.env', 'PS3_DISC.SFB', 'BLES02258_patch.yml', 'rpcs3-discovery.yml'}
 FORBIDDEN_SUFFIXES = {'.iso', '.pkg', '.elf', '.big', '.bin', '.self', '.sprx', '.key', '.pem', '.p12', '.pfx',
                       '.db', '.sqlite', '.sqlite3', '.sqlite3-journal', '.sqlite3-wal', '.sqlite3-shm'}
 SECRET_PATTERNS = (rb'-----BEGIN (?:RSA |EC |OPENSSH |ENCRYPTED )?PRIVATE KEY-----',

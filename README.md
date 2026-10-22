@@ -19,6 +19,9 @@ FUT Lab adds a club-linked website for building custom packs with live prices
 and opening them into the same saved FUT inventory.
 Single-player divisions progress from weak clubs on Amateur in Division 10
 to strong international teams on World Class in Division 1.
+CPU knockout tournaments have three difficulty tiers and saved per-club
+progress; see [tournament support and testing limits](docs/TOURNAMENTS.md).
+Graceful server restarts retain a private reconnect window for running clients.
 Standalone Python plugins reload automatically when added, edited or removed;
 broken edits keep the last working hooks.
 

@@ -133,6 +133,8 @@ class Inventory:
             validate_saved_progress(state['offlineSeason'])
         from fut_seasons import validate_season_history
         validate_season_history(state)
+        from fut_tournaments import validate_state
+        validate_state(state)
         from fut_online import validate_season_state
         validate_season_state(state)
         if 'homeStadium' in state:
@@ -471,7 +473,7 @@ def response(backend, method, path, raw):
         return None
     # Retail single-item quick sell deletes one card by URL, without a body.
     # DiscardCard (0x2b) uses the separate POST itemId-array route.
-    methods = ('PUT',) if resource else ('GET',) if consumables or support_stats else ROUTES[route] if not item else (('GET', 'PUT', 'DELETE') if item[1] else ('GET', 'PUT'))
+    methods = ('POST', 'PUT') if resource else ('GET',) if consumables or support_stats else ROUTES[route] if not item else (('GET', 'PUT', 'DELETE') if item[1] else ('GET', 'PUT'))
     if method not in methods:
         return json_reply({'error': 'Method not allowed'}, 'FUT.WrongMethod',
                           '405 Method Not Allowed', [('Allow', ', '.join(methods))])

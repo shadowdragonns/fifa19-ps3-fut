@@ -34,7 +34,9 @@ the card. Consumables require club ownership and can only be applied between
 matches. Applying is one atomic inventory commit: failed saves cannot consume
 the card or change the target. Native ApplyCard requests use
 `PUT /ut/game/fifa19/item/<consumed-id>` with `{"apply":[{"id":<target-id>}]}`;
-the resource-ID variant and consumable search routes are also handled.
+the resource-ID variant and consumable search routes are also handled. Retail
+stack applications use `POST /ut/game/fifa19/item/resource/<resource-id>` with
+the same body; the earlier PUT compatibility form remains supported.
 
 The native staff/consumable menus read `GET /club/stats/staff` and
 `GET /club/stats/consumables` below `/ut/game/fifa19`. Consumable counts include

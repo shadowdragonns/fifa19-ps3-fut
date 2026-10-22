@@ -150,5 +150,11 @@ In both clients open **Ultimate Team → Online Seasons → Play Match** and
 search within the configured search window. Ready both sides. Gameplay is
 peer-to-peer, so RPCN and peer connectivity must work in addition to server
 access. A second match should use the same login; test repeated full games and
-report the stage of any failure. Reconnect after a server restart and re-enter
-FUT to refresh changed prices/cards. Do not reset squads to apply an update.
+report the stage of any failure. After a graceful server restart, dismiss the
+connection error and use FIFA’s Connect to EA Servers option if offered, then
+re-enter FUT in the same running game. The server retains existing FUT tokens
+and cached callback routes for a 15-minute reconnect window; authenticated use
+renews it. Online matches/searches must be started again. The server address
+and certificate must remain the same. This recovery path still needs an
+in-game check; it does not promise a seamless restart during gameplay.
+Do not reset squads to apply an update.

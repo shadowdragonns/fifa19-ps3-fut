@@ -391,7 +391,7 @@ class SupportItemTests(unittest.TestCase):
                  218:[messi],219:[messi],220:[keeper]}
         for group in groups:
             card=group['item'];subtype=card['cardsubtypeid']
-            result=request('PUT',f"/ut/game/fifa19/item/resource/{card['resourceId']}",
+            result=request('POST',f"/ut/game/fifa19/item/resource/{card['resourceId']}",
                            {'apply':[{'id':i} for i in targets[subtype]]})
             self.assertEqual({row['id'] for row in result['itemData']},set(targets[subtype]))
         self.assertEqual(request('GET',path)['itemData'],[])
