@@ -1,5 +1,6 @@
 """Administrator grants, owned-card edits and atomic in-game propagation."""
 from copy import deepcopy
+from contextlib import closing
 import json
 from pathlib import Path
 import sqlite3
@@ -131,7 +132,7 @@ class AdminCardTests(unittest.TestCase):
 
     def test_migration_preserves_existing_users_sessions_and_defaults_to_no_admin(self):
         path=self.path.with_name('old-accounts.sqlite3')
-        with sqlite3.connect(path) as db:
+        with closing(sqlite3.connect(path)) as db, db:
             db.execute('CREATE TABLE users(username TEXT PRIMARY KEY,persona INTEGER UNIQUE NOT NULL,salt TEXT NOT NULL,password_hash TEXT NOT NULL)')
             db.execute("INSERT INTO users VALUES('existing',100,'00','00')")
         auth=WebAccounts(path)
