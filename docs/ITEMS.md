@@ -101,4 +101,9 @@ IDs or types; missing engine assets cannot be supplied by the server alone.
 Goalkeeper training (resource 5000001, goalkeeper artwork) applies to keepers.
 Outfield training (5000000, footballers artwork) applies to outfield players.
 Using the wrong type rejects the request without consuming either card.
+For example, Neuer needs the goalkeeper training card; Messi needs the
+outfield training card. Both are included in every Training and Club Supplies
+Pack. FIFA may display its generic communication error for a rejected target;
+the server log records the compatibility reason. Training is temporary and
+expires after the trained player completes a match.
 The native contracts list uses the plural `/club/consumables/contracts` route.

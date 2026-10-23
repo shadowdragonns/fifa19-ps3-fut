@@ -29,3 +29,7 @@ are outside this implementation.
 Retail's empty auxiliary progress field (`progressDataVersion: 2`,
 `progressData: "AAAAAA=="`) is accepted as an empty sized envelope. Repeated
 initial bracket saves are allowed without advancing wins or awarding coins.
+
+Final-match creation accepts retail's `tournamentTrophyRound: "true"` string.
+Boolean values and legacy 0/1 flags are normalized for reservation retries.
+The flag is informational: only four committed wins authorize the cup prize.

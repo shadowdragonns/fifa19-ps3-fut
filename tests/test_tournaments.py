@@ -41,7 +41,12 @@ class TournamentTests(unittest.TestCase):
 
     def match(self,identifier=1001,reason='WIN'):
         session=self.a.session
-        fut_matches.create(self.root,session,{'type':'OFFLINE','squadId':1,'tournamentId':identifier,'tournamentTrophyRound':1})
+        request={'type':'OFFLINE','squadId':1,'tournamentId':identifier,'customData1':-1314516563}
+        if cups.saved(self.owner.fut_inventory.state,identifier)['wins']==3:
+            request['tournamentTrophyRound']='true'
+        raw=(f'POST {fut_matches.BASE} HTTP/1.1\r\nX-UT-SID: {session.fut_key}\r\n\r\n').encode()+json.dumps(request).encode()
+        reply=fut_matches.response(self.root,'POST',fut_matches.BASE,raw)
+        self.assertEqual(reply[0],'200 OK')
         ids=[p['itemData']['id'] for p in session.local_fut_match['squad']['players'] if p['index']<11]
         fut_matches.play(self.root,session,{'items':[{'id':i} for i in ids]})
         report={'matchReportId':0,'endReason':reason,'secondsPlayed':5400,'items':[{'id':i} for i in ids],
@@ -109,6 +114,29 @@ class TournamentTests(unittest.TestCase):
         self.assertFalse(self.a.session.local_fut_match.get('finished',False))
         fut_results.finish(self.root,self.a.session,report)
         self.assertEqual(cups.saved(self.owner.fut_inventory.state,1001)['wins'],1)
+
+    def test_trophy_flag_is_normalized_for_retries_and_does_not_skip_rounds_or_pay_early(self):
+        request={'type':'OFFLINE','squadId':1,'tournamentId':1001,'tournamentTrophyRound':'true'}
+        original=deepcopy(request);balance=self.owner.fut_inventory.state['coins']
+        reply=fut_matches.create(self.root,self.a.session,request)
+        current=self.a.session.local_fut_match
+        for flag in (True,1,'true'):
+            self.assertEqual(fut_matches.create(self.root,self.a.session,{**request,'tournamentTrophyRound':flag}),reply)
+            self.assertIs(self.a.session.local_fut_match,current)
+        self.assertEqual(request,original)
+        self.assertIs(current['request']['tournamentTrophyRound'],True)
+        self.assertEqual(current['tournament']['round'],1)
+        self.assertEqual(self.owner.fut_inventory.state['coins'],balance)
+        fut_matches.reset(self.a.session)
+        for flag in ('TRUE','1','',2,-1,1.0,None,[],{}):
+            with self.subTest(flag=flag),self.assertRaises(ValueError):
+                fut_matches.create(self.root,self.a.session,{**request,'tournamentTrophyRound':flag})
+            self.assertIsNone(self.a.session.local_fut_match)
+        for flag in (False,0,'false'):
+            fut_matches.create(self.root,self.a.session,{**request,'tournamentTrophyRound':flag})
+            self.assertIs(self.a.session.local_fut_match['request']['tournamentTrophyRound'],False)
+        self.assertEqual(cups.saved(self.owner.fut_inventory.state,1001)['wins'],0)
+        self.assertEqual(self.owner.fut_inventory.state['coins'],balance)
 
     def test_retail_empty_auxiliary_progress_and_repeated_initial_saves_are_accepted(self):
         payload={'round':1,'dataVersion':2,'tournamentData':bracket(),

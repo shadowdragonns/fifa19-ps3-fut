@@ -48,13 +48,26 @@ def create(backend, session, payload):
     if isinstance(payload, dict) and payload.get('type') == 'ONLINE':
         from fut_online import create_match
         return create_match(backend, session, payload)
+    if isinstance(payload, dict) and 'tournamentTrophyRound' in payload:
+        # Retail CreateMatch writes the final-only flag as the string "true".
+        # Canonicalize it so retries also match clients using JSON booleans
+        # or the older 0/1 compatibility representation. This flag never
+        # advances cup progress or authorizes the champion bonus.
+        value = payload['tournamentTrophyRound']
+        if type(value) is str and value in ('true', 'false'):
+            value = value == 'true'
+        elif type(value) is int and value in (0, 1):
+            value = bool(value)
+        if type(value) is not bool:
+            raise ValueError('Invalid tournament trophy flag')
+        payload = {**payload, 'tournamentTrophyRound': value}
     allowed = {'squadId', 'type', 'tournamentId', 'tournamentTrophyRound',
                'seasonId', 'divisionId', 'gameMode', 'grantsGameModePrizes', 'customData1'}
     if (not isinstance(payload, dict) or set(payload) - allowed
             or payload.get('type') != 'OFFLINE' or type(payload.get('squadId')) is not int
             or not integer(payload['squadId'], 1, 999999999)
             or any(not integer(payload[k], 0, 2**31-1) for k in
-                   ('tournamentId', 'tournamentTrophyRound', 'seasonId', 'divisionId') if k in payload)
+                   ('tournamentId', 'seasonId', 'divisionId') if k in payload)
             or ('gameMode' in payload and payload['gameMode'] not in ('GENERIC', 'TOTW_CHALLENGE'))
             or ('grantsGameModePrizes' in payload and type(payload['grantsGameModePrizes']) is not bool)
             or ('customData1' in payload and not integer(payload['customData1'], -2**31, 2**31-1))):
