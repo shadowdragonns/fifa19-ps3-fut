@@ -33,15 +33,14 @@ function element(tag, text, cls) {
 function notice(message) { $('notice').textContent = message; $('notice').hidden = !message; }
 function balance() {
   $('coins').textContent = state.me ? number(state.me.coins) : '—';
-  $('club-name').textContent = state.me ? state.me.club_name : 'Your club awaits';
-  $('club-user').textContent = state.me ? '@'+state.me.username : 'Sign in to get started';
-  $('club-initials').textContent = state.me ? state.me.club_name.split(/\s+/).map(s=>s[0]).join('').slice(0,2).toUpperCase() : 'FC';
-  $('owned-count').textContent = state.me ? number(state.me.card_count)+' players in your club' : 'Your next signing starts here';
+  $('club-name').textContent = state.me ? state.me.club_name : 'Signed out';
+  $('club-user').textContent = state.me ? '@'+state.me.username : '';
+  $('owned-count').textContent = state.me ? number(state.me.card_count)+' players' : '';
   $('contract-settings').hidden=!state.me;
   if(state.me?.contracts){
     const c=state.me.contracts;
     $('auto-contracts').checked=c.auto_renew;
-    $('contract-description').textContent=`Uses owned contract cards first. If none remain, pays ${number(c.player_price)} coins per player (+${c.player_matches} matches) or ${number(c.manager_price)} per manager (+${c.manager_matches}). Applies at zero contracts to your active XI, bench and selected manager between matches. Insufficient coins leave the card unchanged.`;
+    $('contract-description').textContent=`Uses cards first, then ${number(c.player_price)} coins/player (+${c.player_matches} matches) or ${number(c.manager_price)} coins/manager (+${c.manager_matches}). Active XI, bench and manager only, between matches.`;
     const r=c.last_renewal;
     $('contract-recent').textContent=r?`Last renewal: ${r.items.length} card${r.items.length===1?'':'s'}, ${number(r.coins)} coins spent.`:'';
   }
@@ -62,8 +61,9 @@ function signedOut() {
   adminAccess();
   $('auth-panel').hidden=false; $('filters').disabled=true; $('reset').disabled=true; $('logout').hidden=true;
   $('open-pack').disabled=true; $('refresh-quote').disabled=true; $('price').textContent='—'; $('breakdown').replaceChildren();
-  $('quote-summary').textContent='Sign in to start building.'; $('matches').textContent='Your club, your possibilities';
-  $('history-list').replaceChildren(element('p','Your first custom pack is waiting to be built.','empty'));
+  $('quote-title').textContent='Custom player pack';
+  $('quote-summary').textContent='Sign in to open packs.'; $('matches').textContent='';
+  $('history-list').replaceChildren(element('p','No packs opened.','empty'));
   balance();
 }
 async function loadClub() {
@@ -81,7 +81,7 @@ async function loadClub() {
   }
   for (const button of document.querySelectorAll('[data-edition] small')) {
     const edition=button.parentElement.dataset.edition;
-    if(state.options.editions?.[edition])button.textContent='BASE +'+state.options.editions[edition].boost;
+    if(state.options.editions?.[edition])button.textContent='+'+state.options.editions[edition].boost;
   }
   history();
 }
@@ -106,7 +106,7 @@ function chooseButtons() {
     const selected=button.dataset.edition===state.edition;
     button.classList.toggle('selected',selected);button.setAttribute('aria-pressed',String(selected));
   });
-  $('pack-count').textContent=state.size+' PLAYER'+(state.size===1?'':'S');
+  $('pack-count').textContent=state.size+' player'+(state.size===1?'':'s');
   $('art-edition').textContent=editionMark(state.edition);
   document.querySelector('.pack-art').dataset.edition=state.edition;
   document.querySelector('.pack-art').classList.toggle('prime-art',state.edition!=='standard');
@@ -119,15 +119,15 @@ function enableOpen() {
 async function updateQuote() {
   if (!state.me||state.busy) return;
   const serial=++state.serial;
-  state.quote=null;enableOpen();$('quote-error').textContent='';$('matches').textContent='Finding your players…';
+  state.quote=null;enableOpen();$('quote-error').textContent='';$('matches').textContent='Loading…';
   try {
     const p=parameters();
     try { localStorage.setItem('fut-lab-pack-draft',JSON.stringify(p)); } catch (_) {}
     const q=await api('quote',p);
     if (serial!==state.serial||!state.me) return;
     state.quote=q;
-    $('quote-title').textContent=(p.edition!=='standard'?editionLabel(p.edition):'Your custom')+' player pack';
-    $('quote-summary').textContent=p.size+' distinct '+(p.edition!=='standard'?editionLabel(p.edition)+' ':'')+'player'+(p.size===1?'':'s')+(p.min_rating?' rated '+p.min_rating+'+':'')+'. Built around your selections.';
+    $('quote-title').textContent=(p.edition!=='standard'?editionLabel(p.edition):'Custom')+' player pack';
+    $('quote-summary').textContent=p.size+' distinct player'+(p.size===1?'':'s')+(p.min_rating?' rated '+p.min_rating+'+':'')+'.';
     $('matches').textContent=number(q.matching_players)+' matching player'+(q.matching_players===1?'':'s');
     $('price').textContent=number(q.price);
     $('breakdown').replaceChildren(...q.breakdown.map(row=>{
@@ -137,7 +137,7 @@ async function updateQuote() {
     enableOpen();
   } catch (error) {
     if (serial!==state.serial) return;
-    $('matches').textContent='Your selection needs a little adjustment';
+    $('matches').textContent='';
     $('quote-error').textContent=error.message; $('price').textContent='—';$('breakdown').replaceChildren();
   }
 }
@@ -158,7 +158,7 @@ function applyDraft() {
 }
 function history() {
   const rows=state.me.history||[];
-  if (!rows.length) {$('history-list').replaceChildren(element('p','No packs opened yet. Your next signing starts here.','empty'));return;}
+  if (!rows.length) {$('history-list').replaceChildren(element('p','No packs opened.','empty'));return;}
   $('history-list').replaceChildren(...rows.map(row=>{
     const item=element('div',undefined,'history-row');
     const prime=row.parameters.edition!=='standard';
@@ -185,9 +185,9 @@ function playerCard(card) {
 }
 $('auth-switch').addEventListener('click',()=>{
   state.register=!state.register;$('invite-label').hidden=!state.register;$('invite').required=state.register;
-  $('auth-title').textContent=state.register?'Make it your club':'Sign in to your club';
-  $('auth-submit').textContent=state.register?'Create web account ↗':'Sign in ↗';
-  $('auth-switch').textContent=state.register?'Already linked? Sign in':'First time? Link your club';
+  $('auth-title').textContent=state.register?'Create account':'Sign in';
+  $('auth-submit').textContent=state.register?'Create account':'Sign in';
+  $('auth-switch').textContent=state.register?'Sign in':'Create account';
   $('password').minLength=state.register?12:1;$('password').autocomplete=state.register?'new-password':'current-password';$('auth-error').textContent='';
 });
 $('auth-form').addEventListener('submit',async event=>{
@@ -209,7 +209,7 @@ $('refresh-quote').addEventListener('click',updateQuote);
 $('reset').addEventListener('click',()=>{state.size=3;state.edition='standard';for(const id of ['club','nation','league','position'])$(id).value='';$('level').value='gold';$('min-rating').value='0';$('rare-only').checked=false;chooseButtons();scheduleQuote();});
 $('open-pack').addEventListener('click',async()=>{
   if(state.busy||!state.quote)return;
-  state.busy=true;enableOpen();$('open-pack').textContent='Opening your pack…';$('quote-error').textContent='';
+  state.busy=true;enableOpen();$('open-pack').textContent='Opening…';$('quote-error').textContent='';
   try {
     const result=await api('open',{quote_token:state.quote.quote_token,duplicate_consent:$('duplicate-consent').checked});
     $('reveal-cards').replaceChildren(...result.cards.map(playerCard));
@@ -217,9 +217,9 @@ $('open-pack').addEventListener('click',async()=>{
     $('reveal-summary').textContent=kept+' player'+(kept===1?'':'s')+' added to your club'+(result.duplicate_refund?' · '+number(result.duplicate_refund)+' coins returned for duplicates':'')+'.';
     $('reveal').showModal();state.quote=null;
     state.me=await api('me');balance();history();
-    notice('Pack saved to your FUT club. Refresh your club in game to see the new players.');
+    notice('Pack saved. Re-enter FUT to refresh.');
   } catch(error){$('quote-error').textContent=error.message;}
-  finally{state.busy=false;$('open-pack').textContent='Open this pack ↗';enableOpen();}
+  finally{state.busy=false;$('open-pack').textContent='Open pack';enableOpen();}
 });
 $('close-reveal').addEventListener('click',()=>{$('reveal').close();updateQuote();});
 $('reveal').addEventListener('cancel',()=>{updateQuote();});

@@ -1,4 +1,4 @@
-# FUT Lab: custom web packs
+# FUT website
 
 Open `http://SERVER_IP:8099/club/` using the same reachable server IP as your
 launcher. The site runs inside the existing FUT service, with no separate
@@ -14,7 +14,7 @@ matches. See [ITEMS.md](ITEMS.md) for timing, costs and insufficient-funds behav
 ## Link a website account to a club
 
 An operator issues a one-use registration code for an existing saved club.
-The player enters that code on **First time? Link your club**, then chooses a
+The player enters that code on **Create account**, then chooses a
 website username and password. The website never asks for RPCN credentials.
 There is one website account per saved club. Usernames are case insensitive.
 
