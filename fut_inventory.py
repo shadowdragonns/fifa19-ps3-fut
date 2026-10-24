@@ -84,6 +84,10 @@ class Inventory:
             validate_statistics(record)
             from admin_cards import validate_overrides
             validate_overrides(record.get('overrides',{}))
+            if ('position' in record and (not isinstance(record['position'],str) or record['position'] not in card_versions.POSITIONS)
+                    or 'playStyle' in record and not integer(record['playStyle'],250,273)
+                    or 'firstOwner' in record and type(record['firstOwner']) is not bool):
+                raise ValueError('Invalid saved player chemistry/position')
             ids.add(record['id'])
             if record['pile'] == 'club':
                 club_assets.add(identity)
@@ -185,6 +189,8 @@ class Inventory:
         custom = edition not in PLAYER_EDITIONS
         player = (card_versions.variant_player(record['assetId'], record['variant']) if custom
                   else PLAYER_EDITIONS[edition][record['assetId']])
+        if 'position' in record:
+            player = dict(player,preferredPosition=record['position'])
         if record.get('overrides'):
             from admin_cards import apply_overrides
             player=apply_overrides(player,record['overrides'])
@@ -196,15 +202,24 @@ class Inventory:
         from fut_condition import fitness
         from player_statistics import lists as statistics_lists
         current_stats, lifetime_stats = statistics_lists(record)
+        keeper = player['preferredPosition']=='GK'
+        style = record.get('playStyle',273 if keeper else 250)
+        # Admin/config position edits can cross the GK boundary. Keep the
+        # saved choice but never send an incompatible style to the client.
+        if (style>=269) != keeper: style = 273 if keeper else 250
         # Display names and portraits come from the game's DB using assetId.
         card = {'id': record['id'], 'resourceId': card_versions.resource_id(record),
                 **{k: deepcopy(v) for k, v in player.items() if k != 'name'},
                 'cardsubtypeid': 1, 'itemType': 'player', 'itemState': 'free',
                 'contract': record.get('contract',7), 'fitness': fitness(record,settings), 'injuryGames': record.get('injuryGames', 0),
                 'injuryType': record.get('injuryType', 'none'),
-                'suspension': record.get('suspension', 0), 'rareflag': record['variant']['rareflag'] if custom else fut_packs.rare(player) if standard else 1, 'owners': 1, 'loyaltyBonus': 0,
+                'suspension': record.get('suspension', 0), 'rareflag': record['variant']['rareflag'] if custom else fut_packs.rare(player) if standard else 1, 'owners': 1,
+                # All existing cards were issued directly to their club. A
+                # future transferred card can explicitly set firstOwner=False.
+                'loyaltyBonus': int(record.get('firstOwner',True) or record.get('statistics',{}).get('gamesPlayed',0)>=10),
                 'discardValue': card_versions.discard_value(record, settings) if custom else settings.section('economy')['quick_sell'][tier][rarity], 'timestamp': record['timestamp'],
-                'untradeable': False, 'dream': False, 'training': int(bool(record.get('trainingBoost'))), 'playStyle': 250,
+                'untradeable': False, 'dream': False, 'training': int(bool(record.get('trainingBoost'))),
+                'playStyle': style,
                 # Retail notification getter 0x13eefe4 checks statsList[4],
                 # independently of the suspension byte used for eligibility.
                 # This is the current ban, not a lifetime red-card total.
@@ -416,7 +431,7 @@ def club_search(store, query):
     if values.get('sort', 'desc') not in ('asc', 'desc') or values.get('filter', 'any') not in ('any', 'available', 'base', 'exact'):
         raise ValueError('Invalid club sort/filter')
     cards = [store.card(r, store.settings) for r in store.state['items'] if r['pile'] == 'club']
-    positions = {'GK', 'RB', 'RWB', 'CB', 'LB', 'LWB', 'CDM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'CF', 'ST'}
+    positions = card_versions.POSITIONS
     if 'position' in values:
         if values['position'] not in positions:
             raise ValueError('Invalid player position')
@@ -522,7 +537,7 @@ def response(backend, method, path, raw):
                     raise ValueError('Invalid club query')
                 if query.get('type', ['player']) == ['player']:
                     value = club_search(store, query)
-                elif query.get('type',[''])[0] in {'manager','staff','training','consumable','consumables','playerTraining','GKTraining','contract','fitness','healing'}:
+                elif query.get('type',[''])[0] in fut_items.TYPES | {'staff','training','consumable','consumables'}:
                     from fut_items import search
                     value = search(store,query)
                 else:

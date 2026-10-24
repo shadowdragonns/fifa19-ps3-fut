@@ -3,7 +3,9 @@
 The in-game store has a **Manager Pack** (ID 190, 1,000 coins), a
 **Training and Club Supplies Pack** (ID 191, 2,000 coins), and a
 **Contracts Pack** (ID 192, 2,000 coins: ten player and two manager cards,
-each adding 28 matches). Prices are live
+each adding 28 matches). **Position Change Pack** (ID 193, 1,500 coins) and
+**Chemistry Style Pack** (ID 194, 2,500 coins) each contain six different
+cards randomly selected from their respective catalogues. Prices are live
 `packs.prices` settings. Send pulled items to the club before selecting a
 manager or using a consumable. Items, pending packs and balances persist per
 club. Consumables can stack; duplicate copies of the same manager must be
@@ -89,9 +91,50 @@ charge twice. The website shows the current prices and latest renewal total.
 Operators can change `contracts.player_price` and `contracts.manager_price`
 live. Changing a price does not enable the feature for a club.
 
-Attribute training does not change preferred position. The website's admin
-card editor already offers a **Position** field for individual owned cards.
-Native position-change consumables are not implemented by this server.
+## Position changes and chemistry
+
+Send the new pack contents to your club, select a player in the squad and
+choose **Apply Consumable**. The Positioning tab contains position modifiers;
+the chemistry-style tabs distinguish outfield players from goalkeepers.
+The printed starting position must match the card's current preferred
+position. These are permanent changes to that owned card, across all squads
+using it; they do not change the base player or other versions/copies.
+
+The PS3 catalogue supports both directions for LB/LWB, RB/RWB, LW/LM,
+RW/RM, LF/LW, RF/RW, CAM/CM, CM/CDM, CF/CAM and ST/CF (20 cards).
+For example, ST → CF → CAM → CM → CDM requires four separate cards.
+There is no goalkeeper conversion or arbitrary jump between positions.
+The website's admin editor can still set a position directly. Resetting admin
+overrides leaves paid position conversions intact.
+
+Outfield styles are Basic, Sniper, Finisher, Deadeye, Marksman, Hawk, Artist,
+Architect, Powerhouse, Maestro, Engine, Sentinel, Guardian, Gladiator,
+Backbone, Anchor, Hunter, Catalyst and Shadow. Goalkeeper styles are Wall,
+Shield, Cat, Glove and Goalkeeper Basic. A new style replaces the previous
+one and persists after matches; Basic restores the default. Incompatible
+styles and reapplying the current style reject without consuming a card.
+Temporary attribute training remains separate and expires after a played
+match. Position changes preserve the version, OVR, attributes and condition.
+
+FIFA calculates links and squad/player chemistry natively using the current
+positions, club, league, nationality, manager and loyalty. Captured squad
+saves already contain client-calculated chemistry; the server does not
+replace this with a simplified formula. Chemistry styles use the retail
+`playStyle` IDs 250–273, with 273 as the correct goalkeeper default. The
+game applies their chemistry-dependent effects; the server does not add a
+second flat bonus to face attributes. Live match effects still need in-game
+verification. Pack-issued players receive first-owner loyalty immediately.
+Cards explicitly marked as transferred (`firstOwner: false`) earn loyalty
+after ten recorded appearances; unused substitutes and no-contest matches
+do not count. Existing directly issued cards keep their IDs and saves.
+
+Position/style items use unique 6000000-series resources so stack applications
+select the exact modifier. The native bio renderer chooses installed position
+art 5000013 and style art 5000015_4 from the subtype. Chemistry cards send
+the native all-tier compatibility value (`amount: 4`); zero would hide them
+from the apply menu. No new textures or client
+patches are required. These types use retail subtypes 91–110 and 250–273;
+71–86 are old formation modifiers and must not be substituted.
 
 ## Fitness and match conditions
 

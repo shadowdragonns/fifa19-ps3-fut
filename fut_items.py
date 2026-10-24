@@ -30,6 +30,40 @@ for subtype, resource, kind, name, amount, target in (
 class WrongTrainingTarget(ValueError):pass
 
 
+# Retail PS3 subtypes 91..110 (71..86 are obsolete formation cards).
+POSITION_CHANGES = dict(enumerate((
+    ('LWB','LB'), ('LB','LWB'), ('RWB','RB'), ('RB','RWB'),
+    ('LM','LW'), ('RM','RW'), ('LW','LM'), ('RW','RM'),
+    ('LW','LF'), ('RW','RF'), ('LF','LW'), ('RF','RW'),
+    ('CM','CAM'), ('CAM','CM'), ('CDM','CM'), ('CM','CDM'),
+    ('CAM','CF'), ('CF','CAM'), ('CF','ST'), ('ST','CF')), 91))
+CHEMISTRY_STYLES = dict(enumerate((
+    'Basic', 'Sniper', 'Finisher', 'Deadeye', 'Marksman', 'Hawk',
+    'Artist', 'Architect', 'Powerhouse', 'Maestro', 'Engine',
+    'Sentinel', 'Guardian', 'Gladiator', 'Backbone', 'Anchor',
+    'Hunter', 'Catalyst', 'Shadow', 'Wall', 'Shield', 'Cat', 'Glove',
+    'Goalkeeper Basic'), 250))
+# Keep the original seven supplies guaranteed in their existing pack.
+SUPPLIES = [key for key, row in CATALOGUE.items() if row['itemType'] != 'manager']
+for subtype, (origin, destination) in POSITION_CHANGES.items():
+    definition = 6000000+subtype
+    CATALOGUE[definition] = dict(assetId=definition, resourceId=definition,
+        cardsubtypeid=subtype, itemType='position', name=f'{origin} > {destination}',
+        rating=80, rareflag=1, amount=0, target='player', discardValue=50,
+        sourcePosition=origin, destinationPosition=destination)
+for subtype, name in CHEMISTRY_STYLES.items():
+    definition = 6000000+subtype
+    # Native bio rendering replaces these unique resources with installed
+    # position art 5000013 or style art 5000015_4. The unique resource lets
+    # ApplyCardByRes select the correct conversion/style from owned stacks.
+    CATALOGUE[definition] = dict(assetId=definition, resourceId=definition,
+        cardsubtypeid=subtype, itemType='playStyle', name=name,
+        # Native compatibility accepts amount 4 for every nonempty player
+        # tier. Zero is not eligible. It also selects the _4 artwork suffix.
+        rating=80, rareflag=1, amount=4,
+        target='keeper' if subtype>=269 else 'outfield', discardValue=50)
+
+
 CONSUMABLES = [key for key, row in CATALOGUE.items() if row['itemType'] != 'manager']
 TYPES = {row['itemType'] for row in CATALOGUE.values()}
 CONSUMABLE_TYPES = {
@@ -42,8 +76,9 @@ CONSUMABLE_TYPES = {
     'consumablesFitnessPlayer': {6000219}, 'consumablesFitnessTeam': {6000220},
     'consumablesHealing': {6000218},
     'consumablesFormationManager': set(), 'consumablesTrainingManagerLeagueModifier': set(),
-    'consumablesTrainingPlayerPlayStyle': set(), 'consumablesTrainingGkPlayStyle': set(),
-    'consumablesPosition': set(), 'consumablesTrainingManager': set(),
+    'consumablesTrainingPlayerPlayStyle': {6000000+i for i in range(250,269)},
+    'consumablesTrainingGkPlayStyle': {6000000+i for i in range(269,274)},
+    'consumablesPosition': {6000000+i for i in POSITION_CHANGES}, 'consumablesTrainingManager': set(),
 }
 CONSUMABLE_CATEGORY_IDS = {
     'consumables':60, 'consumablesContractPlayer':66, 'consumablesContractManager':71,
@@ -87,7 +122,9 @@ def consumable_list(store, selector, query):
     aliases = {'development':'consumables','all':'consumables','any':'consumables',
                'positioning':'consumablesPosition','contracts':'consumablesContract','contract':'consumablesContract','training':'consumablesTraining',
                'playerTraining':'consumablesTrainingPlayer','GKTraining':'consumablesTrainingGk',
-               'fitness':'consumablesFitness','healing':'consumablesHealing'}
+               'fitness':'consumablesFitness','healing':'consumablesHealing',
+               'position':'consumablesPosition', 'playStyle':'consumablesTrainingPlayerPlayStyle',
+               'GKPlayStyle':'consumablesTrainingGkPlayStyle'}
     # UI enum IDs returned by retail 0x16e0474.
     aliases.update({str(ident):name for name,ident in CONSUMABLE_CATEGORY_IDS.items()})
     definitions = CONSUMABLE_TYPES.get(aliases.get(selector,selector))
@@ -127,6 +164,8 @@ def validate(state, player_ids):
 def card(record):
     spec = deepcopy(CATALOGUE[record['definitionId']])
     spec.pop('target', None)
+    spec.pop('sourcePosition', None)
+    spec.pop('destinationPosition', None)
     spec.update(id=record['id'], itemState='free', timestamp=record['timestamp'],
                 owners=1, untradeable=False, itemQuantity=1)
     if spec['itemType'] == 'manager':
@@ -145,8 +184,11 @@ def draw(spec):
         return rng.sample(pool, spec['size'])
     if spec['support_type'] == 'contracts':
         return [6000201]*10+[6000202]*2
+    if spec['support_type'] in ('position','playStyle'):
+        return rng.sample([key for key,row in CATALOGUE.items()
+                           if row['itemType']==spec['support_type']], spec['size'])
     # Include training, contracts, fitness and healing in every supplies pack.
-    pool = list(CONSUMABLES); rng.shuffle(pool)
+    pool = list(SUPPLIES); rng.shuffle(pool)
     return pool[:spec['size']]
 
 
@@ -223,7 +265,21 @@ def apply(backend, source_id, payload, by_resource=False):
                 raise Conflict('Squad fitness is already full')
         for item_id in ids:
             target = candidates[item_id]
-            if spec['itemType'] in ('playerTraining','GKTraining'):
+            if spec['itemType']=='position':
+                if store.card(target,store.settings)['preferredPosition'] != spec['sourcePosition']:
+                    raise Conflict('This position card requires a '+spec['sourcePosition']+' player')
+                target['position'] = spec['destinationPosition']
+                # A paid conversion supersedes an older admin position edit;
+                # independent rating/attribute overrides remain intact.
+                target.get('overrides',{}).pop('position',None)
+            elif spec['itemType']=='playStyle':
+                current = store.card(target,store.settings)
+                if (current['preferredPosition']=='GK') != (spec['target']=='keeper'):
+                    raise WrongTrainingTarget('Use a chemistry style for this player type')
+                if current['playStyle']==spec['cardsubtypeid']:
+                    raise Conflict('This player already has this chemistry style')
+                target['playStyle'] = spec['cardsubtypeid']
+            elif spec['itemType'] in ('playerTraining','GKTraining'):
                 current = store.card(target,store.settings)
                 if (current['preferredPosition']=='GK') != (spec['target']=='keeper'):
                     raise WrongTrainingTarget('Use goalkeeper training for a goalkeeper.' if spec['target']=='outfield'

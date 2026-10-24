@@ -60,12 +60,18 @@ PACKS[191] = dict(name='Training and Club Supplies Pack', edition='support', sup
                   level='gold', size=7, price=2000, rares=7, artwork=3)
 PACKS[192] = dict(name='Contracts Pack', edition='support', support_type='contracts',
                   level='gold', size=12, price=2000, rares=12, artwork=3)
+PACKS[193] = dict(name='Position Change Pack', edition='support', support_type='position',
+                  level='gold', size=6, price=1500, rares=6, artwork=3)
+PACKS[194] = dict(name='Chemistry Style Pack', edition='support', support_type='playStyle',
+                  level='gold', size=6, price=2500, rares=6, artwork=3)
 
 
 def description(spec):
     if spec['edition'] == 'support':
         text = ('One manager for your squad.' if spec['support_type']=='manager' else
                 '10 player and 2 manager contract cards, each adding 28 matches.' if spec['support_type']=='contracts' else
+                'Six different position-change cards. Apply only to the printed starting position.' if spec['support_type']=='position' else
+                'Six different permanent chemistry styles, drawn from outfield and goalkeeper styles.' if spec['support_type']=='playStyle' else
                 'Player and goalkeeper training, player and manager contracts, player and squad fitness, and injury healing.')
     elif spec['edition'] == 'england110':
         text = f"{spec['size']} England players with 110 ratings."

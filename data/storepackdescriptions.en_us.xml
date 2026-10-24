@@ -182,6 +182,18 @@
       <trans-unit id="FUT_STORE_PACK_192_DESC" resname="FUT_STORE_PACK_192_DESC">
         <source>10 player and 2 manager contract cards, each adding 28 matches. Costs 2,000 local coins.</source>
       </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_193_NAME" resname="FUT_STORE_PACK_193_NAME">
+        <source>Position Change Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_193_DESC" resname="FUT_STORE_PACK_193_DESC">
+        <source>Six different position-change cards. Apply only to the printed starting position. Costs 1,500 local coins.</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_194_NAME" resname="FUT_STORE_PACK_194_NAME">
+        <source>Chemistry Style Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_194_DESC" resname="FUT_STORE_PACK_194_DESC">
+        <source>Six different permanent chemistry styles, drawn from outfield and goalkeeper styles. Costs 2,500 local coins.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

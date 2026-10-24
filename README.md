@@ -98,6 +98,7 @@ reader uses Python only; Windows clients do not need OpenSSL. Use
 - [Python plugins and game events](docs/PLUGINS.md)
 - [Custom Prime cards, version IDs and packs](docs/CUSTOM_CARDS.md)
 - [Web pack builder, club logins and pricing](docs/WEB.md)
+- [Managers, position cards, chemistry styles and consumables](docs/ITEMS.md)
 - [Development and tests](docs/DEVELOPMENT.md)
 
 Editable configuration lives in `server-config.json`; Python plugins live in

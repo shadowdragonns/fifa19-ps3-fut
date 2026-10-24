@@ -7,7 +7,7 @@ import re
 BASE_EDITIONS = {'standard', 'england110'}
 MAX_OVR = 255  # Native card field is an unsigned byte.
 MAX_ATTRIBUTE = (1 << 32)-1  # Native indexed card attributes are uint32.
-POSITIONS = {'GK', 'RB', 'RWB', 'CB', 'LB', 'LWB', 'CDM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'CF', 'ST'}
+POSITIONS = {'GK', 'RB', 'RWB', 'CB', 'LB', 'LWB', 'CDM', 'CM', 'CAM', 'RM', 'LM', 'RW', 'LW', 'RF', 'LF', 'CF', 'ST'}
 
 
 def default_editions():
