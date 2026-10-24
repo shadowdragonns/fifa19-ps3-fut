@@ -176,6 +176,12 @@
       <trans-unit id="FUT_STORE_PACK_191_DESC" resname="FUT_STORE_PACK_191_DESC">
         <source>Player and goalkeeper training, player and manager contracts, player and squad fitness, and injury healing. Costs 2,000 local coins.</source>
       </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_192_NAME" resname="FUT_STORE_PACK_192_NAME">
+        <source>Contracts Pack</source>
+      </trans-unit>
+      <trans-unit id="FUT_STORE_PACK_192_DESC" resname="FUT_STORE_PACK_192_DESC">
+        <source>10 player and 2 manager contract cards, each adding 28 matches. Costs 2,000 local coins.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

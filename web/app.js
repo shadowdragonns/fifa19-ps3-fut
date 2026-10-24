@@ -37,7 +37,26 @@ function balance() {
   $('club-user').textContent = state.me ? '@'+state.me.username : 'Sign in to get started';
   $('club-initials').textContent = state.me ? state.me.club_name.split(/\s+/).map(s=>s[0]).join('').slice(0,2).toUpperCase() : 'FC';
   $('owned-count').textContent = state.me ? number(state.me.card_count)+' players in your club' : 'Your next signing starts here';
+  $('contract-settings').hidden=!state.me;
+  if(state.me?.contracts){
+    const c=state.me.contracts;
+    $('auto-contracts').checked=c.auto_renew;
+    $('contract-description').textContent=`Uses owned contract cards first. If none remain, pays ${number(c.player_price)} coins per player (+${c.player_matches} matches) or ${number(c.manager_price)} per manager (+${c.manager_matches}). Applies at zero contracts to your active XI, bench and selected manager between matches. Insufficient coins leave the card unchanged.`;
+    const r=c.last_renewal;
+    $('contract-recent').textContent=r?`Last renewal: ${r.items.length} card${r.items.length===1?'':'s'}, ${number(r.coins)} coins spent.`:'';
+  }
 }
+let contractsBusy=false;
+$('auto-contracts').addEventListener('change',async()=>{
+  if(!state.me||contractsBusy)return;
+  contractsBusy=true;$('auto-contracts').disabled=true;$('contract-status').textContent='Saving…';
+  try{
+    await api('contracts',{auto_renew:$('auto-contracts').checked});
+    state.me=await api('me');balance();enableOpen();
+    $('contract-status').textContent=state.me.contracts.auto_renew?'Automatic renewal enabled.':'Automatic renewal disabled.';
+  }catch(error){balance();$('contract-status').textContent=error.message;}
+  finally{contractsBusy=false;$('auto-contracts').disabled=false;}
+});
 function signedOut() {
   state.me=null; state.quote=null; state.serial++;
   adminAccess();
@@ -205,7 +224,7 @@ $('open-pack').addEventListener('click',async()=>{
 $('close-reveal').addEventListener('click',()=>{$('reveal').close();updateQuote();});
 $('reveal').addEventListener('cancel',()=>{updateQuote();});
 async function refreshBalance() {
-  if(!state.me||state.busy||document.hidden)return;
+  if(!state.me||state.busy||contractsBusy||document.hidden)return;
   try{state.me=await api('me');balance();history();enableOpen();}catch(_){}
 }
 document.addEventListener('visibilitychange',refreshBalance);setInterval(refreshBalance,15000);

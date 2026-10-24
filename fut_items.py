@@ -20,7 +20,11 @@ for subtype, resource, kind, name, amount, target in (
     # Retain saved definition IDs, but send the installed PS3 art resource.
     # The native consumable constructor derives assetId from resourceId.
     asset = 6000000+subtype
-    CATALOGUE[asset] = dict(assetId=resource, resourceId=resource, cardsubtypeid=subtype,
+    # Retail 0x1d1e214 identifies 51..57 as GK training; 0x1d1e23c
+    # identifies 61..67 as outfield training. Keep saved definition IDs and
+    # their effects stable while correcting the wire subtype/UI eligibility.
+    native_subtype = {57:67,67:57}.get(subtype,subtype)
+    CATALOGUE[asset] = dict(assetId=resource, resourceId=resource, cardsubtypeid=native_subtype,
         itemType=kind, name=name, rating=80, rareflag=1, amount=amount,
         target=target, discardValue=50)
 class WrongTrainingTarget(ValueError):pass
@@ -126,7 +130,7 @@ def card(record):
     spec.update(id=record['id'], itemState='free', timestamp=record['timestamp'],
                 owners=1, untradeable=False, itemQuantity=1)
     if spec['itemType'] == 'manager':
-        spec.update(contract=record.get('contract',7), leagueId=record.get('leagueId',0))
+        spec.update(contract=record.get('contract',7), leagueId=record.get('leagueId',spec.get('leagueId',0)))
     elif spec['itemType'] == 'contract':
         # Native contracts display/eligibility reads these three fields,
         # separately from the generic amount used by training and fitness.
@@ -139,6 +143,8 @@ def draw(spec):
     if spec['support_type'] == 'manager':
         pool = [row['resourceId'] for row in MANAGERS]
         return rng.sample(pool, spec['size'])
+    if spec['support_type'] == 'contracts':
+        return [6000201]*10+[6000202]*2
     # Include training, contracts, fitness and healing in every supplies pack.
     pool = list(CONSUMABLES); rng.shuffle(pool)
     return pool[:spec['size']]

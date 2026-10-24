@@ -18,7 +18,12 @@ QUIT = '/ut/delete/game/fifa19/tournament/user/'
 JOINED = '/ut/game/fifa19/user/action/JOINED'
 CUPS = {
     1001: {'name':'Local Starter Cup','difficulty':1,'tier':0,'prize':1000},
+    1004: {'name':'Club Showcase Cup','difficulty':2,'tier':5,'prize':1750,
+           'teams':(1,5,9,10,11,18,21,22,44,45,47,73,240,241,243)},
     1002: {'name':'Local Champions Cup','difficulty':3,'tier':6,'prize':2500},
+    1005: {'name':'Elite Clubs Cup','difficulty':3,'tier':7,'prize':3500,
+           'round_difficulties':(3,3,3,4),
+           'teams':(1,5,9,10,11,18,21,22,44,45,73,234,236,241,243)},
     1003: {'name':'Local World Cup','difficulty':4,'tier':9,'prize':5000},
 }
 
@@ -30,6 +35,7 @@ def cup_id(value):
 
 def teams(identifier):
     cup=CUPS[cup_id(identifier)];tier=cup['tier']
+    if 'teams' in cup:return list(cup['teams'])
     # Fifteen distinct opponents plus the user's club make a sixteen-team draw.
     pool=list(dict.fromkeys(CPU_TIERS[tier]+CPU_TIERS[max(0,tier-1)]+CPU_TIERS[min(9,tier+1)]+tuple(t for group in reversed(CPU_TIERS) for t in group)))
     return pool[:15]
@@ -45,7 +51,8 @@ def definitions(backend=None):
         'visStart':0,'visEnd':0,'unlockreq':0,'trophyResourceId':1,'trophyUserCount':saved(backend.fut_inventory.state,identifier)['championships'] if backend else 0,
         'matchlength':4,'aigroup':identifier,'numTeams':16,'numRounds':4,'treeType':'knockout',
         'eligibilityOperation':'AND','elgReq':[],
-        'rounds':[{'id':i,'difficulty':cup['difficulty'],'rewardMultiplier':100,'coins':0} for i in range(1,5)],
+        'rounds':[{'id':i,'difficulty':difficulty,'rewardMultiplier':100,'coins':0}
+                  for i,difficulty in enumerate(cup.get('round_difficulties',(cup['difficulty'],)*4),1)],
         'awardSet':{'awards':[{'awardType':1,'value':cup['prize'],'halid':0}]}}
         for identifier,cup in CUPS.items()]}
 

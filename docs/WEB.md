@@ -5,6 +5,12 @@ launcher. The site runs inside the existing FUT service, with no separate
 server process, Node runtime or extra port. Use your private/Tailscale address
 for the initial installation. Website access requires its own club-linked login.
 
+The **Club settings** panel contains the per-club automatic contract switch.
+It is disabled by default. When enabled it uses owned compatible contract
+cards first, then the displayed coin price if no card remains. Only expired
+contracts in the active XI, bench and selected manager are renewed between
+matches. See [ITEMS.md](ITEMS.md) for timing, costs and insufficient-funds behavior.
+
 ## Link a website account to a club
 
 An operator issues a one-use registration code for an existing saved club.

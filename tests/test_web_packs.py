@@ -56,6 +56,21 @@ class WebPackTests(unittest.TestCase):
         token,expires=self.auth.quote(owner.profile['persona'],q)
         return token,q
 
+    def test_contract_switch_requires_csrf_and_changes_only_the_authenticated_club(self):
+        before=deepcopy(self.other.fut_inventory.state)
+        self.assertFalse(self.request('me')[1]['contracts']['auto_renew'])
+        for kwargs in ({'csrf':False},{'origin':'http://untrusted.invalid'}):
+            self.assertEqual(self.request('contracts',{'auto_renew':True},**kwargs)[0],'403 Forbidden')
+        self.assertEqual(self.request('contracts',{'auto_renew':1})[0],'400 Bad Request')
+        self.assertEqual(self.request('contracts',{'auto_renew':True,'persona':self.other.profile['persona']})[0],'400 Bad Request')
+        status,result,_=self.request('contracts',{'auto_renew':True})
+        self.assertEqual(status,'200 OK');self.assertTrue(result['auto_renew'])
+        self.assertEqual((result['player_price'],result['manager_price']),(200,200))
+        self.assertTrue(self.request('me')[1]['contracts']['auto_renew'])
+        self.assertEqual(self.other.fut_inventory.state,before)
+        self.assertTrue(Backend(self.backend.path).fut_inventory.state['autoRenewContracts'])
+        self.assertFalse(self.request('contracts',{'auto_renew':False})[1]['auto_renew'])
+
     def test_registration_requires_single_use_club_invite_and_passwords_are_hashed(self):
         with self.assertRaises(AuthError):self.auth.register('intruder',self.password,'not-a-club-invite')
         code=self.auth.invite(self.other.profile['persona'])

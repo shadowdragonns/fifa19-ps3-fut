@@ -110,11 +110,24 @@ class SupportItemTests(unittest.TestCase):
 
     def source(self,subtype):
         return next(row['id'] for row in fut_items.records(self.store.state)
-                    if fut_items.CATALOGUE[row['definitionId']]['cardsubtypeid']==subtype)
+                    if row['definitionId']==6000000+subtype)
 
     def target(self,keeper=False):
         return next(row for row in self.store.state['items']
                     if (self.store.card(row)['preferredPosition']=='GK')==keeper)
+
+    def test_training_wire_types_and_default_manager_leagues_update_existing_cards_without_save_edits(self):
+        for definition,subtype,kind in ((6000057,67,'playerTraining'),(6000067,57,'GKTraining')):
+            row={'id':1,'definitionId':definition,'pile':'club','timestamp':1};before=deepcopy(row)
+            card=fut_items.card(row)
+            self.assertEqual((card['cardsubtypeid'],card['itemType']),(subtype,kind))
+            self.assertEqual(row,before)
+        manager=next(r for r in fut_items.MANAGERS if r['name']=='Pep Guardiola')
+        row={'id':1,'definitionId':manager['resourceId'],'pile':'club','timestamp':1};before=deepcopy(row)
+        self.assertEqual(fut_items.card(row)['leagueId'],13)
+        self.assertEqual(row,before)
+        self.assertEqual(fut_items.card({**row,'leagueId':19})['leagueId'],19)
+        self.assertEqual(fut_items.card({**row,'leagueId':0})['leagueId'],0)
 
     def test_manager_purchase_selection_creation_and_quick_sell_survive_restart(self):
         opened=self.buy(190);manager=opened['itemList'][0]
@@ -156,7 +169,7 @@ class SupportItemTests(unittest.TestCase):
         trained=next(row for row in self.store.state['items'] if row['id']==outfield['id'])
         self.assertEqual([a['value'] for a in self.store.card(trained)['attributeList']],
                          [a['value']+10 for a in base['attributeList']])
-        self.assertEqual(self.store.card(trained)['trainingItem']['cardsubtypeid'],57)
+        self.assertEqual(self.store.card(trained)['trainingItem']['cardsubtypeid'],67)
         fut_items.apply(self.backend,self.source(67),{'apply':[{'id':keeper['id']}]})
         fut_items.apply(self.backend,self.source(201),{'apply':[{'id':outfield['id']}]})
         state=deepcopy(self.store.state)
@@ -349,7 +362,7 @@ class SupportItemTests(unittest.TestCase):
             before=deepcopy(row)
             card=fut_items.card(row)
             self.assertEqual((card['resourceId'],card['assetId']),(resource,resource))
-            self.assertEqual(card['cardsubtypeid'],subtype)
+            self.assertEqual(card['cardsubtypeid'],{57:67,67:57}.get(subtype,subtype))
             self.assertEqual(row,before)
         self.buy(191)
         target=self.target()['id']
@@ -397,7 +410,7 @@ class SupportItemTests(unittest.TestCase):
         self.assertEqual(rejected[0],'400 Bad Request')
         self.assertEqual(rejected[-1],'FUT.TrainingWrongTarget')
         self.assertEqual(self.store.state,before)
-        targets={57:[messi],67:[keeper],201:[messi],202:[manager['id']],
+        targets={67:[messi],57:[keeper],201:[messi],202:[manager['id']],
                  218:[messi],219:[messi],220:[keeper]}
         for group in groups:
             card=group['item'];subtype=card['cardsubtypeid']

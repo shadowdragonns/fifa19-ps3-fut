@@ -1,7 +1,9 @@
 # Managers, consumables and player statistics
 
-The in-game store has a **Manager Pack** (ID 190, 1,000 coins) and a
-**Training and Club Supplies Pack** (ID 191, 2,000 coins). Prices are live
+The in-game store has a **Manager Pack** (ID 190, 1,000 coins), a
+**Training and Club Supplies Pack** (ID 191, 2,000 coins), and a
+**Contracts Pack** (ID 192, 2,000 coins: ten player and two manager cards,
+each adding 28 matches). Prices are live
 `packs.prices` settings. Send pulled items to the club before selecting a
 manager or using a consumable. Items, pending packs and balances persist per
 club. Consumables can stack; duplicate copies of the same manager must be
@@ -11,7 +13,11 @@ The manager catalogue contains 452 installed PS3 manager definitions, exported
 as metadata without models/textures. Squad creation/saving, selection, retrieval
 and quick-sell cleanup support an owned manager slot. Item subtype 4 reaches
 the native manager constructor and local DB name lookup. Nationality and
-contract metadata are supplied. Manager chemistry calculations/benefits and
+contract metadata are supplied. Default leagues are supplied for 328 managers
+matched to clubs in the installed FIFA 19 database, including Guardiola,
+Klopp and Mourinho. Existing owned cards use these defaults without changing
+their IDs or contracts; an explicitly saved league override takes precedence.
+Unmatched managers retain no league. Manager chemistry calculations/benefits and
 faces need live-game verification; no new chemistry bonus is invented.
 Managers with no assigned league display **No league** (or **None** on a
 collapsed card). The public FUT text response supplies the missing league-zero
@@ -61,6 +67,33 @@ art resources 5000000/5000001 (training), 5000007/5000008 (contracts), 5000009
 `bronze`, `silver` and `gold` amounts used by native card display/eligibility.
 The resource apply route accepts the installed resource and the previous
 6000000-series definition alias, so existing owned supplies need no migration.
+Retail wire subtype 67 identifies all-attribute outfield training; subtype 57
+identifies goalkeeper training. Earlier server versions reversed those types,
+causing FIFA's labels/eligibility and the server's target checks to disagree.
+The correction also applies to previously pulled cards and attached training.
+
+## Automatic contracts
+
+Sign into the club website and use **Automatically renew expired contracts**
+under Club settings. This is a per-club preference, disabled by default.
+At zero remaining contracts, active XI/bench players and the selected manager
+use an owned compatible contract card first. If none is available, renewal
+costs **200 coins for +28 matches** by default. Insufficient funds leave the
+card unchanged. Purchased/unassigned supplies and reserve players outside
+the match squad are not charged or consumed.
+
+Renewal happens between matches when reading the active squad, when enabling
+the switch, or atomically with a completed result after its reward is added.
+Nothing is renewed during gameplay. Save failures and result retries cannot
+charge twice. The website shows the current prices and latest renewal total.
+Operators can change `contracts.player_price` and `contracts.manager_price`
+live. Changing a price does not enable the feature for a club.
+
+Attribute training does not change preferred position. The website's admin
+card editor already offers a **Position** field for individual owned cards.
+Native position-change consumables are not implemented by this server.
+
+## Fitness and match conditions
 
 After a completed match, played cards lose one contract, save reported fitness
 and remove their temporary training. The selected manager loses one contract.

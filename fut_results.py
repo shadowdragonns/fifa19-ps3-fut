@@ -166,6 +166,9 @@ def save_result(backend, current, payload):
         from fut_condition import apply as apply_condition
         apply_condition(state, current, payload, backend.settings)
         state['coins'] += coins
+        if payload['endReason'] in {'WIN','DRAW','LOSS'}:
+            from fut_contracts import renew
+            renew(state,current['squad'],backend.settings)
         state.setdefault('matchHistory', []).append(record)
         store.commit(state)
         # Persistence precedes session completion, so a failed write or retry

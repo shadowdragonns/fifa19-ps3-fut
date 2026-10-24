@@ -182,6 +182,8 @@ def retrieve(backend, session, squad_id=None):
     from fut_club_assets import active_assets
     with backend.lock:
         store = backend.fut_inventory
+        from fut_contracts import ensure
+        ensure(backend)
         value = deepcopy(saved(backend, squad_id))
         from fut_items import records as support_records, card as support_card
         manager_id = value['manager'][0]['id']

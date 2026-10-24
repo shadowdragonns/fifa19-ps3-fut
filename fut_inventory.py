@@ -149,6 +149,8 @@ class Inventory:
         if 'webPackReceipts' in state:
             from web_packs import validate_receipts
             validate_receipts(state)
+        from fut_contracts import validate as validate_contracts
+        validate_contracts(state)
 
     def commit(self, state):
         self.validate(state)

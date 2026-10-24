@@ -54,6 +54,8 @@ active matches keep their captured squads. See [CUSTOM_CARDS.md](CUSTOM_CARDS.md
 | `economy.loss_percent` | 50 | Loss reward as a percentage of the win base; cannot exceed draw percentage |
 | `economy.quick_sell` | tier pairs | Common/rare quick-sell values for bronze, silver and gold |
 | `packs.prices` | per-pack map | Coin prices keyed by string pack ID; applies to offers, purchases and descriptions |
+| `contracts.player_price` | 200 | Coin fallback for +28 player contracts when the club opted into auto renewal and has no owned player contract card |
+| `contracts.manager_price` | 200 | Coin fallback for +28 selected-manager contracts; owned manager contract cards are used first |
 | `packs.gold_rare_weights` | `[30,30,30,10]` | Positive weights for rating bands 80–82, 83–84, 85–89, 90–99 |
 | `points.win`, `.draw`, `.loss` | 3, 1, 0 | Local leaderboard points per completed result |
 | `cpu_seasons.hold` | `[5,6,7,8,9,10,11,12,13,14]` | Points needed to avoid relegation after ten CPU fixtures |
@@ -69,7 +71,7 @@ active matches keep their captured squads. See [CUSTOM_CARDS.md](CUSTOM_CARDS.md
 | `custom_cards.standard_pack_chance_percent` | null | Use per-edition odds; a numeric value explicitly selects legacy combined-percentage mode |
 | `custom_cards.editions` | Prime/TOTW +10, TOTY +20, OTW +25 | Version IDs, catalogue coverage, stat boosts, player overrides and custom quick-sell prices; stat edits also refresh owned cards |
 
-Each edition has `one_in` (400 / 2000 / 10000 by default). See [CUSTOM_CARDS.md](CUSTOM_CARDS.md) for the exact roll and native numeric bounds. Manager/supplies pack prices use keys 190/191 in `packs.prices`. See [ITEMS.md](ITEMS.md) for fitness, training and player totals.
+Each edition has `one_in` (400 / 2000 / 10000 by default). See [CUSTOM_CARDS.md](CUSTOM_CARDS.md) for the exact roll and native numeric bounds. Manager/supplies/contracts pack prices use keys 190/191/192 in `packs.prices`. See [ITEMS.md](ITEMS.md) for fitness, training, automatic renewal and player totals.
 
 Division arrays run from **displayed Division 10 to Division 1**. The wire
 division numbers run in the opposite direction: wire 1 is displayed Division

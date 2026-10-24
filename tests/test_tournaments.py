@@ -58,7 +58,7 @@ class TournamentTests(unittest.TestCase):
 
     def test_native_list_teams_progress_and_missing_login_are_handled(self):
         status,value=self.call('GET',cups.BASE+'/list?active=true&count=99')
-        self.assertEqual(status,'200 OK');self.assertEqual(len(value['tournament']),3)
+        self.assertEqual(status,'200 OK');self.assertEqual(len(value['tournament']),5)
         for row in value['tournament']:
             self.assertEqual((row['type'],row['treeType'],row['numTeams'],row['numRounds']),('offline','knockout',16,4))
             self.assertEqual(row['elgReq'],[])
@@ -73,6 +73,20 @@ class TournamentTests(unittest.TestCase):
         self.assertEqual(cups.response(self.root,'GET',cups.BASE+'/list',raw)[0],'401 Unauthorized')
         for route in (cups.BASE+'/teams?groupId=1&count=15',cups.USER+'/999',cups.BASE+'/list?count=-1'):
             self.assertEqual(self.call('GET',route)[0],'400 Bad Request')
+
+    def test_new_club_cups_use_known_clubs_intermediate_levels_and_save_their_own_prizes(self):
+        definitions={row['id']:row for row in cups.definitions()['tournament']}
+        self.assertEqual([r['difficulty'] for r in definitions[1004]['rounds']],[2]*4)
+        self.assertEqual([r['difficulty'] for r in definitions[1005]['rounds']],[3,3,3,4])
+        for identifier,prize in ((1004,1750),(1005,3500)):
+            self.assertTrue({1,5,9,10,11,21,241,243}<=set(cups.teams(identifier)))
+            for round_number in range(1,5):
+                report=self.match(identifier)
+                result=fut_results.finish(self.root,self.a.session,report)
+                self.assertEqual(result['tournamentCoins'],prize if round_number==4 else 0)
+            self.assertEqual(cups.saved(self.owner.fut_inventory.state,identifier)['championships'],1)
+        restored=Backend(self.path,multiuser=True).for_user(101)
+        for identifier in (1004,1005):self.assertEqual(cups.saved(restored.fut_inventory.state,identifier)['status'],'won')
 
     def test_four_wins_award_one_prize_and_restart_preserves_bracket_and_receipts(self):
         balance=self.owner.fut_inventory.state['coins'];rewards=0

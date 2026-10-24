@@ -1,17 +1,22 @@
 # Single-player tournaments
 
-Ultimate Team → Single Player → Tournaments uses three local knockout cups:
+Ultimate Team → Single Player → Tournaments uses five local knockout cups:
 
 | Cup | Difficulty | Opponents | Champion bonus |
 |---|---|---|---|
 | Local Starter Cup | Amateur | Lower rated clubs | 1,000 coins |
+| Club Showcase Cup | Semi-Pro | Well-known clubs including Arsenal, Liverpool, Bayern, Barcelona and Real Madrid | 1,750 coins |
 | Local Champions Cup | Professional | Strong clubs | 2,500 coins |
+| Elite Clubs Cup | Professional; World Class final | Leading European clubs | 3,500 coins |
 | Local World Cup | World Class | International sides, then strong clubs | 5,000 coins |
 
 Each draw has your club and fifteen CPU teams, with four rounds. The usual
 configured match reward is paid separately. Four wins earn the champion bonus
 once; a loss or abandoned match ends the attempt. A new attempt starts a fresh
 bracket. Completed cups and current progress are saved per RPCN club.
+Difficulty levels are discrete: the Elite cup combines stronger club
+opposition on Professional with a World Class final to bridge the existing
+Professional and World Class cups.
 
 The retail client generates the bracket and uploads its serialized data. The
 server stores that data for reopening the menu, but uses committed owned-match

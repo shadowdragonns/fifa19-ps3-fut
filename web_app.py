@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 from web_accounts import WebAccounts, AuthError
 import web_packs
 import admin_cards
+import fut_contracts
 
 HERE = Path(__file__).resolve().parent
 COOKIE = 'fut_web_session'
@@ -110,7 +111,10 @@ class WebApp:
                         result = {'username':session['username'], 'club_name':owner.profile['fut_club']['name'],
                                   'persona':session['persona'], 'coins':state['coins'],
                                   'card_count':sum(row['pile']=='club' for row in state['items']),
-                                  'csrf':self.csrf(token), 'is_admin':bool(session['is_admin']), 'history':[row['result'] for row in history]}
+                                  'csrf':self.csrf(token), 'is_admin':bool(session['is_admin']),
+                                  'contracts':fut_contracts.info(owner), 'history':[row['result'] for row in history]}
+                elif method == 'POST' and route == '/club/api/contracts':
+                    result=fut_contracts.preference(owner,data)
                 elif route.startswith('/club/api/admin/'):
                     if not session['is_admin']:raise HTTPError(403,'Administrator access required.')
                     if method=='GET' and route=='/club/api/admin/clubs':

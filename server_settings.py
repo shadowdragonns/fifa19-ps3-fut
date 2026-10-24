@@ -24,6 +24,7 @@ def defaults():
                         'difficulties': [DIFFICULTY_NAMES[level] for level in CPU_DIFFICULTIES],
                         'opponents': [list(teams) for teams in CPU_TIERS]},
         'fitness': {'enabled':True,'seconds_per_point':300},
+        'contracts': {'player_price':200,'manager_price':200},
         'matchmaking': {'search_seconds': 20, 'peer_timeout_seconds': 180},
         'plugins': {'enabled': True, 'disabled': [], 'settings': {}},
         'custom_cards': {'enabled': True, 'standard_pack_chance_percent': None, 'editions': default_editions()},
@@ -65,6 +66,7 @@ class Settings:
                 raise ValueError('quick_sell.'+tier+' needs common and rare values')
             for amount in amounts: _integer(amount, 0, 1000000, 'quick_sell.'+tier)
         for key, price in rules['packs']['prices'].items(): _integer(price, 0, 10000000, 'pack price '+key)
+        for key, price in rules['contracts'].items():_integer(price,0,1000000,'contracts.'+key)
         weights = rules['packs']['gold_rare_weights']
         if not isinstance(weights, list) or len(weights) != 4:
             raise ValueError('gold_rare_weights needs four rating-band weights')
