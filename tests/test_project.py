@@ -133,7 +133,7 @@ class PublicProjectTests(unittest.TestCase):
             events=[];backend.events.subscribe('match.completed',events.append)
             backend.events.subscribe('match.reward',lambda event,coins:coins+100,filter=True)
             first=fut_results.finish(backend,session,report)
-            self.assertEqual(first['allCoins'],1600)
+            self.assertEqual(first['allCoins'],1850)  # 1500 base + 250 performance + 100 plugin.
             self.assertEqual(fut_results.finish(backend,session,report),first)
             self.assertEqual(len(events),1)
             restored=Backend(backend.path,settings=Settings({'economy':{'win_coins':8000}}))

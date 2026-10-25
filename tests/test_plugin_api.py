@@ -168,7 +168,7 @@ class PluginAPITests(unittest.TestCase):
         matches=api.get_matches(c.session.persona,mode='OFFLINE')
         self.assertEqual(len(matches),1)
         self.assertEqual(api.get_match(c.session.persona,current['id']),matches[0])
-        self.assertEqual(matches[0]['coins'],1000)
+        self.assertEqual(matches[0]['coins'],1250)  # Includes goal and clean-sheet performance coins.
         self.assertNotIn('matchData',matches[0]);self.assertNotIn('requestHash',matches[0])
         self.assertEqual(api.get_matches(c.session.persona,mode='ONLINE'),[])
 

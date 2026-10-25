@@ -88,7 +88,9 @@ their own result, score and reward.
 result and score fields. Filters run in filename/registration order, passing
 the previous filter's amount to the next. Invalid returns or exceptions keep
 the previous amount. Results must be integer coins from 0 to 100,000,000.
-The final amount is saved atomically with the match result and ban/injury
+The initial amount includes the result/division payout plus the configured
+performance bonus after its deductions and zero floor. Tournament prizes are
+added after the filter. The final amount is saved atomically with the match result and ban/injury
 updates. This hook is called only for completed WIN/DRAW/LOSS results.
 There is no API to bypass card ownership or edit raw protocol replies.
 

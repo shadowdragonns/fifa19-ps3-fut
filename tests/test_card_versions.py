@@ -138,7 +138,7 @@ class CardVersionTests(unittest.TestCase):
                   'opponentMatchStats': {k: 0 for k in fut_results.STATS}}
         report['myMatchStats']['goals'] = 1
         awarded = fut_results.finish(self.backend, session, report)
-        self.assertEqual(awarded['allCoins'], 1000)
+        self.assertEqual(awarded['allCoins'], 1250)  # Win, one goal and a clean sheet.
         self.assertEqual(fut_results.finish(self.backend, session, report), awarded)
         self.assertEqual(Backend(self.backend.path, settings=self.settings).fut_inventory.state, store.state)
 

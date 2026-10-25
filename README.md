@@ -105,7 +105,8 @@ Editable configuration lives in `server-config.json`; Python plugins live in
 `plugins/` and their private files in `plugin-data/`. Valid JSON settings reload
 live in about one second; invalid edits retain the last valid rules.
 Defaults give new clubs 20,000 coins and full-time win/draw/loss
-rewards of 1,000/750/500, with higher CPU division rewards. Reward receipts
+rewards of 1,000/750/500, with higher CPU division rewards, plus configurable
+performance coins for goals, clean sheets and other match stats. Reward receipts
 snapshot the policy so future configuration changes preserve old awards.
 
 ## Status and limits

@@ -11,6 +11,7 @@ def defaults():
     from fut_packs import PACKS
     from card_versions import default_editions
     from web_packs import DEFAULT_PRICING
+    from fut_rewards import defaults as bonus_defaults
     from fut_seasons import CPU_TIERS, CPU_DIFFICULTIES, DIFFICULTY_NAMES
     return {
         'version': 1,
@@ -25,6 +26,7 @@ def defaults():
                         'opponents': [list(teams) for teams in CPU_TIERS]},
         'fitness': {'enabled':True,'seconds_per_point':300},
         'contracts': {'player_price':200,'manager_price':200},
+        'match_bonuses': bonus_defaults(),
         'matchmaking': {'search_seconds': 20, 'peer_timeout_seconds': 180},
         'plugins': {'enabled': True, 'disabled': [], 'settings': {}},
         'custom_cards': {'enabled': True, 'standard_pack_chance_percent': None, 'editions': default_editions()},
@@ -67,6 +69,10 @@ class Settings:
             for amount in amounts: _integer(amount, 0, 1000000, 'quick_sell.'+tier)
         for key, price in rules['packs']['prices'].items(): _integer(price, 0, 10000000, 'pack price '+key)
         for key, price in rules['contracts'].items():_integer(price,0,1000000,'contracts.'+key)
+        from fut_rewards import validate as validate_bonuses
+        maximum_bonus=validate_bonuses(rules['match_bonuses'])
+        if economy['win_coins']+9*economy['cpu_division_bonus']+maximum_bonus>100000000:
+            raise ValueError('Maximum division reward plus match bonuses exceeds 100000000 coins')
         weights = rules['packs']['gold_rare_weights']
         if not isinstance(weights, list) or len(weights) != 4:
             raise ValueError('gold_rare_weights needs four rating-band weights')

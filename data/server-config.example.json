@@ -21,6 +21,61 @@
       ]
     }
   },
+  "match_bonuses": {
+    "enabled": true,
+    "goals": {
+      "coins": 100,
+      "cap": 5
+    },
+    "shots_on_target": {
+      "coins": 5,
+      "cap": 10
+    },
+    "successful_tackles": {
+      "coins": 1,
+      "cap": 25
+    },
+    "corners": {
+      "coins": 5,
+      "cap": 10
+    },
+    "clean_sheet": {
+      "coins": 150,
+      "cap": 1
+    },
+    "passing_percentage": {
+      "coins": 1,
+      "cap": 80
+    },
+    "possession_percentage": {
+      "coins": 1,
+      "cap": 60
+    },
+    "man_of_the_match": {
+      "coins": 15,
+      "cap": 1
+    },
+    "goals_against": {
+      "coins": -20,
+      "cap": 3
+    },
+    "fouls": {
+      "coins": -5,
+      "cap": 5
+    },
+    "yellow_cards": {
+      "coins": -10,
+      "cap": 5
+    },
+    "red_cards": {
+      "coins": -40,
+      "cap": 5
+    },
+    "offsides": {
+      "coins": -1,
+      "cap": 10
+    }
+  },
   "packs": {
     "prices": {
       "4": 400,

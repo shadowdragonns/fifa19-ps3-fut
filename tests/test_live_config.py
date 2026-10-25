@@ -191,7 +191,7 @@ class LiveConfigTests(unittest.TestCase):
         report['myMatchStats']['goals'] = 1
         self.apply({'economy': {'win_coins': 2500}, 'packs': {'prices': {'6': 100}}})
         first = fut_results.finish(self.root, session, report)
-        self.assertEqual(first['allCoins'], 2500)
+        self.assertEqual(first['allCoins'], 2750)  # Configured base plus one goal/clean sheet.
         self.root.fut_inventory.open_pack(BUY)
         coins = self.root.fut_inventory.state['coins']
         state = deepcopy(self.root.fut_inventory.state)

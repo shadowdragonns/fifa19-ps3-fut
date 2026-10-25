@@ -40,17 +40,25 @@ def result_reward(season_id, division_id, reason, version=3):
     return base
 
 
-def policy_reward(policy, reason):
-    if (not isinstance(policy, dict) or set(policy) != {'baseWin', 'drawPercent', 'lossPercent', 'pluginAdjustment'}
+def policy_reward(policy, reason, report=None):
+    fields={'baseWin', 'drawPercent', 'lossPercent', 'pluginAdjustment'}
+    if (not isinstance(policy, dict) or set(policy) not in (fields,fields|{'matchBonuses'})
             or not integer(policy['baseWin'], 0, 100000000)
             or not integer(policy['drawPercent'], 0, 100) or not integer(policy['lossPercent'], 0, policy['drawPercent'])
             or not integer(policy['pluginAdjustment'], -100000000, 100000000)):
         raise ValueError('Invalid saved reward policy')
+    performance=0
+    if 'matchBonuses' in policy:
+        from fut_rewards import validate,bonus
+        validate(policy['matchBonuses'])
+        if report is None or report.get('endReason')!=reason:
+            raise ValueError('Performance policy requires the saved match report')
+        performance=bonus(report,policy['matchBonuses'])
     if reason not in {'WIN', 'DRAW', 'LOSS'}:
         if policy['pluginAdjustment']: raise ValueError('Unfinished matches cannot earn a plugin bonus')
         return 0
     percent = 100 if reason == 'WIN' else policy['drawPercent'] if reason == 'DRAW' else policy['lossPercent']
-    coins = policy['baseWin']*percent//100+policy['pluginAdjustment']
+    coins = policy['baseWin']*percent//100+performance+policy['pluginAdjustment']
     if not integer(coins, 0, 100000000): raise ValueError('Invalid saved configured reward')
     return coins
 
@@ -102,6 +110,21 @@ def award(coins):
             'matchCoinPartials': [], 'matchCoinMultipliers': []}
 
 
+def configured_award(policy,report):
+    coins=policy_reward(policy,report['endReason'],report)
+    result=award(coins)
+    if 'matchBonuses' in policy and report['endReason'] in ('WIN','DRAW','LOSS'):
+        from fut_rewards import partials
+        rows=partials(report,policy['matchBonuses'])
+        performance=max(0,sum(row['total'] for row in rows))
+        result['matchCoinPartials']=rows
+        # Retail completion UI computes skill total as matchCoins minus
+        # participationAward. Plugins adjust the completion component first;
+        # even a filter returning zero keeps unsigned native fields valid.
+        result['participationAward']=max(0,coins-performance)
+    return result
+
+
 def finish(backend, session, payload):
     backend = backend.for_session(session)
     with backend.lock:
@@ -138,7 +161,8 @@ def save_result(backend, current, payload):
         from server_plugins import match_event
         policy = backend.settings.reward_policy(current['request'].get('seasonId', 0),
                                                 current['request'].get('divisionId', 0))
-        coins = policy_reward(policy, payload['endReason'])
+        policy['matchBonuses']=backend.settings.section('match_bonuses')
+        coins = policy_reward(policy, payload['endReason'],payload)
         event = match_event(backend, current, result=payload['endReason'],
                             score={'for': payload.get('myMatchStats', {}).get('goals', 0),
                                    'against': payload.get('opponentMatchStats', {}).get('goals', 0)})
@@ -146,13 +170,13 @@ def save_result(backend, current, payload):
             filtered = backend.events.reward(coins, **event)
             policy['pluginAdjustment'] = filtered-coins
             coins = filtered
-        result = award(coins)
+        result = configured_award(policy,payload)
         summary = {k: deepcopy(v) for k, v in payload.items() if k not in ('matchReportId', 'matchData')}
         record = {'id': current['id'], 'requestHash': digest, 'finished': int(time.time()),
                   'playedItems': sorted(current['played_items']),
                   'seasonId': current['request'].get('seasonId', 0),
                   'divisionId': current['request'].get('divisionId', 0),
-                  'summary': summary, 'award': result, 'rewardVersion': 4, 'rewardPolicy': policy}
+                  'summary': summary, 'award': result, 'rewardVersion': 5, 'rewardPolicy': policy}
         state = deepcopy(store.state)
         from fut_tournaments import apply_result
         tournament = apply_result(state,current,payload)
@@ -199,14 +223,17 @@ def validate_history(history):
                     or any(not integer(i,1) for i in played) or len(set(played))!=len(played)
                     or not set(played)<={r['id'] for r in row['summary']['items']}):
                 raise ValueError('Invalid saved played-card IDs')
-        if 'rewardVersion' in row and (type(row['rewardVersion']) is not int or row['rewardVersion'] not in (2, 3, 4)):
+        if 'rewardVersion' in row and (type(row['rewardVersion']) is not int or row['rewardVersion'] not in (2, 3, 4, 5)):
             raise ValueError('Invalid saved reward version')
-        if ('rewardPolicy' in row) != (row.get('rewardVersion') == 4):
+        if ('rewardPolicy' in row) != (row.get('rewardVersion') in (4,5)):
             raise ValueError('Configured reward requires a saved policy')
-        expected = (policy_reward(row['rewardPolicy'], row['summary']['endReason']) if row.get('rewardVersion') == 4
+        if row.get('rewardVersion') in (4,5) and (not isinstance(row['rewardPolicy'],dict)
+                or ('matchBonuses' in row['rewardPolicy'])!=(row['rewardVersion']==5)):
+            raise ValueError('Invalid performance reward policy version')
+        expected = (policy_reward(row['rewardPolicy'], row['summary']['endReason'],row['summary']) if row.get('rewardVersion') in (4,5)
                     else result_reward(row['seasonId'], row['divisionId'],
                                        row['summary']['endReason'], row.get('rewardVersion')))
-        expected_award = award(expected)
+        expected_award = configured_award(row['rewardPolicy'],row['summary']) if row.get('rewardVersion')==5 else award(expected)
         if 'tournament' in row:
             from fut_tournaments import CUPS
             cup = row['tournament']

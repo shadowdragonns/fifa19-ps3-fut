@@ -53,6 +53,7 @@ active matches keep their captured squads. See [CUSTOM_CARDS.md](CUSTOM_CARDS.md
 | `economy.draw_percent` | 75 | Draw reward as a percentage of the win base |
 | `economy.loss_percent` | 50 | Loss reward as a percentage of the win base; cannot exceed draw percentage |
 | `economy.quick_sell` | tier pairs | Common/rare quick-sell values for bronze, silver and gold |
+| `match_bonuses.enabled` | true | Add the performance breakdown below to completed match rewards |
 | `packs.prices` | per-pack map | Coin prices keyed by string pack ID; applies to offers, purchases and descriptions |
 | `contracts.player_price` | 200 | Coin fallback for +28 player contracts when the club opted into auto renewal and has no owned player contract card |
 | `contracts.manager_price` | 200 | Coin fallback for +28 selected-manager contracts; owned manager contract cards are used first |
@@ -149,6 +150,59 @@ An example partial configuration (all omitted rules keep defaults):
   "plugins": {"settings": {"win_bonus": {"bonus_coins": 300}}}
 }
 ```
+
+## Match performance rewards
+
+Completed WIN/DRAW/LOSS reports receive performance coins in addition to the
+normal result/division reward. The FIFA results screen uses its native rows
+for each statistic. Both players in an online match earn their own breakdown;
+CPU seasons and tournaments use the same rules. Cup prizes remain separate.
+
+Each `match_bonuses` entry has `coins` per unit and a maximum counted `cap`.
+For example, `"goals": {"coins": 100, "cap": 5}` pays up to 500 goal coins.
+Settings reload live and apply when the next result is first committed.
+
+| Entry | Coins per unit | Cap |
+|---|---:|---:|
+| `goals` | 100 | 5 |
+| `shots_on_target` | 5 | 10 |
+| `successful_tackles` | 1 | 25 |
+| `corners` | 5 | 10 |
+| `clean_sheet` | 150 | 1 |
+| `passing_percentage` | 1 per percentage point | 80 |
+| `possession_percentage` | 1 per percentage point | 60 |
+| `man_of_the_match` | 15 | 1 |
+| `goals_against` | −20 | 3 |
+| `fouls` | −5 | 5 |
+| `yellow_cards` | −10 | 5 |
+| `red_cards` | −40 | 5 |
+| `offsides` | −1 | 10 |
+
+Fewer fouls/cards/offsides retain more of the bonus. Deductions have a zero
+floor on the combined performance bonus and do not reduce the normal result
+reward. A clean sheet means the validated opponent score is zero, including
+a 0–0 draw. Goal counts come from the final score, without adding penalty goals
+or own goals again. Other values come from the client's validated match report;
+the server does not independently simulate the match. These are local rules,
+not a claim to reproduce EA's historical reward formula.
+
+For example, a basic 2–0 win with one foul and all other reported statistics at
+zero pays **1,345 coins**: 1,000 completion + 200 goals + 150 clean sheet − 5
+foul. Passing, possession and other reported stats can increase this further.
+The native screen shows completion separately from the skill/performance total.
+
+Set `match_bonuses.enabled` to `false` to keep only the existing result/division
+pay. Setting an individual rate or cap to zero disables that contribution.
+Positive categories accept nonnegative rates; deduction categories accept
+nonpositive rates. Rates are limited to 10,000 coins in magnitude. Caps are
+0–1 for clean sheet/man of the match, 0–100 for percentages, and 0–1,000 for
+other counters; configured positive bonuses cannot exceed 1,000,000 per match.
+
+New receipts save the complete bonus policy and native breakdown. Retries,
+server restarts and later rule changes return the original paid amount.
+Existing historical receipts and balances are unchanged. Abandoned, DNF and
+no-contest reports earn no new performance reward. Reward plugins receive the
+combined result and performance amount; tournament prizes are added afterward.
 
 ## Custom web packs
 
