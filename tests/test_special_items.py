@@ -129,6 +129,25 @@ class SupportItemTests(unittest.TestCase):
         self.assertEqual(fut_items.card({**row,'leagueId':19})['leagueId'],19)
         self.assertEqual(fut_items.card({**row,'leagueId':0})['leagueId'],0)
 
+    def test_category_icons_refresh_saved_stacks_and_consumed_snapshots_without_migrating_saves(self):
+        for pack in (190,191,193,194):
+            opened=self.buy(pack)
+            self.assertTrue(all(type(c.get('cardassetid')) is int and c['cardassetid']>0
+                                for c in opened['itemList']))
+        state=deepcopy(self.store.state);saved=self.store.path.read_bytes()
+        stacks=fut_items.consumable_list(self.store,'development',{})['itemData']
+        individual=fut_items.search(self.store,{'type':['consumables']})['itemData']
+        self.assertEqual({s['item']['id']:s['item']['cardassetid'] for s in stacks},
+                         {c['id']:c['cardassetid'] for c in individual})
+        self.assertEqual(self.store.state,state)
+        self.assertEqual(self.store.path.read_bytes(),saved)
+        self.assertEqual(Backend(self.backend.path,settings=self.backend.settings).fut_inventory.state,state)
+        source=self.source(201)
+        reply=fut_items.apply(self.backend,5000007,{'apply':[{'id':self.target()['id']}]},by_resource=True)
+        snapshot=next(c for c in reply['itemData'] if c['id']==source)
+        self.assertGreater(snapshot['cardassetid'],0)
+        self.assertNotIn(source,{r['id'] for r in fut_items.records(self.store.state)})
+
     def test_manager_purchase_selection_creation_and_quick_sell_survive_restart(self):
         opened=self.buy(190);manager=opened['itemList'][0]
         self.assertEqual(manager['itemType'],'manager')

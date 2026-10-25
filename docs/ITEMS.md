@@ -67,6 +67,11 @@ Saved support definition IDs remain stable. Card responses use installed PS3
 art resources 5000000/5000001 (training), 5000007/5000008 (contracts), 5000009
 (healing), and 5000010/5000011 (fitness). Contracts populate the separate
 `bronze`, `silver` and `gold` amounts used by native card display/eligibility.
+The independent `cardassetid` selects an installed category icon for managers
+and consumables. Missing this field makes the client load `cards_icon_0.big`
+and display a tinted rectangle over the bottom corner. Existing owned cards,
+pack results, stack lists and application snapshots all receive the corrected
+icons without a save migration or client patch.
 The resource apply route accepts the installed resource and the previous
 6000000-series definition alias, so existing owned supplies need no migration.
 Retail wire subtype 67 identifies all-attribute outfield training; subtype 57
@@ -95,7 +100,7 @@ live. Changing a price does not enable the feature for a club.
 
 Send the new pack contents to your club, select a player in the squad and
 choose **Apply Consumable**. The Positioning tab contains position modifiers;
-the chemistry-style tabs distinguish outfield players from goalkeepers.
+the Chemistry Style tab contains styles for both outfield players and keepers.
 The printed starting position must match the card's current preferred
 position. These are permanent changes to that owned card, across all squads
 using it; they do not change the base player or other versions/copies.
@@ -113,6 +118,9 @@ Backbone, Anchor, Hunter, Catalyst and Shadow. Goalkeeper styles are Wall,
 Shield, Cat, Glove and Goalkeeper Basic. A new style replaces the previous
 one and persists after matches; Basic restores the default. Incompatible
 styles and reapplying the current style reject without consuming a card.
+The retail Suggested list can also offer goalkeeper styles for outfield
+players. Wall, Shield, Cat and Glove require a goalkeeper even when shown
+there; use an outfield style for a defender, midfielder or forward.
 Temporary attribute training remains separate and expires after a played
 match. Position changes preserve the version, OVR, attributes and condition.
 

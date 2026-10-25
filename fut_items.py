@@ -91,6 +91,12 @@ CONSUMABLE_CATEGORY_IDS = {
 }
 ITEM_LABELS = {'LeagueName_0':'No league', 'LeagueName_Abbr15_0':'No league',
                'LAbbr_0':'None'}
+# The footer/category icon is independent of the main resource artwork.
+# GetConsumableData copies cardassetid into ICON_ASSET_ID. Omitting it
+# requests cards_icon_0.big and renders its tinted missing-image rectangle.
+CARD_ICONS = {'manager':20, 'playerTraining':1, 'GKTraining':3,
+              'contract':7, 'fitness':10, 'healing':9, 'position':6,
+              'playStyle':50}
 
 
 def records(state): return state.get('supportItems', [])
@@ -167,7 +173,12 @@ def card(record):
     spec.pop('sourcePosition', None)
     spec.pop('destinationPosition', None)
     spec.update(id=record['id'], itemState='free', timestamp=record['timestamp'],
-                owners=1, untradeable=False, itemQuantity=1)
+                owners=1, untradeable=False, itemQuantity=1,
+                cardassetid=CARD_ICONS[spec['itemType']])
+    if record['definitionId']==6000202: spec['cardassetid']=8
+    elif record['definitionId']==6000220: spec['cardassetid']=11
+    elif spec['itemType']=='playStyle' and spec['cardsubtypeid']>=269:
+        spec['cardassetid']=51
     if spec['itemType'] == 'manager':
         spec.update(contract=record.get('contract',7), leagueId=record.get('leagueId',spec.get('leagueId',0)))
     elif spec['itemType'] == 'contract':
