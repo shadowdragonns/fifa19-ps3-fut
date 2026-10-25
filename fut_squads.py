@@ -34,7 +34,10 @@ def validate(value, items, support_items=None):
             or not isinstance(value['custom'], str) or len(value['custom']) > 1024):
         raise ValueError('Invalid squad metadata')
     custom = json.loads(value['custom'])
-    if not isinstance(custom, list) or len(custom) != 22 or any(not integer(n, -1000, 1000) for n in custom):
+    # Retail 0x1719084 serializes two packed instruction words for each of
+    # the eleven starting slots with signed %d formatting. These are bit
+    # fields, not small tactic sliders; legitimate choices exceed 1000.
+    if not isinstance(custom, list) or len(custom) != 22 or any(not integer(n, -2**31, 2**31-1) for n in custom):
         raise ValueError('Invalid custom tactics')
     owned = {r['id']: r for r in items if r['pile'] == 'club'}
     players = value['players']

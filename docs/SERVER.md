@@ -69,6 +69,14 @@ can be removed only after its process has stopped. Back up the whole stopped
 state, config, TLS, plugins and plugin-data directories. Use compatible code
 with a restored state snapshot; old code may not recognize newer receipts.
 
+Player instructions are saved independently for each squad, together with
+its formation, captain and kick takers. The native `custom` string holds 22
+signed 32-bit packed instruction words for the eleven starting positions;
+these are not small slider values. Full and partial squad saves preserve
+them, as do squad switching, server restarts and match-squad snapshots.
+The client interprets the flags and applies the instructions in gameplay.
+No launcher update is required for this server-side support.
+
 ## Optional Linux user service
 
 Create `~/.config/systemd/user/fifa19-fut.service`, substituting **all paths
