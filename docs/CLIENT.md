@@ -121,6 +121,13 @@ ambiguous settings are refused with an error identifying the conflict. The
 launcher does not rewrite the ISO or EBOOT on disk. Network diagnostics are
 captured privately; `--trace-network` enables verbose tracing if needed.
 
+The temporary patch also fixes the CPU tournament results updater's home-only
+fixture lookup and guards its null-fixture path. Both home and away fixtures
+can be selected; an empty or already-completed draw skips the update instead
+of calling the engine with a null match. This does not grant wins, coins or
+change the server's cup progress. Updating only the server cannot install
+this fix: update the client and fully close/relaunch FIFA through the launcher.
+
 For same-PC testing with the source tree, initialize TLS locally and omit
 `--server`; the launcher starts and stops its same-PC server. Separate portable
 client ZIPs require `--server`. Windows supports one client per PC.

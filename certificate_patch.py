@@ -11,6 +11,7 @@ import tempfile
 import client_platform
 import profile_trace
 import upgrade_rewards_patch
+import tournament_patch
 
 HERE = Path(__file__).resolve().parent
 ELF = HERE.parent / 'england-110/update-research/EBOOT.elf'
@@ -58,6 +59,7 @@ def prepare(include_profile_trace=False, skip_upgrade_rewards=False, trust_ca=No
     for offset in range(0, KEY_SIZE, 4):
         value = int.from_bytes(key[offset:offset + 4], 'big')
         patch += f'      - [ be32, 0x{KEY_ADDRESS + offset:08x}, 0x{value:08x} ]\n'
+    patch += tournament_patch.patch_rows(data)
     if include_profile_trace:
         patch += profile_trace.patch_rows(data)
     if skip_upgrade_rewards:
@@ -100,6 +102,7 @@ def prepare_portable(include_profile_trace, skip_upgrade_rewards, trust_ca=None)
     for offset in range(0, KEY_SIZE, 4):
         value = int.from_bytes(key[offset:offset+4], 'big')
         patch += f'      - [ be32, 0x{KEY_ADDRESS+offset:08x}, 0x{value:08x} ]\n'
+    patch += tournament_patch.patch_rows()
     if include_profile_trace:
         patch += metadata['trace_rows']
     if skip_upgrade_rewards:
@@ -123,8 +126,11 @@ def _launcher_patch(content, desired):
             if not re.fullmatch(pattern, lines[offset//4]): return False
         metadata = json.loads((HERE/'data/client-native-patch.json').read_text())
         tail = ''.join(lines[KEY_SIZE//4:])
-        return tail in ('', metadata['trace_rows'], metadata['rewards_rows'],
-                        metadata['trace_rows']+metadata['rewards_rows'])
+        optional = ('', metadata['trace_rows'], metadata['rewards_rows'],
+                    metadata['trace_rows']+metadata['rewards_rows'])
+        # Recognise older launcher patches as well as the current mandatory
+        # compatibility fixes, so an interrupted launch upgrades cleanly.
+        return tail in optional or tail in tuple(tournament_patch.patch_rows()+rows for rows in optional)
     except (UnicodeError, ValueError):
         return False
 

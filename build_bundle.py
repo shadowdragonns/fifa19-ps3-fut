@@ -13,7 +13,7 @@ SERVER_MODULES = ('server', 'initialize_tls', 'tls_identity', 'kits', 'accounts'
     'pow_services', 'pran', 'localization', 'game_reporting', 'server_settings', 'server_plugins', 'plugin_queries', 'card_versions', 'rebalance_primes',
     'admin_cards', 'club_reset', 'web_accounts', 'web_packs', 'web_app', 'card_rebalance', 'fut_items', 'fut_contracts', 'fut_rewards', 'player_statistics')
 CLIENT_MODULES = ('launch', 'launcher_gui', 'server_trust', 'game_input', 'endpoints', 'certificate_patch', 'tls_identity',
-    'profile_trace', 'upgrade_rewards_patch', 'client_platform', 'install_update',
+    'profile_trace', 'upgrade_rewards_patch', 'tournament_patch', 'client_platform', 'install_update',
     'client_instances', 'setup_clients')
 SERVER_DATA = ('england-pack-players.json', 'standard-pack-players.json', 'standard-england-players.json',
     'home-stadium.json', 'club-stadiums.json', 'club-equipment.json',

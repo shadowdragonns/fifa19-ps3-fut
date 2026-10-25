@@ -73,6 +73,22 @@ class PublicProjectTests(unittest.TestCase):
                     self.assertIn(f'0x{certificate_patch.KEY_ADDRESS+at:08x}, 0x{int.from_bytes(modulus[at:at+4],"big"):08x}',rows)
                 self.assertIn('calloc',rows)
                 self.assertIn('0x005f9530, 0x38600000',rows)
+                # Results fixes must be present even without diagnostic
+                # tracepoints or the optional upgrade-rewards boot skip.
+                import tournament_patch
+                fixes=tournament_patch.patch_rows()
+                self.assertIn(fixes,rows)
+                self.assertTrue(certificate_patch._launcher_patch(rows.encode(),rows.encode()))
+                legacy=rows.replace(fixes,'').encode()
+                self.assertTrue(certificate_patch._launcher_patch(legacy,rows.encode()))
+                malicious=rows.replace('0x496f9612','0x496f9616').encode()
+                self.assertFalse(certificate_patch._launcher_patch(malicious,rows.encode()))
+                with certificate_patch.temporary_patch(root/'profile',root/'logs',trust_ca=public):
+                    self.assertIn(fixes,(root/'profile/patches/BLES02258_patch.yml').read_text())
+                self.assertFalse((root/'profile/patches/BLES02258_patch.yml').exists())
+                minimal=certificate_patch.prepare(False,False,trust_ca=public).read_text()
+                self.assertIn(fixes,minimal)
+                self.assertNotIn('0x005f9530',minimal)
             self.assertFalse(list(client.rglob('*.key')))
 
     def test_bad_certificate_is_rejected(self):
