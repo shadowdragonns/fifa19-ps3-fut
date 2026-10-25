@@ -12,6 +12,7 @@ from web_accounts import WebAccounts, AuthError
 import web_packs
 import admin_cards
 import fut_contracts
+import club_reset
 
 HERE = Path(__file__).resolve().parent
 COOKIE = 'fut_web_session'
@@ -121,11 +122,12 @@ class WebApp:
                         from plugin_queries import Queries
                         result={'clubs':[{'persona':r['persona_id'],'name':r['club_name'],'player':r['name']}
                             for r in Queries(self.root).get_players()]}
-                    elif method=='POST' and route in ('/club/api/admin/inventory','/club/api/admin/edit'):
+                    elif method=='POST' and route in ('/club/api/admin/inventory','/club/api/admin/edit','/club/api/admin/reset-club'):
                         if type(data.get('persona')) is not int:raise HTTPError(400,'Select a club.')
                         target=self.owner(data['persona'])
-                        result=(admin_cards.inventory(target,data) if route.endswith('inventory')
-                                else admin_cards.edit(target,data,session['username']))
+                        if route.endswith('inventory'):result=admin_cards.inventory(target,data)
+                        elif route.endswith('reset-club'):result=club_reset.reset(target,data,session['username'])
+                        else:result=admin_cards.edit(target,data,session['username'])
                     else:raise HTTPError(404,'Admin page not found.')
                 elif method == 'GET' and route == '/club/api/options':
                     result = {key:[{'id':int(k),'name':v} for k,v in sorted(values.items(),key=lambda row:row[1].casefold())]
@@ -139,7 +141,8 @@ class WebApp:
                     with owner.lock:
                         result, _ = web_packs.quote(data, owner.settings.snapshot())
                         if result['available']:
-                            quote_token, expires = self.auth.quote(session['persona'],result)
+                            saved={**result,'club_generation':club_reset.generation(owner.fut_inventory.state)}
+                            quote_token, expires = self.auth.quote(session['persona'],saved)
                             result.update(quote_token=quote_token,expires=expires)
                 elif method == 'POST' and route == '/club/api/open':
                     if set(data) != {'quote_token','duplicate_consent'}: raise HTTPError(400, 'Provide a valid pack quote.')

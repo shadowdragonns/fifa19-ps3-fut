@@ -74,7 +74,9 @@ def inventory(owner,payload):
             cards.append(row)
         cards.sort(key=lambda r:(-r['rating'],r['name'],r['id']))
         page=payload.get('page',0)
+        from club_reset import info as reset_info
         return {'persona':owner.profile['persona'],'club_name':owner.profile['fut_club']['name'],
+                'reset':reset_info(owner),
                 'squads':[{'id':i,'name':s['squadName'],'active':i==saved(owner)['id']} for i,s in all_squads.items()],
                 'cards':cards[page*100:(page+1)*100],'total':len(cards),'page':page,'page_size':100,
                 'positions':sorted(POSITIONS)}

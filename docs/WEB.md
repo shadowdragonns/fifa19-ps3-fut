@@ -146,3 +146,26 @@ it first. Ordinary website accounts cannot use admin endpoints. Grants are
 operator-only, and authenticated admin writes retain origin and CSRF checks.
 The latest 500 edits are recorded privately in that club's inventory; credentials
 are never included. Back up the stopped state before bulk manual experiments.
+
+## Reset a club
+
+In **Card editor**, select the club and choose **Reset club…**. Type its name
+exactly in the confirmation dialog. Close FIFA for that club first: the server
+rejects resets while its game session is connected. Ordinary accounts cannot
+reset clubs; the existing admin role, same-origin and CSRF checks all apply.
+
+Reset erases owned/unassigned cards, support items, coins, all squads, equipment
+choices, player statistics/conditions/edits, match history, season/tournament
+progress, web pack history and automatic-contract preferences. It starts with
+the current `economy.starting_coins` balance (20,000 by default) and the same
+empty inventory as a new local club. The RPCN/persona identity, website account,
+admin grant and game account preferences stay linked. Reconnect FIFA afterward.
+
+Before committing, the server writes private profile/inventory backups under
+`state/club-reset-backups/PERSONA/RESET_ID/`. Backup failures leave the club
+unchanged. Reset uses one atomic inventory commit; its club metadata also
+survives a restart before the profile file is next saved. Internal card/pack ID
+allocators keep increasing so stale requests cannot target newly issued cards.
+Pre-reset web quotes are invalidated by the new club generation. A stale or
+repeated confirmation cannot erase a changed club. Restore both backed-up JSON
+files only with the server stopped if an operator needs to undo a reset.

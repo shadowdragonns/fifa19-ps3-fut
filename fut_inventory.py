@@ -46,12 +46,16 @@ class Inventory:
         self.events = EventBus()
         self.player = lambda: {}
         self.path, self.lock = path, lock
-        self.state = {'version': 1, 'coins': self.settings.section('economy')['starting_coins'], 'nextItemId': 10000000,
-                      'nextPackId': 1, 'purchaseCount': 0, 'items': [],
-                      'pendingPack': None, 'userHubData': []}
+        self.state = self.initial_state(self.settings)
         if path and path.exists():
             self.state = json.loads(path.read_text(encoding='utf-8'))
         self.validate(self.state)
+
+    @staticmethod
+    def initial_state(settings):
+        return {'version':1,'coins':settings.section('economy')['starting_coins'],
+                'nextItemId':10000000,'nextPackId':1,'purchaseCount':0,
+                'items':[],'pendingPack':None,'userHubData':[]}
 
     @staticmethod
     def validate(state):
@@ -155,6 +159,9 @@ class Inventory:
             validate_receipts(state)
         from fut_contracts import validate as validate_contracts
         validate_contracts(state)
+        if 'clubReset' in state:
+            from club_reset import validate_marker
+            validate_marker(state['clubReset'])
 
     def commit(self, state):
         self.validate(state)

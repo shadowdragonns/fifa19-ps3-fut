@@ -209,6 +209,20 @@ combined result and performance amount; tournament prizes are added afterward.
 The `web_packs` section controls live pack-builder prices. See [WEB.md](WEB.md)
 for pricing formulas, authentication, the web interface and operator commands.
 
+Edition prices are **per-player surcharges**, separate from fixed in-game
+`packs.prices` offers:
+
+| Website setting | Default | Applies to |
+|---|---:|---|
+| `web_packs.base_per_player` | 750 | Base price for every player, including Standard |
+| `web_packs.prime_surcharge` | 30000 | Extra per Prime/TOTW player |
+| `web_packs.toty_surcharge` | 60000 | Extra per Team of the Year player |
+| `web_packs.otw_surcharge` | 100000 | Extra per Ones to Watch player |
+
+The edition surcharge is added to the base and filter charges before pack size
+and combined-filter pricing. These settings reload live. Old config files can
+omit newer keys and use defaults; add the keys explicitly to edit those prices.
+
 ## Fitness recovery
 
 `fitness.enabled` defaults to `true`; `fitness.seconds_per_point` defaults to

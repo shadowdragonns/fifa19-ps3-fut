@@ -97,6 +97,7 @@
         <p class="muted">Temporary training is separate.</p><div class="form-actions"><button id="admin-save" class="button" type="submit">Save card</button><button id="admin-reset" class="text-button" type="button">Remove stat overrides</button></div>
       </fieldset></form>
     </div><p id="admin-status" role="status"></p>
+    <div class="club-reset"><h3>Reset club</h3><p class="muted">Erase the selected club's cards, coins, squads and progress. Close FIFA for that club first.</p><button id="admin-reset-club" class="button danger-button" type="button" disabled>Reset club…</button></div>
   </div>
 </section>
 </main>
@@ -104,6 +105,10 @@
   <div class="reveal-heading"><h2>Pack opened</h2><p id="reveal-summary"></p></div>
   <div id="reveal-cards" class="reveal-cards"></div>
   <p class="muted">Saved to your club. Re-enter FUT to refresh.</p><button class="button" id="close-reveal">Close</button>
+</dialog>
+<dialog id="reset-club-dialog" aria-labelledby="reset-club-title">
+  <h2 id="reset-club-title">Reset club</h2><p id="reset-club-description"></p>
+  <form id="reset-club-form"><label>Type the club name to confirm<input id="reset-club-name" autocomplete="off" maxlength="32" required></label><p id="reset-club-error" class="error" role="status"></p><div class="form-actions"><button class="button" id="reset-club-cancel" type="button">Cancel</button><button class="button danger-button" id="reset-club-confirm" disabled>Reset club</button></div></form>
 </dialog>
 </body>
 </html>

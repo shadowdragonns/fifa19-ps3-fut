@@ -228,33 +228,34 @@ async function refreshBalance() {
   try{state.me=await api('me');balance();history();enableOpen();}catch(_){}
 }
 document.addEventListener('visibilitychange',refreshBalance);setInterval(refreshBalance,15000);
-const admin = {ready:false,clubs:[],cards:[],current:null,page:0,total:0,serial:0,busy:false};
+const admin = {ready:false,clubs:[],cards:[],current:null,page:0,total:0,serial:0,busy:false,resetInfo:null,resetTarget:null};
 let adminDebounce;
 function adminAccess() {
   const allowed=Boolean(state.me?.is_admin);
   $('admin-link').hidden=!allowed;$('admin-editor').hidden=!allowed;
-  if(!allowed){admin.ready=false;admin.current=null;admin.serial++;$('admin-fields').disabled=true;$('admin-cards').replaceChildren();return;}
+  if(!allowed){admin.ready=false;admin.current=null;admin.resetInfo=null;admin.serial++;$('admin-fields').disabled=true;$('admin-reset-club').disabled=true;$('admin-cards').replaceChildren();$('reset-club-dialog').close();return;}
   if(!admin.ready){admin.ready=true;loadAdminClubs().catch(error=>{$('admin-status').textContent=error.message;admin.ready=false;});}
 }
-async function loadAdminClubs() {
+async function loadAdminClubs(preferred=state.me?.persona) {
   const result=await api('admin/clubs');
   if(!state.me?.is_admin)return;
   admin.clubs=result.clubs;
   $('admin-club').replaceChildren(...result.clubs.map(row=>{
     const opt=element('option',row.name+' · '+row.player);opt.value=String(row.persona);return opt;
   }));
-  if(result.clubs.some(row=>row.persona===state.me.persona))$('admin-club').value=String(state.me.persona);
+  if(result.clubs.some(row=>row.persona===preferred))$('admin-club').value=String(preferred);
   admin.page=0;await loadAdminCards(true);
 }
 async function loadAdminCards(resetSquads=false) {
   if(admin.busy||!state.me?.is_admin||!$('admin-club').value)return;
   const serial=++admin.serial;
-  admin.current=null;$('admin-fields').disabled=true;$('admin-status').textContent='Loading owned cards…';
+  admin.current=null;admin.resetInfo=null;$('admin-reset-club').disabled=true;$('admin-fields').disabled=true;$('admin-status').textContent='Loading owned cards…';
   const data={persona:Number($('admin-club').value),squad_id:resetSquads?null:($('admin-squad').value?Number($('admin-squad').value):null),search:$('admin-search').value,page:admin.page};
   try {
     const result=await api('admin/inventory',data);
     if(serial!==admin.serial||!state.me?.is_admin)return;
     admin.cards=result.cards;admin.total=result.total;
+    admin.resetInfo={...result.reset,persona:result.persona};$('admin-reset-club').disabled=false;
     const selected=resetSquads?'':$('admin-squad').value;
     $('admin-squad').replaceChildren(element('option','All owned players'));
     $('admin-squad').firstChild.value='';
@@ -319,6 +320,38 @@ $('admin-cards').addEventListener('change',()=>{const row=admin.cards.find(card=
 $('admin-prev').addEventListener('click',()=>{if(admin.page>0){admin.page--;loadAdminCards();}});
 $('admin-next').addEventListener('click',()=>{if((admin.page+1)*100<admin.total){admin.page++;loadAdminCards();}});
 $('admin-refresh').addEventListener('click',()=>loadAdminCards());
+$('admin-reset-club').addEventListener('click',()=>{
+  if(admin.busy||!admin.resetInfo)return;
+  admin.resetTarget={...admin.resetInfo};
+  $('reset-club-title').textContent='Reset '+admin.resetTarget.club_name+'?';
+  $('reset-club-description').textContent='Cards, coins, squads, equipment, match history and progress will be erased. The club starts with '+number(admin.resetTarget.starting_coins)+' coins. Its website login stays linked. Close FIFA for this club first.';
+  $('reset-club-name').value='';$('reset-club-error').textContent='';$('reset-club-confirm').disabled=true;
+  $('reset-club-dialog').showModal();
+});
+$('reset-club-name').addEventListener('input',()=>{
+  $('reset-club-confirm').disabled=admin.busy||!admin.resetTarget||$('reset-club-name').value!==admin.resetTarget.club_name;
+});
+$('reset-club-cancel').addEventListener('click',()=>{if(!admin.busy)$('reset-club-dialog').close();});
+$('reset-club-dialog').addEventListener('cancel',event=>{if(admin.busy)event.preventDefault();});
+$('reset-club-form').addEventListener('submit',async event=>{
+  event.preventDefault();const target=admin.resetTarget;
+  if(admin.busy||!target||$('reset-club-name').value!==target.club_name)return;
+  admin.busy=true;$('reset-club-confirm').disabled=true;$('reset-club-cancel').disabled=true;$('reset-club-error').textContent='Resetting…';
+  try{
+    await api('admin/reset-club',{persona:target.persona,revision:target.revision,confirmation:$('reset-club-name').value});
+    $('reset-club-dialog').close();admin.resetInfo=null;admin.current=null;$('admin-fields').disabled=true;
+    state.me=await api('me');balance();history();
+    notice('Club reset. Reconnect to FIFA.');
+  }catch(error){$('reset-club-error').textContent=error.message;}
+  finally{
+    admin.busy=false;$('reset-club-cancel').disabled=false;
+    $('reset-club-confirm').disabled=$('reset-club-name').value!==admin.resetTarget?.club_name;
+    if(state.me?.is_admin&&!$('reset-club-dialog').open){
+      try{admin.page=0;await loadAdminClubs(target.persona);await updateQuote();}
+      catch(error){$('admin-status').textContent=error.message;}
+    }
+  }
+});
 
 (async()=>{chooseButtons();try{await loadClub();applyDraft();await updateQuote();}catch(error){signedOut();if(error.message!=='Sign in to your club.')notice(error.message);}})();
 

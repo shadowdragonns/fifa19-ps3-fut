@@ -94,6 +94,10 @@ added after the filter. The final amount is saved atomically with the match resu
 updates. This hook is called only for completed WIN/DRAW/LOSS results.
 There is no API to bypass card ownership or edit raw protocol replies.
 
+`club.reset` fires after an administrator's reset is committed. It contains
+`player`, `actor` (website username) and `reset_id`, without website credentials
+or backup contents. The player's club is already fresh when the callback runs.
+
 Hooks run synchronously under server locks, with callbacks serialized across
 players. Keep them quick: avoid sleeps, slow network calls and recursive game
 operations. Reward filters must be pure; failed disk writes can cause a filter

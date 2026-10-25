@@ -23,6 +23,10 @@ MAIL = 'player@fifa19.local'
 CREATED = '2026-10-09T00:00:00Z'
 
 
+def fresh_club():
+    return dict(name='England FC',established=int(time.time()),asset_id=0)
+
+
 class Backend:
     def __init__(self, profile_path=None, endpoints=None, multiuser=False, settings=None, events=None):
         from endpoints import Endpoints
@@ -56,9 +60,15 @@ class Backend:
         self.profile = dict(persona=1000001, account=1100000001,
                             name='Local Player', settings={}, telemetry_opt=0,
                             pow_supported_club=0)
-        self.profile['fut_club'] = dict(name='England FC', established=int(time.time()), asset_id=0)
+        self.profile['fut_club'] = fresh_club()
         if self.path and self.path.exists():
             self.profile.update(json.loads(self.path.read_text()))
+        # The inventory is the atomic reset commit. A profile that has not
+        # yet been saved after that commit picks up its new club metadata.
+        reset=self.fut_inventory.state.get('clubReset')
+        if reset and self.profile.get('clubGeneration')!=reset['id']:
+            self.profile['fut_club']=dict(reset['club'])
+            self.profile['clubGeneration']=reset['id']
         p = self.profile
         if (any(type(p[k]) is not int or not 0 < p[k] < 2**63 for k in ('persona', 'account'))
                 or not isinstance(p['name'], str) or not 1 <= len(p['name']) <= 32

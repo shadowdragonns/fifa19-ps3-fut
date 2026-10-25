@@ -14,7 +14,7 @@ EVENTS = {'server.started', 'server.stopping', 'server.stopped', 'server.config_
           'player.online', 'player.offline', 'player.fut_entered', 'player.fut_left',
           'player.created', 'player.login', 'player.logout', 'pack.opened', 'web.pack.opened', 'cards.moved', 'cards.discarded',
           'squad.saved', 'squad.created', 'squad.deleted', 'squad.activated', 'equipment.changed',
-          'match.reserved', 'match.paired', 'match.started', 'match.completed', 'season.completed'}
+          'match.reserved', 'match.paired', 'match.started', 'match.completed', 'season.completed', 'club.reset'}
 FILTERS = {'match.reward'}
 
 

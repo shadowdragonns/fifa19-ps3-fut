@@ -136,6 +136,11 @@ input[type=checkbox] { width: 16px; height: 16px; margin: 2px 0 0; accent-color:
 .admin-editor fieldset { padding: 0; }
 .admin-editor legend { font-size: 16px; font-weight: 600; }
 #admin-status { color: var(--muted); }
+.club-reset { border-top: 1px solid var(--line); margin-top: 20px; padding-top: 16px; }
+.club-reset h3 { font-size: 15px; font-weight: 600; }
+.danger-button { border-color: #b86d65; color: #f3b4ab; }
+#reset-club-dialog { max-width: 470px; }
+#reset-club-dialog .form-actions { margin-top: 16px; }
 dialog { width: calc(100% - 32px); max-width: 1000px; max-height: 90vh; padding: 24px; background: var(--panel); color: #e0e0e0; border: 1px solid #626262; border-radius: 3px; }
 dialog::backdrop { background: #000b; }
 .reveal-heading { text-align: center; }

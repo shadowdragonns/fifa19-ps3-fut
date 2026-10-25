@@ -101,6 +101,9 @@ def open_pack(owner, auth, token, *, duplicate_consent=False, clock=time.time):
         cached = store.state.get('webPackReceipts', {}).get(key)
         if cached: return deepcopy(cached['result'])
         saved, expires = auth.get_quote(owner.profile['persona'], token)
+        from club_reset import generation
+        if saved.get('club_generation','original')!=generation(store.state):
+            raise PackError('This club was reset. Refresh the price before buying.')
         settings = owner.settings.snapshot()
         current, pool = quote(saved['parameters'], settings)
         if current['price'] != saved['price'] or current['rules'] != saved['rules']:
